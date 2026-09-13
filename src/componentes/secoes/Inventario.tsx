@@ -94,7 +94,7 @@ export function Inventario({ itens, total, titulo, texto }: Props) {
               );
             })}
           </ul>
-          <p className="pixel mt-5 text-pixel-1 text-bruma">setas do teclado também andam pelos espaços</p>
+          <p className="pixel mt-5 hidden text-pixel-1 text-bruma md:block">setas do teclado também andam pelos espaços</p>
         </div>
 
         <div className="moldura self-start px-6 py-6 lg:col-span-5" aria-live="polite">

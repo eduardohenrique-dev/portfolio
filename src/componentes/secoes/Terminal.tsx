@@ -130,7 +130,7 @@ export function Terminal({ titulo, texto, boasVindas, sugestoes }: Props) {
             aria-live="polite"
             aria-busy={ocupado}
             aria-label="Conversa com o terminal"
-            className="terminal-registro flex h-96 flex-col gap-5 overflow-y-auto px-4 py-5"
+            className="terminal-registro flex h-72 flex-col gap-5 overflow-y-auto px-4 py-5 md:h-96"
             tabIndex={0}
           >
             <p className="text-bruma">

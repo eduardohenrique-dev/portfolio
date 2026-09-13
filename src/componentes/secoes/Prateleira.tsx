@@ -48,14 +48,10 @@ export function Prateleira({ projetos, titulo, texto }: Props) {
       const estado = estadoFlip.current;
       if (!estado || !raiz.current) return;
       estadoFlip.current = null;
-      const focar = () => {
-        if (focarDepois.current) document.getElementById(focarDepois.current)?.focus();
-        focarDepois.current = null;
-      };
-      if (prefereMenosMovimento()) {
-        focar();
-        return;
-      }
+      // o foco vai já para o destino (sem rolar a página): leitor de tela não fica sem contexto durante o Flip
+      if (focarDepois.current) document.getElementById(focarDepois.current)?.focus({ preventScroll: true });
+      focarDepois.current = null;
+      if (prefereMenosMovimento()) return;
       Flip.from(estado, {
         targets: raiz.current.querySelectorAll("[data-flip-id]"),
         duration: 0.48,
@@ -63,7 +59,6 @@ export function Prateleira({ projetos, titulo, texto }: Props) {
         absolute: true,
         scale: false,
         toggleClass: "virando",
-        onComplete: focar,
       });
       if (aberto) {
         gsap.from("[data-revelar]", {

@@ -1,7 +1,7 @@
 /**
  * O quarto em duas composições:
  *  - "larga" (320×200): desktop, diorama completo
- *  - "alta"  (180×240): mobile e rodapé — paredes altas, janela grande, menos móveis
+ *  - "alta"  (180×200): mobile e rodapé — paredes altas, janela grande, menos móveis
  * Não é a mesma cena escalada: cada composição tem o próprio enquadramento.
  */
 import { VAZIO } from "../../src/arte/paleta";
@@ -141,7 +141,7 @@ export function montarQuarto(composicao: Composicao, somenteCamada: number | nul
   const W = larga ? 56 : 36;
   const D = larga ? 56 : 36;
   const H = larga ? 62 : 96;
-  const tela = larga ? new Tela(320, 200, 160, 78) : new Tela(180, 240, 90, 138);
+  const tela = larga ? new Tela(320, 200, 160, 78) : new Tela(180, 200, 90, 110);
   tela.somenteCamada = somenteCamada;
 
   const janela = larga ? { y0: 18, y1: 38, z0: 24, z1: 50 } : { y0: 9, y1: 27, z0: 34, z1: 80 };

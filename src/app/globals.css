@@ -241,7 +241,7 @@
 
   .cena[data-composicao="alta"],
   .cena[data-composicao="responsiva"] {
-    aspect-ratio: 180 / 240;
+    aspect-ratio: 180 / 200;
   }
 
   @media (min-width: 768px) {

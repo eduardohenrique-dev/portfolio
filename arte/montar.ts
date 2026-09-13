@@ -9,11 +9,12 @@
  * Uso: npm run arte
  */
 import { createHash } from "node:crypto";
-import { mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { CEUS, desenharCeu } from "../src/arte/ceu";
 import { comporIndices } from "../src/arte/compositor";
-import { INDICE, PALETAS, VAZIO, type Rgb } from "../src/arte/paleta";
+import { HORARIOS, INDICE, PALETAS, VAZIO, type Rgb } from "../src/arte/paleta";
+import { lerPngIndices } from "./pngLer";
 import { type CenaExportada, exportarCena } from "./cena/exportar";
 import { CANECA, CONTROLE, GATO_DORMINDO, IBITURUNA, SUCULENTA, VAPOR } from "./cena/sprites";
 import { gerarFonte } from "./fonte/gerar";
@@ -40,6 +41,7 @@ import { desenhoParaIndices } from "./util";
 
 const RAIZ = join(import.meta.dirname, "..");
 const PASTA_ARTE = join(RAIZ, "public", "arte");
+const NOMES_INDICE = Object.keys(INDICE);
 
 interface Imagem {
   largura: number;
@@ -158,6 +160,29 @@ GATO_DORMINDO.forEach((q, i) => itensSprite.push([`gato-${i}`, deDesenho(q)]));
 itensSprite.push(["caneca", deDesenho(CANECA)], ["suculenta", deDesenho(SUCULENTA)], ["controle", deDesenho(CONTROLE)]);
 VAPOR.forEach((q, i) => itensSprite.push([`vapor-${i}`, deDesenho(q)]));
 itensSprite.push(["ibituruna", deDesenho(IBITURUNA)]);
+
+// ——— fluxo do Aseprite ———
+// referencia/<nome>.png: o sprite gerado em código, no tamanho exato, para redesenhar por cima.
+// <nome>.png: se existir, substitui o sprite gerado (mesmo tamanho, paleta do entardecer).
+const PASTA_ASEPRITE = join(RAIZ, "arte", "aseprite");
+mkdirSync(join(PASTA_ASEPRITE, "referencia"), { recursive: true });
+for (let i = 0; i < itensSprite.length; i++) {
+  const [nome, img] = itensSprite[i];
+  writeFileSync(join(PASTA_ASEPRITE, "referencia", `${nome}.png`), pngIndexado(img.largura, img.altura, img.dados, PALETAS.entardecer));
+  const desenhado = join(PASTA_ASEPRITE, `${nome}.png`);
+  if (!existsSync(desenhado)) continue;
+  const novo = lerPngIndices(desenhado, PALETAS.entardecer);
+  if (novo.largura !== img.largura || novo.altura !== img.altura) {
+    console.warn(`aseprite: ${nome}.png tem ${novo.largura}×${novo.altura}, esperado ${img.largura}×${img.altura} — ignorado`);
+    continue;
+  }
+  itensSprite[i] = [nome, novo];
+  console.log(`aseprite: usando ${nome}.png desenhado à mão`);
+}
+for (const horario of HORARIOS) {
+  const linhas = PALETAS[horario].map(([r, g, b], i) => `${String(r).padStart(3)} ${String(g).padStart(3)} ${String(b).padStart(3)}\t${NOMES_INDICE[i]}`);
+  writeFileSync(join(PASTA_ASEPRITE, `paleta-${horario}.gpl`), `GIMP Palette\nName: Portfólio ${horario}\nColumns: 8\n#\n${linhas.join("\n")}\n`);
+}
 
 const sprites = folha(itensSprite, 1024, VAZIO);
 const pngSprites = pngIndexado(sprites.largura, sprites.altura, sprites.dados, PALETAS.entardecer);
