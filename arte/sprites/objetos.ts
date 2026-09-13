@@ -1,0 +1,309 @@
+/**
+ * Objetos desenhados por código: os projetos na prateleira, o personagem da
+ * trajetória, ícones do HUD, cartão-postal, selo, cursores e favicon.
+ */
+import { CORES } from "../cena/sprites";
+import { Pincel } from "./pincel";
+
+const { F, S, L, A, V, R, C, B } = CORES;
+
+/** Cartucho — EINERD Scrims (treino é partida: VS no rótulo). */
+export function cartucho(): Pincel {
+  const p = new Pincel(30, 36);
+  // corpo com cantos superiores chanfrados
+  p.ret(2, 0, 26, 1, L);
+  p.ret(1, 1, 28, 1, L);
+  p.ret(0, 2, 30, 30, L);
+  p.ret(2, 1, 26, 1, B);
+  p.ret(1, 2, 28, 29, B);
+  // brilho na borda esquerda e sombra na direita
+  p.ret(1, 3, 1, 27, C);
+  p.ret(28, 3, 1, 27, S);
+  // ranhuras de pegada
+  for (const x of [5, 8, 11, 18, 21, 24]) p.ret(x, 3, 1, 3, L);
+  // rótulo
+  p.ret(4, 8, 22, 17, C);
+  p.ret(5, 9, 20, 15, A);
+  const w = Pincel.larguraMini("VS", 2);
+  p.mini("VS", 5 + Math.floor((20 - w) / 2), 11, F, 2);
+  p.ret(7, 22, 16, 1, R);
+  // conector
+  p.ret(0, 32, 30, 4, L);
+  p.ret(3, 31, 24, 4, S);
+  for (let x = 4; x < 26; x += 2) p.ret(x, 32, 1, 3, A);
+  return p;
+}
+
+/** Fichário — EINERD HQ (a operação inteira arquivada num lugar só). */
+export function fichario(): Pincel {
+  const p = new Pincel(26, 42);
+  p.caixa(0, 0, 26, 42, R, L);
+  p.ret(2, 1, 1, 40, C); // curvatura da lombada
+  p.ret(23, 1, 2, 40, L);
+  // etiqueta
+  p.ret(5, 6, 16, 14, L);
+  p.ret(6, 7, 14, 12, C);
+  const w = Pincel.larguraMini("HQ", 2);
+  p.mini("HQ", 6 + Math.floor((14 - w) / 2), 8, F, 2);
+  // furo de puxar
+  p.circulo(13, 30, 3, L);
+  p.circulo(13, 30, 2, F);
+  // faixa
+  p.ret(1, 36, 22, 2, A);
+  return p;
+}
+
+/** Caderno espiral — LoL Coach Pilot (anotação de aula, fitinha marcando a página). */
+export function caderno(): Pincel {
+  const p = new Pincel(30, 40);
+  p.caixa(2, 0, 28, 38, V, L);
+  p.ret(3, 1, 26, 1, C);
+  // espiral
+  for (let y = 3; y < 36; y += 4) {
+    p.ret(0, y, 4, 2, B);
+    p.px(0, y, L);
+    p.px(3, y + 1, L);
+  }
+  // etiqueta
+  p.ret(6, 7, 21, 13, C);
+  p.mini("COACH", 7, 9, F);
+  p.ret(7, 16, 19, 1, L);
+  // elástico
+  p.ret(27, 1, 1, 36, A);
+  // fitinha escapando por baixo
+  p.ret(19, 37, 3, 3, R);
+  p.px(20, 39, F);
+  return p;
+}
+
+/** Personagem da trajetória: parado + 4 quadros de caminhada, virado para a direita. */
+export function andarilho(): Pincel[] {
+  const cabeca = ["....SSSSS...", "...SSSSSSS..", "...SSSCCCC..", "...SSCCFCC..", "....SCCCCC..", ".....CCCC..."];
+  const tronco = ["...VVVVVVV..", "..VVVVVVVVV.", "..VVVVVVVVV.", "..VCVVVVVVV.", "...VVVVVVV..", "...LLLLLLL.."];
+  const pernas = {
+    parado: ["...LLL.LLL..", "...LL...LL..", "...LL...LL..", "...LL...LL..", "..FFF..FFF.."],
+    passo: ["...LLL.LLL..", "..LL....LL..", "..LL.....LL.", ".LL......LL.", ".FFF.....FFF"],
+    junto: ["....LLLLL...", "....LLLL....", "....LLL.....", "....LLL.....", "...FFFF....."],
+  };
+  const quadro = (p: readonly string[], sobe: boolean) => {
+    const pincel = new Pincel(12, 18);
+    const oy = sobe ? 0 : 1;
+    pincel.desenho([...cabeca, ...tronco], 0, oy);
+    pincel.desenho(p, 0, 12 + oy);
+    return pincel;
+  };
+  return [
+    quadro(pernas.parado, false),
+    quadro(pernas.passo, false),
+    quadro(pernas.junto, true),
+    quadro(pernas.passo, false),
+    quadro(pernas.junto, true),
+  ];
+}
+
+export function marco(): Pincel {
+  const p = new Pincel(12, 16);
+  p.caixa(0, 0, 12, 7, A, L);
+  p.ret(2, 3, 8, 1, R);
+  p.ret(5, 7, 2, 7, R);
+  p.ret(6, 7, 1, 7, L);
+  p.ret(3, 14, 6, 2, L);
+  return p;
+}
+
+export function iconeSol(): Pincel {
+  const p = new Pincel(11, 11);
+  p.desenho(
+    [
+      ".....A.....",
+      ".A.......A.",
+      "...........",
+      "....CCC....",
+      "...CCCCC...",
+      "A..CCCCC..A",
+      "...CCCCC...",
+      "....CCC....",
+      "...........",
+      ".A.......A.",
+      ".....A.....",
+    ],
+    0,
+    0,
+  );
+  return p;
+}
+
+export function iconePorDoSol(): Pincel {
+  const p = new Pincel(11, 11);
+  p.desenho(
+    [
+      "...........",
+      "...........",
+      ".....A.....",
+      ".A.......A.",
+      "....AAA....",
+      "...AAAAA...",
+      "...AAAAA...",
+      "LLLLLLLLLLL",
+      "...........",
+      "..LLLLLLL..",
+      "...........",
+    ],
+    0,
+    0,
+  );
+  return p;
+}
+
+export function iconeLua(): Pincel {
+  const p = new Pincel(11, 11);
+  p.desenho(
+    [
+      "....CCC....",
+      "..CCCC.....",
+      ".CCCC......",
+      ".CCC.......",
+      "CCCC.....B.",
+      "CCCC.......",
+      "CCCC.......",
+      ".CCCC......",
+      ".CCCCC...C.",
+      "..CCCCCCC..",
+      "....CCC....",
+    ],
+    0,
+    0,
+  );
+  return p;
+}
+
+/** Frente do cartão-postal: Ibituruna no fim de tarde, Rio Doce e um parapente. */
+export function postal(montanha: readonly string[]): Pincel {
+  const W = 120;
+  const H = 76;
+  const p = new Pincel(W, H);
+  p.degrade(0, 0, W, 52, [B, R, A]);
+  // sol baixo atrás da montanha
+  p.circulo(34, 44, 6, C);
+  // montanha ampliada 2×
+  const altura = montanha.length;
+  const largura = Math.max(...montanha.map((l) => l.length));
+  const ox = 30;
+  const oy = 54 - altura * 2;
+  montanha.forEach((linha, j) => {
+    for (let i = 0; i < largura; i++) if (linha[i] && linha[i] !== ".") p.ret(ox + i * 2, oy + j * 2, 2, 2, L);
+  });
+  // serra ao fundo, à esquerda
+  for (let x = 0; x < 34; x++) {
+    const h = Math.round(6 + 3 * Math.sin(x / 5));
+    p.ret(x, 54 - h, 1, h, S);
+  }
+  // cidade
+  p.ret(0, 54, W, 6, L);
+  for (let x = 2; x < W; x += 5) p.px(x, 55 + ((x * 7) % 3), A);
+  // Rio Doce
+  p.ret(0, 60, W, 16, S);
+  for (let y = 62; y < H; y += 3)
+    for (let x = (y * 11) % 7; x < W; x += 9) {
+      p.ret(x, y, 3, 1, B);
+    }
+  // reflexo do sol
+  for (let y = 61; y < 72; y += 2) p.ret(31 + ((y * 3) % 3), y, 6 - ((y - 61) >> 2), 1, A);
+  // parapente
+  p.desenho(["..CCCCC..", ".C.....C.", "..L...L..", "...L.L...", "....S...."], 84, 16);
+  return p;
+}
+
+/** Selo com o gato dormindo. */
+export function selo(gato: readonly string[]): Pincel {
+  const p = new Pincel(28, 32);
+  p.ret(0, 0, 28, 32, C);
+  // picote
+  for (let x = 1; x < 28; x += 3) {
+    p.px(x, 0, F);
+    p.px(x, 31, F);
+  }
+  for (let y = 1; y < 32; y += 3) {
+    p.px(0, y, F);
+    p.px(27, y, F);
+  }
+  p.ret(3, 3, 22, 26, R);
+  p.degrade(4, 4, 20, 14, [A, R]);
+  p.desenho(gato, 6, 14);
+  p.mini("GV", 4, 23, C);
+  return p;
+}
+
+export function cursorSeta(): Pincel {
+  const p = new Pincel(12, 12);
+  p.desenho(
+    [
+      "F...........",
+      "FF..........",
+      "FCF.........",
+      "FCCF........",
+      "FCCCF.......",
+      "FCCCCF......",
+      "FCCCCCF.....",
+      "FCCCCCCF....",
+      "FCCCCFFFF...",
+      "FCFFCF......",
+      "FF..FCF.....",
+      "....FFF.....",
+    ],
+    0,
+    0,
+  );
+  return p;
+}
+
+export function cursorMao(): Pincel {
+  const p = new Pincel(12, 12);
+  p.desenho(
+    [
+      "...FF.......",
+      "..FCCF......",
+      "..FCCF......",
+      "..FCCFFF....",
+      "..FCCFCCFF..",
+      "FFFCCFCCFCF.",
+      "FCFCCCCCCCCF",
+      "FCCCCCCCCCCF",
+      ".FCCCCCCCCCF",
+      "..FCCCCCCCF.",
+      "...FCCCCCF..",
+      "...FFFFFFF..",
+    ],
+    0,
+    0,
+  );
+  return p;
+}
+
+export function favicon(): Pincel {
+  const p = new Pincel(16, 16);
+  p.ret(0, 0, 16, 16, F);
+  p.desenho(
+    [
+      "................",
+      "................",
+      ".......LL.......",
+      ".....LLRRLL.....",
+      "....LRRRRRRL....",
+      "...LRRAAAARRL...",
+      "....LLCCCCLL....",
+      "................",
+      ".....A.A.A.A....",
+      "....A.A.A.A.A...",
+      "...A.A.A.A.A.A..",
+      "..A.A.A.A.A.A.A.",
+      "................",
+      "..LLLLLLLLLLLL..",
+      "..SSSSSSSSSSSS..",
+      "................",
+    ],
+    0,
+    0,
+  );
+  return p;
+}

@@ -1,26 +1,460 @@
 @import "tailwindcss";
 
+/*
+ * Tokens. A paleta tem 8 índices; o horário troca o VALOR de cada um (ver src/arte/paleta.ts).
+ * As variáveis são registradas como <color> para a troca acontecer em passos (steps), não em fade.
+ */
+@property --c-fundo { syntax: "<color>"; inherits: true; initial-value: #2a2030; }
+@property --c-superficie { syntax: "<color>"; inherits: true; initial-value: #3a2c3d; }
+@property --c-linha { syntax: "<color>"; inherits: true; initial-value: #5a4557; }
+@property --c-ambar { syntax: "<color>"; inherits: true; initial-value: #f0b45c; }
+@property --c-salvia { syntax: "<color>"; inherits: true; initial-value: #9aae7e; }
+@property --c-rosa { syntax: "<color>"; inherits: true; initial-value: #db8c7e; }
+@property --c-creme { syntax: "<color>"; inherits: true; initial-value: #f6e8d0; }
+@property --c-bruma { syntax: "<color>"; inherits: true; initial-value: #b3a1ab; }
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --c-fundo: #2a2030;
+  --c-superficie: #3a2c3d;
+  --c-linha: #5a4557;
+  --c-ambar: #f0b45c;
+  --c-salvia: #9aae7e;
+  --c-rosa: #db8c7e;
+  --c-creme: #f6e8d0;
+  --c-bruma: #b3a1ab;
+  --troca: 480ms steps(4, jump-end);
+  transition:
+    --c-fundo var(--troca),
+    --c-superficie var(--troca),
+    --c-linha var(--troca),
+    --c-ambar var(--troca),
+    --c-salvia var(--troca),
+    --c-rosa var(--troca),
+    --c-creme var(--troca),
+    --c-bruma var(--troca);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+/* Com menos movimento a página fica parada no entardecer, sem depender de JS. */
+@media (prefers-reduced-motion: reduce) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --c-fundo: #241c2e;
+    --c-superficie: #33283b;
+    --c-linha: #503f59;
+    --c-ambar: #eba75a;
+    --c-salvia: #8ca582;
+    --c-rosa: #d48088;
+    --c-creme: #f3e7d2;
+    --c-bruma: #aa99ae;
+    transition: none;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme {
+  /* sem paleta, raio ou sombra padrão do Tailwind: só o que foi escolhido */
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --drop-shadow-*: initial;
+
+  /* grade de 4px */
+  --spacing: 4px;
+
+  /* fonte pixel só em múltiplos da grade de 12px; entrelinha com folga par para a linha de base cair no pixel */
+  --text-pixel-1: 12px;
+  --text-pixel-1--line-height: 16px;
+  --text-pixel-2: 24px;
+  --text-pixel-2--line-height: 32px;
+  --text-pixel-3: 36px;
+  --text-pixel-3--line-height: 44px;
+  --text-pixel-4: 48px;
+  --text-pixel-4--line-height: 56px;
+
+  /* texto corrido */
+  --text-miudo: 14px;
+  --text-miudo--line-height: 20px;
+  --text-corpo: 17px;
+  --text-corpo--line-height: 28px;
+  --text-destaque: 21px;
+  --text-destaque--line-height: 32px;
+
+  --container-texto: 62ch;
+  --container-pagina: 1160px;
+
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+}
+
+@theme inline {
+  --color-fundo: var(--c-fundo);
+  --color-superficie: var(--c-superficie);
+  --color-linha: var(--c-linha);
+  --color-ambar: var(--c-ambar);
+  --color-salvia: var(--c-salvia);
+  --color-rosa: var(--c-rosa);
+  --color-creme: var(--c-creme);
+  --color-bruma: var(--c-bruma);
+  --font-pixel: var(--fonte-pixel), ui-monospace, monospace;
+  --font-texto: var(--fonte-texto), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-fundo);
+    color: var(--color-creme);
+    cursor: url("/cursores/seta.png") 0 0, auto;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-texto);
+    font-size: var(--text-corpo);
+    line-height: var(--text-corpo--line-height);
+    min-height: 100dvh;
+  }
+
+  a,
+  button,
+  summary,
+  [role="button"],
+  label[for] {
+    cursor: url("/cursores/mao.png") 6 0, pointer;
+  }
+
+  input,
+  textarea {
+    cursor: text;
+  }
+
+  ::selection {
+    background-color: var(--color-ambar);
+    color: var(--color-fundo);
+  }
+
+  :focus-visible {
+    outline: 4px solid var(--color-creme);
+    outline-offset: 4px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-pixel);
+    font-weight: 400;
+  }
+}
+
+@layer components {
+  /* texto em fonte pixel: sem suavização extra, sem kerning, sem espaçamento inventado */
+  .pixel {
+    font-family: var(--font-pixel);
+    font-weight: 400;
+    font-kerning: none;
+    letter-spacing: 0;
+    -webkit-font-smoothing: none;
+    font-synthesis: none;
+  }
+
+  /* moldura de 4px com canto chanfrado desenhado em pixel (as sombras não cobrem o canto) */
+  .moldura {
+    --cor-moldura: var(--color-linha);
+    background-color: var(--color-superficie);
+    box-shadow:
+      0 -4px 0 0 var(--cor-moldura),
+      0 4px 0 0 var(--cor-moldura),
+      -4px 0 0 0 var(--cor-moldura),
+      4px 0 0 0 var(--cor-moldura);
+  }
+
+  .botao {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px 12px;
+    font-family: var(--font-pixel);
+    font-size: var(--text-pixel-2);
+    line-height: var(--text-pixel-2--line-height);
+    color: var(--color-fundo);
+    background-color: var(--color-ambar);
+    box-shadow:
+      0 -4px 0 0 var(--color-ambar),
+      -4px 0 0 0 var(--color-ambar),
+      4px 0 0 0 var(--color-ambar),
+      inset 0 -4px 0 0 var(--color-rosa),
+      0 4px 0 0 var(--color-linha);
+    transition: transform 120ms steps(2);
+  }
+
+  .botao:hover {
+    transform: translateY(-4px);
+  }
+
+  .botao:active {
+    transform: translateY(4px);
+  }
+
+  .botao-contorno {
+    color: var(--color-creme);
+    background-color: var(--color-fundo);
+    box-shadow:
+      0 -4px 0 0 var(--color-creme),
+      0 4px 0 0 var(--color-creme),
+      -4px 0 0 0 var(--color-creme),
+      4px 0 0 0 var(--color-creme);
+  }
+
+  .link {
+    color: var(--color-ambar);
+    text-decoration-line: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+
+  .link:hover {
+    color: var(--color-creme);
+  }
+
+  .pular {
+    position: fixed;
+    left: 16px;
+    top: -80px;
+    z-index: 60;
+  }
+
+  .pular:focus {
+    top: 16px;
+  }
+
+  .sprite {
+    display: block;
+    image-rendering: pixelated;
+  }
+
+  .cena {
+    position: relative;
+    width: 100%;
+  }
+
+  .cena[data-composicao="larga"] {
+    aspect-ratio: 320 / 200;
+  }
+
+  .cena[data-composicao="alta"],
+  .cena[data-composicao="responsiva"] {
+    aspect-ratio: 180 / 240;
+  }
+
+  @media (min-width: 768px) {
+    .cena[data-composicao="responsiva"] {
+      aspect-ratio: 320 / 200;
+    }
+  }
+
+  /* posição calculada em JS e alinhada ao pixel do dispositivo (centralizar com 50% pode cair em meio pixel) */
+  .cena-palco {
+    position: absolute;
+  }
+
+  .cena-camadas,
+  .cena-camada {
+    position: absolute;
+    inset: 0;
+  }
+
+  .cena-camada {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+  }
+
+  .cena-luminaria {
+    position: absolute;
+    background: transparent;
+  }
+
+  /* a abertura segura a cena na tela enquanto o fim de tarde passa */
+  @media (min-width: 1280px) {
+    .abertura {
+      min-height: 170dvh;
+    }
+  }
+
+  /* o título só se esconde quando há JS para animá-lo; se o JS não vier, aparece sozinho */
+  .js [data-titulo] {
+    visibility: hidden;
+    animation: mostrar-titulo 0s 2.5s forwards;
+  }
+
+  .letra {
+    will-change: transform;
+  }
+
+  /* ——— prateleira ——— */
+  .tabua {
+    height: 16px;
+    background-color: var(--color-rosa);
+    box-shadow:
+      inset 0 4px 0 0 var(--color-ambar),
+      inset 0 -4px 0 0 var(--color-linha);
+  }
+
+  .objeto-moldura {
+    transition: transform 160ms steps(2);
+  }
+
+  .objeto:hover .objeto-moldura,
+  .objeto:focus-visible .objeto-moldura {
+    transform: translateY(-8px);
+  }
+
+  .objeto:focus-visible {
+    outline: none;
+  }
+
+  .objeto:focus-visible .objeto-moldura {
+    outline: 4px solid var(--color-creme);
+    outline-offset: 4px;
+  }
+
+  /* lugar vazio na prateleira: contorno pontilhado de poeira */
+  .vaga {
+    background-image: conic-gradient(var(--color-linha) 25%, transparent 0 50%, var(--color-linha) 0 75%, transparent 0);
+    background-size: 8px 8px;
+    mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+    mask-clip: border-box, content-box;
+    mask-composite: exclude;
+    padding: 4px;
+    opacity: 0.8;
+  }
+
+  /* durante o Flip, objeto e painel são a mesma moldura */
+  .virando {
+    background-color: var(--color-superficie);
+    box-shadow:
+      0 -4px 0 0 var(--color-linha),
+      0 4px 0 0 var(--color-linha),
+      -4px 0 0 0 var(--color-linha),
+      4px 0 0 0 var(--color-linha);
+    overflow: hidden;
+  }
+
+  /* ——— inventário ——— */
+  .espaco {
+    aspect-ratio: 1;
+    background-color: var(--color-fundo);
+    box-shadow:
+      inset 4px 4px 0 0 var(--color-superficie),
+      inset -4px -4px 0 0 var(--color-linha);
+  }
+
+  .espaco-vazio {
+    opacity: 0.6;
+  }
+
+  .espaco[data-ativo="true"] {
+    box-shadow:
+      inset 0 0 0 4px var(--color-ambar),
+      inset 0 0 0 8px var(--color-fundo);
+  }
+
+  /* ——— trajetória ——— */
+  .caminho {
+    height: 16px;
+    background-color: var(--color-linha);
+    box-shadow:
+      inset 0 4px 0 0 var(--color-rosa),
+      inset 0 -4px 0 0 var(--color-superficie);
+  }
+
+  .andarilho .quadro {
+    display: none;
+  }
+
+  .andarilho[data-quadro="0"] .quadro:nth-child(1),
+  .andarilho[data-quadro="1"] .quadro:nth-child(2),
+  .andarilho[data-quadro="2"] .quadro:nth-child(3),
+  .andarilho[data-quadro="3"] .quadro:nth-child(4),
+  .andarilho[data-quadro="4"] .quadro:nth-child(5) {
+    display: block;
+  }
+
+  .andarilho.voltando {
+    transform: scaleX(-1);
+  }
+
+  /* ——— terminal ——— */
+  /* sugestões são frases: fonte de texto, não pixel */
+  .sugestao {
+    padding: 4px 12px 8px;
+    font-family: var(--font-texto);
+    font-size: var(--text-miudo);
+    line-height: var(--text-miudo--line-height);
+    text-align: left;
+    color: var(--color-creme);
+    background-color: var(--color-superficie);
+    box-shadow: inset 0 -4px 0 0 var(--color-linha);
+  }
+
+  .sugestao:hover:not(:disabled) {
+    color: var(--color-fundo);
+    background-color: var(--color-salvia);
+  }
+
+  .sugestao:disabled,
+  .botao:disabled {
+    opacity: 0.55;
+    transform: none;
+  }
+
+  .campo {
+    padding: 8px 12px;
+    color: var(--color-creme);
+    background-color: var(--color-superficie);
+    box-shadow: inset 0 0 0 4px var(--color-bruma);
+  }
+
+  .campo::placeholder {
+    color: var(--color-bruma);
+  }
+
+  .campo:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 4px var(--color-ambar);
+  }
+
+  .cursor-terminal {
+    display: inline-block;
+    width: 8px;
+    height: 16px;
+    margin-left: 4px;
+    vertical-align: -2px;
+    background-color: var(--color-ambar);
+    animation: piscar 1s steps(2, jump-none) infinite;
+  }
+
+  /* ——— contato ——— */
+  .postal-cartao {
+    transform-origin: 50% 50%;
+  }
+}
+
+@keyframes piscar {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes mostrar-titulo {
+  to {
+    visibility: visible;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
 }
