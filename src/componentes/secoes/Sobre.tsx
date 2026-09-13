@@ -1,8 +1,12 @@
 import { SOBRE } from "@/conteudo/perfil";
 import { Sprite } from "@/componentes/arte/Sprite";
 
-export function Sobre() {
-  const [primeiro, ...resto] = SOBRE.paragrafos;
+interface Props {
+  comTerminal: boolean;
+}
+
+export function Sobre({ comTerminal }: Props) {
+  const [primeiro, ...resto] = comTerminal ? [...SOBRE.paragrafos, SOBRE.paragrafoTerminal] : SOBRE.paragrafos;
   return (
     <section id="quem-sou" aria-labelledby="titulo-quem-sou" className="mx-auto max-w-pagina px-5 py-20 md:px-10 md:py-24">
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-6">

@@ -16,7 +16,9 @@ interface Props {
 }
 
 const COLUNAS_DESKTOP = 6;
+/** 6 × 3 a partir de sm; no celular a grade tem 4 colunas e ganha uma fileira a mais (4 × 5), sem sobra na última. */
 const ESPACOS = 18;
+const ESPACOS_CELULAR = 20;
 
 export function Inventario({ itens, total, titulo, texto }: Props) {
   const [selecionado, setSelecionado] = useState(0);
@@ -62,10 +64,11 @@ export function Inventario({ itens, total, titulo, texto }: Props) {
       <div className="mt-14 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8">
         <div className="lg:col-span-7">
           <ul className="inventario-grade grid grid-cols-4 gap-2 sm:grid-cols-6" aria-label="Itens do inventário">
-            {Array.from({ length: ESPACOS }, (_, i) => {
+            {Array.from({ length: Math.max(ESPACOS_CELULAR, itens.length) }, (_, i) => {
               const it = itens[i];
               if (!it) {
-                return <li key={`vazio-${i}`} className="espaco espaco-vazio" aria-hidden="true" />;
+                const classe = i < ESPACOS ? "espaco espaco-vazio" : "espaco espaco-vazio sm:hidden";
+                return <li key={`vazio-${i}`} className={classe} aria-hidden="true" />;
               }
               const ativo = i === selecionado;
               return (

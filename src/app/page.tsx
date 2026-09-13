@@ -25,29 +25,40 @@ const SECOES = [
 ];
 
 export default function Pagina() {
+  // Sem a chave, o terminal só teria respostas prontas, e demo de IA simulada não entra: saem a seção
+  // e as frases que apontam para ela. A página é estática, então a chave é conferida no build.
+  const comTerminal = Boolean(process.env.ANTHROPIC_API_KEY);
+  const secoes = comTerminal ? SECOES : SECOES.filter((s) => s.id !== "terminal");
+  const itens = comTerminal ? INVENTARIO : INVENTARIO.filter((i) => !i.soComTerminal);
+  const marcos = TRAJETORIA.map(({ textoSemTerminal, ...marco }) =>
+    comTerminal || !textoSemTerminal ? marco : { ...marco, texto: textoSemTerminal },
+  );
+
   return (
     <>
       <MovimentoRaiz />
-      <Hud secoes={SECOES} />
+      <Hud secoes={secoes} />
       <main id="conteudo" tabIndex={-1}>
         <Abertura />
-        <Sobre />
+        <Sobre comTerminal={comTerminal} />
         <Prateleira
           projetos={PROJETOS}
           titulo="Três projetos no ar"
           texto="Estão todos em produção. Escolha um objeto da prateleira para abrir o caso: o problema, a decisão técnica e o resultado."
         />
         <Inventario
-          itens={INVENTARIO}
+          itens={itens}
           total={TOTAL_PROJETOS}
           titulo="Inventário"
           texto={`O que eu levo para os projetos. O número no canto de cada espaço é em quantos deles o item entrou — contando os três acima, o GVTEM e este site, ${TOTAL_PROJETOS} ao todo.`}
         />
-        <Trajetoria marcos={TRAJETORIA} agora={AGORA} titulo="Trajetória" texto="Do primeiro repositório de curso a este site, em ordem." />
-        <Terminal titulo={TERMINAL.titulo} texto={TERMINAL.texto} boasVindas={TERMINAL.boasVindas} sugestoes={TERMINAL.sugestoes} />
+        <Trajetoria marcos={marcos} agora={AGORA} titulo="Trajetória" texto="Do primeiro repositório de curso a este site, em ordem." />
+        {comTerminal && (
+          <Terminal titulo={TERMINAL.titulo} texto={TERMINAL.texto} boasVindas={TERMINAL.boasVindas} sugestoes={TERMINAL.sugestoes} />
+        )}
         <Contato titulo={CONTATO.titulo} texto={CONTATO.texto} email={PERFIL.email} github={PERFIL.github} linkedin={PERFIL.linkedin} />
       </main>
-      <Rodape />
+      <Rodape comTerminal={comTerminal} />
     </>
   );
 }

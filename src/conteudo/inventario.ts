@@ -8,6 +8,8 @@ export interface Item {
   icone: string;
   projetos: string[];
   como: string;
+  /** O item aponta para o terminal: sai do inventário quando o terminal não está no ar. */
+  soComTerminal?: boolean;
 }
 
 export const TOTAL_PROJETOS = 5;
@@ -117,6 +119,7 @@ export const INVENTARIO: Item[] = [
     icone: "icone-claude",
     projetos: ["este site"],
     como: "O terminal lá embaixo: streaming, limite de uso por visitante e modo offline quando a API não responde.",
+    soComTerminal: true,
   },
   {
     id: "gsap",

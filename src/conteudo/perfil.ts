@@ -26,8 +26,10 @@ export const SOBRE = {
     "Sou o Eduardo, de Governador Valadares. Estou no 4º período de Análise e Desenvolvimento de Sistemas, mas o que mostro aqui não é exercício de curso: são ferramentas que times usam no dia a dia.",
     "Cuido do produto inteiro. Modelo os dados, desenho as telas e faço o deploy. Nos projetos da Ei Nerd, isso quis dizer permissão que vale no banco e não só na tela, dados de partida chegando de uma API com limite de requisições e um app de gestão com dez módulos.",
     "O código fala a língua de quem mantém. Quando o domínio é em português, componentes e props também são: BotaoGoogle, tema, proximo.",
-    "O que me puxa agora é IA dentro de produto. O terminal mais abaixo responde perguntas sobre o meu trabalho usando a API do Claude. Preferi mostrar funcionando a escrever que sei fazer.",
   ],
+  /** Só entra com o terminal no ar: sem a chave da API, a frase prometeria algo que a página não mostra. */
+  paragrafoTerminal:
+    "O que me puxa agora é IA dentro de produto. O terminal mais abaixo responde perguntas sobre o meu trabalho usando a API do Claude. Preferi mostrar funcionando a escrever que sei fazer.",
   nota: [
     ["Onde", "Governador Valadares, MG"],
     ["Estudo", "ADS, 4º período"],
@@ -40,5 +42,9 @@ export const CONTATO = {
   texto: "Conte o que você precisa, para quem é e até quando. Eu leio tudo e respondo em até 1 dia útil.",
 };
 
-export const COLOFAO =
-  "Pixel art e fonte (Ibituruna) desenhadas em código, numa paleta de 8 cores que muda com o horário. Texto em Inter Tight. Feito com Next.js, GSAP e a API do Claude.";
+export const COLOFAO = {
+  comTerminal:
+    "Pixel art e fonte (Ibituruna) desenhadas em código, numa paleta de 8 cores que muda com o horário. Texto em Inter Tight. Feito com Next.js, GSAP e a API do Claude.",
+  semTerminal:
+    "Pixel art e fonte (Ibituruna) desenhadas em código, numa paleta de 8 cores que muda com o horário. Texto em Inter Tight. Feito com Next.js e GSAP.",
+};

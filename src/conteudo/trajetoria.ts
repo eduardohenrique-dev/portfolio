@@ -8,6 +8,8 @@ export interface Marco {
   data: string;
   titulo: string;
   texto: string;
+  /** Versão do texto para quando o terminal não está no ar. */
+  textoSemTerminal?: string;
 }
 
 export const TRAJETORIA: Marco[] = [
@@ -59,6 +61,7 @@ export const TRAJETORIA: Marco[] = [
     data: "2026-09",
     titulo: "Este site",
     texto: "Pixel art e fonte feitas em código, luz que muda com a rolagem e um terminal que responde com a API do Claude.",
+    textoSemTerminal: "Pixel art e fonte feitas em código e luz que muda com a rolagem.",
   },
 ];
 

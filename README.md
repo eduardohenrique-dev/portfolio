@@ -43,6 +43,10 @@ JS), a trajetória vira lista e as trocas acontecem sem animação.
 `POST /api/pergunta` → API do Claude em streaming, com o prompt de sistema montado a partir do mesmo
 conteúdo que a página exibe (`src/conteudo/`). Sem fato na base, o modelo diz que não sabe.
 
+- **Só com chave:** a página é estática e confere `ANTHROPIC_API_KEY` no build. Sem a chave, o terminal
+  só teria respostas prontas, então a seção não é renderizada e saem junto as frases que apontam para
+  ela (parágrafo do "Quem sou", item do inventário, marco da trajetória e colofão). Cadastrou a chave,
+  faça um novo deploy e tudo volta.
 - **Limite:** 6 perguntas por hora por visitante (IP com hash) e teto diário (`IA_LIMITE_DIARIO`, padrão 300).
 - **Fallback:** sem chave, com cota esgotada, erro, demora (> 15 s) ou recusa, a rota responde com uma
   resposta pronta e o terminal mostra que é offline e por quê. Sem rede, o navegador faz o mesmo.
@@ -53,7 +57,7 @@ conteúdo que a página exibe (`src/conteudo/`). Sem fato na base, o modelo diz 
 
 | Variável | Obrigatória | Para quê |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | para o modo IA | sem ela o terminal fica sempre offline |
+| `ANTHROPIC_API_KEY` | para o terminal | sem ela no build, a seção do terminal não aparece |
 | `ANTHROPIC_MODEL` | não | padrão `claude-opus-5` |
 | `IA_LIMITE_DIARIO` | não | teto de perguntas por dia (padrão 300) |
 | `UPSTASH_REDIS_REST_URL` e `UPSTASH_REDIS_REST_TOKEN` | não | limite compartilhado entre instâncias; sem elas o limite é por instância |

@@ -17,7 +17,7 @@ function fatos(): string {
   const trajetoria = TRAJETORIA.map((m) => `- ${m.quando}: ${m.titulo}. ${m.texto}`).join("\n");
   return [
     `# Pessoa\nNome: ${PERFIL.nomeCompleto} (assina Eduardo Henrique). ${PERFIL.papel}. Cidade: ${PERFIL.cidade}. Formação: ${PERFIL.formacao}. Idiomas: ${PERFIL.idiomas.join(" e ")}.`,
-    `# Apresentação (escrita por ele)\n${ABERTURA.lead}\n${SOBRE.paragrafos.join("\n")}`,
+    `# Apresentação (escrita por ele)\n${ABERTURA.lead}\n${[...SOBRE.paragrafos, SOBRE.paragrafoTerminal].join("\n")}`,
     `# Projetos em produção\n${projetos}`,
     `# GVTEM\nProjeto próprio de junho de 2026, sem link público no momento: guia de negócios de Governador Valadares com avaliações, busca tolerante a acento e erro de digitação e painel para o dono. Next.js 16, Supabase e Prisma.`,
     `# Tecnologias e onde foram usadas\n${inventario}`,
