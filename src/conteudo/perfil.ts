@@ -16,7 +16,7 @@ export const PERFIL = {
 } as const;
 
 export const ABERTURA = {
-  lead: "Faço software de ponta a ponta: entendo o problema, desenho a interface e coloco no ar. Os três últimos nasceram no mundo do League of Legends — dois para a operação de um time de esports, um para aulas particulares do jogo.",
+  lead: "Faço software de ponta a ponta: entendo o problema, desenho a interface e coloco no ar. Já fiz sistema para um time de esports, para aulas de League of Legends e para uma loja de games, um guia de negócios de Valadares e um scanner de cartas de Magic.",
   linha: "Full stack e UX/UI, em Governador Valadares (MG).",
 };
 

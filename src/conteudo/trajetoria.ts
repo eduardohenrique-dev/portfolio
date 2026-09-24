@@ -28,6 +28,13 @@ export const TRAJETORIA: Marco[] = [
     texto: "Começo o clone do TabNews, o projeto do curso.dev.",
   },
   {
+    id: "dgames",
+    quando: "jun. 2026",
+    data: "2026-06",
+    titulo: "DGAMES",
+    texto: "Estoque e lucro de uma loja de revenda de games, num arquivo só que abre com dois cliques.",
+  },
+  {
     id: "gvtem",
     quando: "jun. 2026",
     data: "2026-06",
@@ -54,6 +61,13 @@ export const TRAJETORIA: Marco[] = [
     data: "2026-09",
     titulo: "EINERD HQ",
     texto: "A operação inteira do time de esports da Ei Nerd num app só.",
+  },
+  {
+    id: "deck",
+    quando: "set. 2026",
+    data: "2026-09",
+    titulo: "Deck Scanner",
+    texto: "A câmera lê cartas de Magic e monta a decklist, com a visão rodando no navegador.",
   },
   {
     id: "site",

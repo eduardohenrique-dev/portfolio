@@ -76,6 +76,93 @@ export function caderno(): Pincel {
   return p;
 }
 
+/** Guia dobrado — GVTEM (o mapa da cidade, com o alfinete no negócio). */
+export function guia(): Pincel {
+  const p = new Pincel(30, 40);
+  // aba da capa com GV
+  p.ret(0, 0, 13, 7, L);
+  p.ret(1, 1, 11, 6, A);
+  p.mini("GV", 3, 1, F);
+  // folha aberta em três painéis; a sombra depois de cada dobra marca o papel dobrado
+  p.caixa(0, 6, 30, 34, C, L);
+  p.ret(10, 7, 1, 32, L);
+  p.ret(11, 7, 1, 32, B);
+  p.ret(20, 7, 1, 32, L);
+  p.ret(21, 7, 1, 32, B);
+  // rio Doce atravessando os três painéis
+  for (let x = 1; x < 29; x++) {
+    const y = 29 + Math.round(Math.sin(x / 4) * 2);
+    p.ret(x, y, 1, 3, V);
+  }
+  // ruas
+  p.ret(1, 16, 28, 1, L);
+  p.ret(6, 7, 1, 21, L);
+  p.ret(25, 11, 1, 17, L);
+  for (let i = 0; i < 7; i++) p.px(13 + i, 24 - i, L);
+  // praça
+  p.ret(2, 19, 3, 3, V);
+  // alfinete no negócio
+  p.circulo(16, 11, 3, F);
+  p.circulo(16, 11, 2, R);
+  p.px(15, 10, C);
+  p.ret(16, 14, 1, 3, F);
+  return p;
+}
+
+/** Caixa de deck com uma carta saindo, no visor da câmera — Deck Scanner. */
+export function caixaDeck(): Pincel {
+  const p = new Pincel(28, 42);
+  // carta (verso) subindo da caixa
+  p.caixa(6, 3, 16, 16, R, L);
+  p.circulo(14, 10, 4, A);
+  p.circulo(14, 10, 2, R);
+  // cantos do visor da câmera em volta da carta
+  p.ret(3, 0, 4, 1, A);
+  p.ret(3, 0, 1, 4, A);
+  p.ret(21, 0, 4, 1, A);
+  p.ret(24, 0, 1, 4, A);
+  // caixa
+  p.caixa(1, 14, 26, 28, L, F);
+  p.ret(2, 15, 24, 2, S);
+  p.ret(2, 17, 1, 24, B);
+  // etiqueta com as cinco cores de mana
+  p.ret(3, 23, 22, 11, C);
+  [C, B, F, R, V].forEach((cor, i) => {
+    p.ret(5 + i * 4, 25, 3, 3, L);
+    if (cor !== C) p.ret(5 + i * 4, 25, 3, 3, cor);
+    else p.ret(6 + i * 4, 26, 1, 1, A);
+  });
+  p.ret(5, 31, 18, 1, L);
+  return p;
+}
+
+/** Caixa de papelão da loja com o D da marca e etiqueta de preço — DGAMES. */
+export function caixaLoja(): Pincel {
+  const p = new Pincel(34, 36);
+  // abas de cima
+  p.ret(2, 6, 28, 4, L);
+  p.ret(3, 7, 26, 3, A);
+  p.ret(3, 9, 26, 1, R);
+  // corpo
+  p.caixa(1, 10, 30, 26, A, L);
+  p.degrade(2, 30, 28, 5, [A, R]);
+  // fita
+  p.ret(14, 6, 4, 29, C);
+  p.ret(14, 6, 1, 29, B);
+  // logo: quadrado rosa com D
+  p.ret(3, 14, 10, 14, F);
+  p.ret(4, 15, 8, 12, R);
+  p.mini("D", 5, 16, C, 2);
+  // etiqueta de preço pendurada
+  p.ret(27, 0, 1, 12, L);
+  p.caixa(24, 11, 9, 13, C, L);
+  p.px(28, 13, L);
+  p.ret(26, 17, 5, 1, L);
+  p.ret(26, 19, 4, 1, L);
+  p.ret(26, 21, 5, 1, B);
+  return p;
+}
+
 /** Personagem da trajetória: parado + 4 quadros de caminhada, virado para a direita. */
 export function andarilho(): Pincel[] {
   const cabeca = ["....SSSSS...", "...SSSSSSS..", "...SSSCCCC..", "...SSCCFCC..", "....SCCCCC..", ".....CCCC..."];

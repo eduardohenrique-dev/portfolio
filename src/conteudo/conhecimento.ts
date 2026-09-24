@@ -11,15 +11,14 @@ import { AGORA, TRAJETORIA } from "./trajetoria";
 function fatos(): string {
   const projetos = PROJETOS.map(
     (p) =>
-      `## ${p.nome} (${p.url}, ${p.quando})\nResumo: ${p.resumo}\nProblema: ${p.problema}\nDecisão técnica: ${p.decisao}\nResultado: ${p.resultado}\nFeito com: ${p.feitoCom}`,
+      `## ${p.nome} (${p.link === "demo" ? "demo com dados fictícios" : "site"}: ${p.url}, ${p.quando})\n${p.acesso ? `Acesso: ${p.acesso}\n` : ""}Resumo: ${p.resumo}\nProblema: ${p.problema}\nDecisão técnica: ${p.decisao}\nResultado: ${p.resultado}\nFeito com: ${p.feitoCom}`,
   ).join("\n\n");
   const inventario = INVENTARIO.map((i) => `- ${i.nome}: usado em ${i.projetos.join(", ")}. ${i.como}`).join("\n");
   const trajetoria = TRAJETORIA.map((m) => `- ${m.quando}: ${m.titulo}. ${m.texto}`).join("\n");
   return [
     `# Pessoa\nNome: ${PERFIL.nomeCompleto} (assina Eduardo Henrique). ${PERFIL.papel}. Cidade: ${PERFIL.cidade}. Formação: ${PERFIL.formacao}. Idiomas: ${PERFIL.idiomas.join(" e ")}.`,
     `# Apresentação (escrita por ele)\n${ABERTURA.lead}\n${[...SOBRE.paragrafos, SOBRE.paragrafoTerminal].join("\n")}`,
-    `# Projetos em produção\n${projetos}`,
-    `# GVTEM\nProjeto próprio de junho de 2026, sem link público no momento: guia de negócios de Governador Valadares com avaliações, busca tolerante a acento e erro de digitação e painel para o dono. Next.js 16, Supabase e Prisma.`,
+    `# Projetos no ar\n${projetos}`,
     `# Tecnologias e onde foram usadas\n${inventario}`,
     `# Trajetória\n${trajetoria}\n- Agora: ${AGORA}`,
     `# Contato\nE-mail: ${PERFIL.email}. Prazo de resposta: ${PERFIL.prazoResposta}. ${CONTATO.texto} GitHub: ${PERFIL.github}. LinkedIn: ${PERFIL.linkedin}.`,

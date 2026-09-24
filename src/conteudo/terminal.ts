@@ -43,12 +43,22 @@ export const RESPOSTAS_OFFLINE: RespostaOffline[] = [
   {
     chaves: ["stack", "tecnologia", "tecnologias", "linguagem", "usa", "ferramenta", "next", "react", "supabase", "typescript"],
     texto:
-      "O que mais aparece nos projetos dele: React, Tailwind, Node.js e Vercel em todos; Next.js e TypeScript no HQ, no LoL Coach, no GVTEM e neste site; Supabase com PostgreSQL nos quatro projetos em produção. O Scrims é React com Vite, em JavaScript, com testes em Vitest.",
+      "O que mais aparece nos projetos dele: React, Tailwind e Node.js em todos; Next.js e TypeScript no HQ, no LoL Coach, no GVTEM e neste site; PostgreSQL em cinco deles, pelo Supabase no Scrims, no HQ e no Coach e pelo Neon no GVTEM e no Deck Scanner. O Deck Scanner tem API em Python com FastAPI e visão com OpenCV.",
   },
   {
     chaves: ["gvtem", "valadares", "guia", "negocios", "avaliacao"],
     texto:
-      "O GVTEM é um projeto próprio do Eduardo, de junho de 2026: um guia de negócios de Governador Valadares, com avaliações, busca que tolera acento e erro de digitação e painel para o dono do negócio. Foi feito com Next.js 16, Supabase e Prisma.",
+      "O GVTEM é um projeto próprio do Eduardo, desde junho de 2026: um guia de negócios de Governador Valadares com os 122 negócios do site antigo, avaliações, busca que tolera acento e erro de digitação e painel para o dono do negócio. Está em gvtem.vercel.app, feito com Next.js 16, Prisma, Postgres no Neon e Auth.js.",
+  },
+  {
+    chaves: ["deck", "scanner", "magic", "mtg", "carta", "cartas", "camera", "visao", "opencv", "python"],
+    texto:
+      "O Deck Scanner lê cartas de Magic pela câmera e monta a decklist. A visão roda no navegador com OpenCV.js e só manda os melhores recortes; o servidor, em Python, compara cada recorte com 111.700 impressões por hash perceptual. Num vídeo de teste com 100 cartas, acertou as 100. Está em deck-scanner.vercel.app.",
+  },
+  {
+    chaves: ["dgames", "loja", "estoque", "lucro", "games", "revenda"],
+    texto:
+      "O DGAMES controla estoque e lucro de uma loja de revenda de games: fotos, fornecedor, cliente, lucro por item e backup em JSON. É um index.html que abre com dois cliques, com os dados guardados no navegador. Há uma demo com dados fictícios na prateleira de projetos.",
   },
   {
     chaves: ["ia", "claude", "inteligencia", "llm", "terminal", "anthropic", "gpt"],

@@ -1,13 +1,18 @@
 /**
- * Projetos em produção. Números e decisões vêm do código e dos READMEs de cada repositório.
+ * Projetos no ar. Números e decisões vêm do código, dos READMEs e da documentação de cada repositório.
+ * Os sistemas internos (Scrims, HQ, DGAMES) abrem numa demo com dados fictícios.
  */
 export interface Projeto {
-  id: "scrims" | "hq" | "coach";
+  id: "scrims" | "hq" | "coach" | "gvtem" | "deck" | "dgames";
   nome: string;
-  objeto: "cartucho" | "fichario" | "caderno";
+  objeto: "cartucho" | "fichario" | "caderno" | "guia" | "caixa-deck" | "caixa-loja";
   /** o que o objeto é, para leitores de tela */
   objetoDescricao: string;
   url: string;
+  /** "demo" quando o link abre uma cópia com dados fictícios, não o sistema de verdade */
+  link: "site" | "demo";
+  /** como entrar, quando não é só abrir o link */
+  acesso?: string;
   quando: string;
   resumo: string;
   problema: string;
@@ -22,7 +27,9 @@ export const PROJETOS: Projeto[] = [
     nome: "EINERD Scrims",
     objeto: "cartucho",
     objetoDescricao: "um cartucho de jogo com VS no rótulo",
-    url: "https://einerd-scrims.vercel.app",
+    url: "https://einerd-scrims-demo.vercel.app",
+    link: "demo",
+    acesso: "Demo com dados fictícios. Entre com o usuário visitante e a senha demo.",
     quando: "desde julho de 2026",
     resumo: "Registro de treinos e leitura de dados de partida para o time de LoL da Ei Nerd.",
     problema:
@@ -38,7 +45,9 @@ export const PROJETOS: Projeto[] = [
     nome: "EINERD HQ",
     objeto: "fichario",
     objetoDescricao: "um fichário rosa com HQ na etiqueta",
-    url: "https://einerd-hq.vercel.app",
+    url: "https://einerd-hq-demo.vercel.app",
+    link: "demo",
+    acesso: "Demo com dados fictícios. Você entra como visitante, e o que mudar vale só para você.",
     quando: "setembro de 2026",
     resumo: "Central de gestão do time de esports da Ei Nerd.",
     problema:
@@ -55,6 +64,7 @@ export const PROJETOS: Projeto[] = [
     objeto: "caderno",
     objetoDescricao: "um caderno espiral verde com COACH na etiqueta",
     url: "https://lolcoachpilot.vercel.app",
+    link: "site",
     quando: "agosto de 2026",
     resumo: "Gestão de aulas particulares de League of Legends, com área do professor e do aluno.",
     problema:
@@ -64,5 +74,58 @@ export const PROJETOS: Projeto[] = [
     resultado:
       "Com as funções na região padrão da Vercel, nos Estados Unidos, cada tela levava de 1,1 s a 1,7 s, porque fazia várias consultas seguidas a um banco no Brasil. Fixei as funções em São Paulo e o mesmo teste caiu para 170–350 ms.",
     feitoCom: "Next.js 15 com Server Actions e TypeScript, React 18 (o FullCalendar 6 ainda exige), Tailwind, Radix, Supabase Auth e Postgres.",
+  },
+  {
+    id: "gvtem",
+    nome: "GVTEM",
+    objeto: "guia",
+    objetoDescricao: "um guia de mapa dobrado, com GV na capa e um alfinete",
+    url: "https://gvtem.vercel.app",
+    link: "site",
+    quando: "desde junho de 2026",
+    resumo: "Guia de negócios de Governador Valadares, com avaliações, busca e painel para o dono do negócio.",
+    problema:
+      "O GVTEM já existia como site em PHP, com 122 negócios de Valadares. A versão nova precisava de avaliação, de uma busca que achasse o que a pessoa digitou sem acento ou com erro e de um painel para o dono cuidar da própria página. No meio do caminho, o plano gratuito do Supabase apagou o banco, que estava pausado havia meses.",
+    decisao:
+      "A busca roda no próprio Postgres, com pg_trgm e unaccent num índice trigram, sem serviço externo. As 203 categorias herdadas, 168 delas com um negócio só, viraram filhas de 15 grupos. Depois da perda do banco, o schema do Prisma subiu no Neon sem nenhuma alteração, o login passou para Auth.js e as fotos para o Vercel Blob.",
+    resultado:
+      "De volta ao ar com os 122 negócios do acervo. Cada negócio tem página com mapa, horário e aviso de aberto agora, avaliações com resposta do dono e aprovação pelo admin, e a home mostra o clima de Valadares ao vivo. Toda foto é reduzida e regravada em WebP no navegador, sem os dados de GPS, antes de subir.",
+    feitoCom: "Next.js 16 e React 19 em TypeScript, Tailwind v4, Prisma 6 com Postgres no Neon, Auth.js, Vercel Blob, GSAP, monorepo com pnpm.",
+  },
+  {
+    id: "deck",
+    nome: "Deck Scanner",
+    objeto: "caixa-deck",
+    objetoDescricao: "uma caixa de deck com uma carta saindo, dentro dos cantos do visor de uma câmera",
+    url: "https://deck-scanner.vercel.app",
+    link: "site",
+    acesso: "Para escanear, é preciso criar uma conta.",
+    quando: "setembro de 2026",
+    resumo: "Aponte a câmera para cartas de Magic e receba a decklist pronta, com a coleção física catalogada.",
+    problema:
+      "Montar a lista de um deck de Magic à mão é carta por carta. E quem tem coleção física perde a conta de onde está cada cópia: na caixa, na pasta ou dentro de outro deck.",
+    decisao:
+      "A visão roda no navegador, com OpenCV.js num Web Worker: acha o contorno da carta, espera ela parar e manda para o servidor só os melhores recortes. Lá, um hash perceptual de 256 bits compara o recorte com 111.700 impressões em milissegundos, e a IA fica opcional, só para o que sobra. Os formatos são regras em JSON, e tudo cabe nos planos gratuitos da Vercel, do Neon e do Cloudflare R2.",
+    resultado:
+      "Num vídeo de teste com 100 cartas, a lista saiu certa nas 100, tanto na visão em Python quanto na do navegador, e o hash resolveu de 96% a 100% das cartas sem IA nos testes. Os testes ainda usam cenas montadas; falta calibrar com luz e desgaste reais. Em volta do scanner: aviso quando a mesma carta está em dois decks, conferência, histórico, preço em reais, bracket de Commander e uma aba de torneio com suíço e telão.",
+    feitoCom: "React 19, TypeScript e Vite, Tailwind v4, Python 3.13 com FastAPI, OpenCV, Postgres e login no Neon, Cloudflare R2, Vercel.",
+  },
+  {
+    id: "dgames",
+    nome: "DGAMES",
+    objeto: "caixa-loja",
+    objetoDescricao: "uma caixa de papelão com um D rosa na frente e uma etiqueta de preço",
+    url: "https://eduardohenrique-nu.vercel.app/demos/dgames",
+    link: "demo",
+    acesso: "Demo com dados fictícios, guardados só no seu navegador.",
+    quando: "junho de 2026",
+    resumo: "Estoque e lucro de uma loja de revenda de games, num arquivo que abre com dois cliques.",
+    problema:
+      "A loja compra e revende consoles, controles, jogos e acessórios. Precisava saber o que está em estoque, de quem cada peça foi comprada, para quem foi vendida e quanto deu de lucro, sem instalar nada.",
+    decisao:
+      "O app inteiro é um index.html que abre por duplo-clique. Como o navegador bloqueia módulos separados num arquivo local, o código vive em 18 módulos comentados e um build junta tudo num arquivo só. Os dados ficam no próprio navegador, em IndexedDB com cópia no localStorage, e as fotos são reduzidas antes de guardar.",
+    resultado:
+      "Cadastro com até 5 fotos, fornecedor e cliente com CEP e telefone formatados enquanto se digita, lucro por item e acumulado, e backup num JSON único que substitui ou mescla os dados em outro computador.",
+    feitoCom: "React 18 e Tailwind pelo CDN, Babel no navegador, IndexedDB, build em Node que junta os módulos.",
   },
 ];

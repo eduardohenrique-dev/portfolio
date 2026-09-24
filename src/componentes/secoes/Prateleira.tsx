@@ -15,9 +15,17 @@ interface Props {
   texto: string;
 }
 
-const TAMANHO = { cartucho: [30, 36], fichario: [26, 42], caderno: [30, 40] } as const;
+const TAMANHO = {
+  cartucho: [30, 36],
+  fichario: [26, 42],
+  caderno: [30, 40],
+  guia: [30, 40],
+  "caixa-deck": [28, 42],
+  "caixa-loja": [34, 36],
+} as const;
 const ESCALA = 4;
-const ENFEITES: Record<number, NomeRegiao[]> = { 0: ["suculenta"], 1: ["controle", "caneca"] };
+/** Enfeites entre os objetos, só a partir do tablet: a chave é o índice do projeto que vem antes. */
+const ENFEITES: Record<number, NomeRegiao[]> = { 0: ["suculenta"], 1: ["controle", "caneca"], 3: ["gato-0"] };
 
 function Tabua({ rotulo }: { rotulo?: string }) {
   return (
@@ -91,11 +99,11 @@ export function Prateleira({ projetos, titulo, texto }: Props) {
       </h2>
       <p className="mt-4 max-w-texto text-bruma">{texto}</p>
 
-      <ul className="mt-20 flex flex-wrap items-end">
+      <ul className="mt-8 flex flex-wrap items-end">
         {projetos.map((p, i) => {
           const [w, h] = TAMANHO[p.objeto];
           return [
-            <li key={p.id} className="flex grow-3 basis-1/2 flex-col items-center md:basis-0">
+            <li key={p.id} className="flex grow-3 basis-1/2 flex-col items-center pt-12 md:basis-[28%]">
               {aberto === p.id ? (
                 <span className="flex w-full flex-col items-center">
                   <span className="vaga block" style={{ width: w * ESCALA, height: h * ESCALA }} aria-hidden="true" />
@@ -124,7 +132,7 @@ export function Prateleira({ projetos, titulo, texto }: Props) {
               )}
             </li>,
             ENFEITES[i] ? (
-              <li key={`enfeite-${i}`} aria-hidden="true" className="hidden grow-2 basis-0 flex-col items-center md:flex">
+              <li key={`enfeite-${i}`} aria-hidden="true" className="hidden grow-2 basis-0 flex-col items-center justify-end md:flex">
                 <span className="flex items-end gap-4">
                   {ENFEITES[i].map((r) => (
                     <Sprite key={r} regiao={r} escala={ESCALA} />
@@ -154,10 +162,11 @@ export function Prateleira({ projetos, titulo, texto }: Props) {
                   </h3>
                   <p className="text-bruma">{projetoAberto.resumo}</p>
                   <p className="pixel text-pixel-2 text-salvia">{projetoAberto.quando}</p>
+                  {projetoAberto.acesso && <p className="text-miudo text-bruma">{projetoAberto.acesso}</p>}
                 </div>
                 <div className="flex flex-wrap gap-6" data-revelar>
                   <a className="botao" href={projetoAberto.url} target="_blank" rel="noreferrer">
-                    Abrir o site
+                    {projetoAberto.link === "demo" ? "Abrir a demo" : "Abrir o site"}
                     <span className="sr-only"> (abre em nova aba)</span>
                   </a>
                   <button type="button" className="botao botao-contorno" onClick={() => trocar(null)}>

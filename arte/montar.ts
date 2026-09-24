@@ -25,9 +25,12 @@ import { ICONES } from "./sprites/icones";
 import {
   andarilho,
   caderno,
+  caixaDeck,
+  caixaLoja,
   cartucho,
   favicon,
   fichario,
+  guia,
   iconeLua,
   iconePorDoSol,
   iconeSol,
@@ -152,6 +155,7 @@ for (const composicao of ["larga", "alta"] as const) {
 
 for (const [nome, linhas] of Object.entries(ICONES)) itensSprite.push([`icone-${nome}`, deDesenho(linhas)]);
 itensSprite.push(["cartucho", cartucho()], ["fichario", fichario()], ["caderno", caderno()]);
+itensSprite.push(["guia", guia()], ["caixa-deck", caixaDeck()], ["caixa-loja", caixaLoja()]);
 andarilho().forEach((q, i) => itensSprite.push([`andarilho-${i}`, q]));
 itensSprite.push(["marco", marco()], ["hud-sol", iconeSol()], ["hud-por-do-sol", iconePorDoSol()], ["hud-lua", iconeLua()]);
 itensSprite.push(["postal", postal(IBITURUNA)], ["selo", selo(GATO_DORMINDO[0])]);
