@@ -1,6 +1,6 @@
 /**
- * Inventário: onde cada tecnologia entrou. A contagem é sobre sete projetos —
- * EINERD Scrims, EINERD HQ, LoL Coach Pilot, GVTEM, Deck Scanner, DGAMES e este site.
+ * Inventário: onde cada tecnologia entrou. A contagem é sobre seis projetos —
+ * EINERD Scrims, EINERD HQ, GVTEM, Deck Scanner, DGAMES e este site.
  */
 export interface Item {
   id: string;
@@ -12,29 +12,29 @@ export interface Item {
   soComTerminal?: boolean;
 }
 
-export const TOTAL_PROJETOS = 7;
+export const TOTAL_PROJETOS = 6;
 
 export const INVENTARIO: Item[] = [
   {
     id: "typescript",
     nome: "TypeScript",
     icone: "icone-typescript",
-    projetos: ["EINERD HQ", "LoL Coach Pilot", "GVTEM", "Deck Scanner", "este site"],
+    projetos: ["EINERD HQ", "GVTEM", "Deck Scanner", "este site"],
     como: "Tipos do banco espelhados à mão no HQ, para a UI nunca pedir coluna que não existe; no Deck Scanner, o motor do torneio e a visão do navegador. O Scrims ficou em JavaScript.",
   },
   {
     id: "react",
     nome: "React",
     icone: "icone-react",
-    projetos: ["EINERD Scrims", "EINERD HQ", "LoL Coach Pilot", "GVTEM", "Deck Scanner", "DGAMES", "este site"],
-    como: "Server Components no HQ e no Coach; no Scrims, SPA com Context API, escrita otimista e realtime; no DGAMES, pelo CDN, compilado no próprio navegador.",
+    projetos: ["EINERD Scrims", "EINERD HQ", "GVTEM", "Deck Scanner", "DGAMES", "este site"],
+    como: "Server Components no HQ; no Scrims, SPA com Context API, escrita otimista e realtime; no DGAMES, pelo CDN, compilado no próprio navegador.",
   },
   {
     id: "nextjs",
     nome: "Next.js",
     icone: "icone-nextjs",
-    projetos: ["EINERD HQ", "LoL Coach Pilot", "GVTEM", "este site"],
-    como: "App Router em todos; Server Actions no Coach; proxy.ts no lugar do middleware no Next 16.",
+    projetos: ["EINERD HQ", "GVTEM", "este site"],
+    como: "App Router em todos; proxy.ts no lugar do middleware no Next 16.",
   },
   {
     id: "vite",
@@ -47,36 +47,36 @@ export const INVENTARIO: Item[] = [
     id: "tailwind",
     nome: "Tailwind CSS",
     icone: "icone-tailwind",
-    projetos: ["EINERD Scrims", "EINERD HQ", "LoL Coach Pilot", "GVTEM", "Deck Scanner", "DGAMES", "este site"],
+    projetos: ["EINERD Scrims", "EINERD HQ", "GVTEM", "Deck Scanner", "DGAMES", "este site"],
     como: "Tokens semânticos no @theme do HQ (ink, line, surface, royal) e do Deck Scanner; aqui, a paleta inteira troca de valor conforme o horário.",
   },
   {
     id: "supabase",
     nome: "Supabase",
     icone: "icone-supabase",
-    projetos: ["EINERD Scrims", "EINERD HQ", "LoL Coach Pilot"],
+    projetos: ["EINERD Scrims", "EINERD HQ"],
     como: "Login com Google no HQ, realtime no Scrims e no HQ, storage privado com URL assinada no HQ.",
   },
   {
     id: "postgresql",
     nome: "PostgreSQL",
     icone: "icone-postgresql",
-    projetos: ["EINERD Scrims", "EINERD HQ", "LoL Coach Pilot", "GVTEM", "Deck Scanner"],
-    como: "RLS por papel, trigger que protege coluna, view que esconde campo; no Neon, busca sem acento com pg_trgm no GVTEM e o catálogo de cartas do Deck Scanner.",
+    projetos: ["EINERD Scrims", "EINERD HQ", "GVTEM", "Deck Scanner"],
+    como: "RLS por papel e view que esconde campo no HQ; no Neon, busca sem acento com pg_trgm no GVTEM e o catálogo de cartas do Deck Scanner.",
   },
   {
     id: "nodejs",
     nome: "Node.js",
     icone: "icone-nodejs",
-    projetos: ["EINERD Scrims", "EINERD HQ", "LoL Coach Pilot", "GVTEM", "Deck Scanner", "DGAMES", "este site"],
+    projetos: ["EINERD Scrims", "EINERD HQ", "GVTEM", "Deck Scanner", "DGAMES", "este site"],
     como: "Runtime das funções serverless e dos scripts de ingestão da GRID; no DGAMES, o build que junta os módulos; aqui, gera a pixel art e a fonte no build.",
   },
   {
     id: "vercel",
     nome: "Vercel",
     icone: "icone-vercel",
-    projetos: ["EINERD Scrims", "EINERD HQ", "LoL Coach Pilot", "GVTEM", "Deck Scanner", "este site"],
-    como: "Deploy dos que estão no ar; cron diário no Scrims; funções fixadas em São Paulo no Coach; front e API em Python no mesmo domínio no Deck Scanner.",
+    projetos: ["EINERD Scrims", "EINERD HQ", "GVTEM", "Deck Scanner", "este site"],
+    como: "Deploy dos que estão no ar; cron diário no Scrims; front e API em Python no mesmo domínio no Deck Scanner.",
   },
   {
     id: "python",
@@ -112,13 +112,6 @@ export const INVENTARIO: Item[] = [
     icone: "icone-grid",
     projetos: ["EINERD Scrims"],
     como: "Dados oficiais de partidas de LoL: séries, eventos e timeline, respeitando o limite de 40 requisições por minuto.",
-  },
-  {
-    id: "fullcalendar",
-    nome: "FullCalendar",
-    icone: "icone-fullcalendar",
-    projetos: ["LoL Coach Pilot"],
-    como: "Agenda de aulas com arrastar para remarcar, redesenhada por completo no CSS.",
   },
   {
     id: "dndkit",

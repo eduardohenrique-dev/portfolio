@@ -53,29 +53,6 @@ export function fichario(): Pincel {
   return p;
 }
 
-/** Caderno espiral — LoL Coach Pilot (anotação de aula, fitinha marcando a página). */
-export function caderno(): Pincel {
-  const p = new Pincel(30, 40);
-  p.caixa(2, 0, 28, 38, V, L);
-  p.ret(3, 1, 26, 1, C);
-  // espiral
-  for (let y = 3; y < 36; y += 4) {
-    p.ret(0, y, 4, 2, B);
-    p.px(0, y, L);
-    p.px(3, y + 1, L);
-  }
-  // etiqueta
-  p.ret(6, 7, 21, 13, C);
-  p.mini("COACH", 7, 9, F);
-  p.ret(7, 16, 19, 1, L);
-  // elástico
-  p.ret(27, 1, 1, 36, A);
-  // fitinha escapando por baixo
-  p.ret(19, 37, 3, 3, R);
-  p.px(20, 39, F);
-  return p;
-}
-
 /** Guia dobrado — GVTEM (o mapa da cidade, com o alfinete no negócio). */
 export function guia(): Pincel {
   const p = new Pincel(30, 40);

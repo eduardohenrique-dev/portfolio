@@ -18,7 +18,6 @@ interface Props {
 const TAMANHO = {
   cartucho: [30, 36],
   fichario: [26, 42],
-  caderno: [30, 40],
   guia: [30, 40],
   "caixa-deck": [28, 42],
   "caixa-loja": [34, 36],

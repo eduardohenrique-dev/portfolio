@@ -24,7 +24,7 @@ const URL_SITE =
 
 const TITULO = "Eduardo Henrique, full stack e UX/UI";
 const DESCRICAO =
-  "Portfólio de Eduardo Henrique, desenvolvedor full stack e designer de interface em Governador Valadares (MG). Sistemas em produção para um time de esports e para aulas de League of Legends.";
+  "Portfólio de Eduardo Henrique, desenvolvedor full stack e designer de interface em Governador Valadares (MG). Sistemas para um time de esports e para uma loja de games, um guia de negócios de Valadares e um scanner de cartas de Magic.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(URL_SITE),

@@ -53,14 +53,13 @@ escurecer anda o caminho de volta. A cena nunca tem mais de 8 cores.
 | `cena-alta-0` · `-1` · `-2` | 180×200 | quarto (mobile e contato), paredes altas, janela grande | abertura no celular, contato |
 | `cartucho` | 30×36 | cartucho com VS no rótulo | EINERD Scrims |
 | `fichario` | 26×42 | fichário rosa com HQ | EINERD HQ |
-| `caderno` | 30×40 | caderno espiral com COACH e fitinha | LoL Coach Pilot |
 | `guia` | 30×40 | guia de mapa dobrado com GV, rio Doce e alfinete | GVTEM |
 | `caixa-deck` | 28×42 | caixa de deck com carta saindo, cantos do visor da câmera, cinco cores de mana | Deck Scanner |
 | `caixa-loja` | 34×36 | caixa de papelão com o D da marca e etiqueta de preço | DGAMES |
 | `andarilho-0` … `-4` | 12×18 | personagem: parado, passo, junto, passo, junto (virado para a direita) | quem sou, trajetória |
 | `marco` | 12×16 | placa de madeira | trajetória |
 | `hud-sol`, `hud-por-do-sol`, `hud-lua` | 11×11 | ícone do relógio | HUD |
-| `icone-*` (18) | 16×16 | typescript, react, nextjs, vite, tailwind, supabase, postgresql, nodejs, vercel, python, opencv, prisma, vitest, grid, fullcalendar, dndkit, claude, gsap | inventário |
+| `icone-*` (17) | 16×16 | typescript, react, nextjs, vite, tailwind, supabase, postgresql, nodejs, vercel, python, opencv, prisma, vitest, grid, dndkit, claude, gsap | inventário |
 | `postal` | 120×76 | Ibituruna no fim de tarde, Rio Doce, parapente | contato |
 | `selo` | 28×32 | selo com o gato | contato |
 | `gato-0`, `gato-1` | 16×9 | gato dormindo: inspira, expira | cena (animação), quem sou |

@@ -49,13 +49,6 @@ export const TRAJETORIA: Marco[] = [
     texto: "Primeiro sistema para a Ei Nerd: registro de treinos e, logo depois, os dados de partida vindos da GRID.",
   },
   {
-    id: "coach",
-    quando: "ago. 2026",
-    data: "2026-08",
-    titulo: "LoL Coach Pilot",
-    texto: "Gestão de aulas particulares de LoL, com o isolamento de cada aluno garantido no banco.",
-  },
-  {
     id: "hq",
     quando: "set. 2026",
     data: "2026-09",

@@ -14,7 +14,7 @@ export const TERMINAL = {
   sugestoes: [
     "O que você fez para a Ei Nerd?",
     "Como o HQ decide quem vê o quê?",
-    "Por que as funções do LoL Coach rodam em São Paulo?",
+    "Como o Deck Scanner reconhece uma carta?",
     "Qual stack você usa mais?",
   ],
 };
@@ -36,14 +36,9 @@ export const RESPOSTAS_OFFLINE: RespostaOffline[] = [
       "No EINERD HQ a permissão mora no Postgres: são quatro papéis com Row Level Security, então quem não tem acesso não recebe o dado nem chamando a API direto. O e-mail dos membros sai por uma view que devolve nulo para quem não pode ver, e as notas fiscais ficam num bucket privado, abertas só por URL assinada.",
   },
   {
-    chaves: ["coach", "sao paulo", "gru1", "regiao", "lento", "latencia", "velocidade", "desempenho"],
-    texto:
-      "No LoL Coach Pilot, as funções rodavam na região padrão da Vercel, nos Estados Unidos, e cada tela levava de 1,1 s a 1,7 s porque fazia várias consultas seguidas a um banco no Brasil. Com as funções fixadas em São Paulo, o mesmo teste caiu para 170–350 ms.",
-  },
-  {
     chaves: ["stack", "tecnologia", "tecnologias", "linguagem", "usa", "ferramenta", "next", "react", "supabase", "typescript"],
     texto:
-      "O que mais aparece nos projetos dele: React, Tailwind e Node.js em todos; Next.js e TypeScript no HQ, no LoL Coach, no GVTEM e neste site; PostgreSQL em cinco deles, pelo Supabase no Scrims, no HQ e no Coach e pelo Neon no GVTEM e no Deck Scanner. O Deck Scanner tem API em Python com FastAPI e visão com OpenCV.",
+      "O que mais aparece nos projetos dele: React, Tailwind e Node.js em todos; Next.js no HQ, no GVTEM e neste site, e TypeScript também no Deck Scanner; PostgreSQL em quatro deles, pelo Supabase no Scrims e no HQ e pelo Neon no GVTEM e no Deck Scanner. O Deck Scanner tem API em Python com FastAPI e visão com OpenCV.",
   },
   {
     chaves: ["gvtem", "valadares", "guia", "negocios", "avaliacao"],
