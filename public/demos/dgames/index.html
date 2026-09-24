@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>D GAMES — Controle de Estoque & Lucro (demo)</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23FF1E80'/><text x='50' y='70' font-size='60' font-family='Arial' font-weight='bold' fill='%23090A3A' text-anchor='middle'>D</text></svg>" />
+
+  <!-- React + ReactDOM + Babel (JSX) + Tailwind via CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fontes: Press Start 2P (pixel/arcade), Orbitron (display neon), Inter (corpo) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@500;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            arcade: {
+              bg:     '#090A3A',  // Midnight Arcade
+              panel:  '#12154A',
+              pink:   '#FF1E80',  // Player 1 Pink
+              green:  '#00E59B',  // Pixel Green
+              yellow: '#FFD700',  // Coin Yellow
+              cyan:   '#22d3ee',
+            }
+          },
+          fontFamily: {
+            sans:    ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Orbitron', 'sans-serif'],
+            pixel:   ['"Press Start 2P"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+/* =============================================================================
+   styles.css — Estilos do tema Neon/Arcade da D Games
+   (cores, brilhos "glow", paineis, botoes, animacoes e barra de rolagem)
+   Editado aqui e embutido no index.html pelo build.
+   ============================================================================= */
+    html { color-scheme: dark; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      color: #e7e9ff;
+      background-color: #090A3A;
+      background-image:
+        radial-gradient(circle at 18% 8%, rgba(255,30,128,.20), transparent 42%),
+        radial-gradient(circle at 88% 18%, rgba(0,229,155,.14), transparent 45%),
+        radial-gradient(circle at 50% 100%, rgba(124,30,180,.18), transparent 55%),
+        linear-gradient(rgba(120,130,255,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(120,130,255,.05) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 42px 42px, 42px 42px;
+      background-attachment: scroll;
+      min-height: 100vh;
+    }
+    .glow-pink   { text-shadow: 0 0 6px rgba(255,30,128,.85), 0 0 20px rgba(255,30,128,.45); }
+    .glow-green  { text-shadow: 0 0 6px rgba(0,229,155,.85), 0 0 18px rgba(0,229,155,.4); }
+    .glow-yellow { text-shadow: 0 0 6px rgba(255,215,0,.85), 0 0 16px rgba(255,215,0,.4); }
+    .panel       { background: rgba(18,21,74,.62); border: 1px solid rgba(150,160,255,.12); }
+    .panel-hover:hover { border-color: rgba(255,30,128,.55); box-shadow: 0 0 24px rgba(255,30,128,.18); }
+    .btn-pink   { background: linear-gradient(135deg,#FF1E80,#b81468); box-shadow: 0 0 16px rgba(255,30,128,.45); }
+    .btn-pink:hover   { box-shadow: 0 0 26px rgba(255,30,128,.7); }
+    .btn-green  { background: linear-gradient(135deg,#00E59B,#00a877); box-shadow: 0 0 16px rgba(0,229,155,.45); color:#04221b; }
+    .btn-green:hover  { box-shadow: 0 0 26px rgba(0,229,155,.7); }
+    .scan { background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.14) 0 2px, transparent 2px 5px); }
+    @keyframes pop { from { transform: scale(.96); opacity:0 } to { transform: scale(1); opacity:1 } }
+    @keyframes slideIn { from { transform: translateX(120%); opacity:0 } to { transform: translateX(0); opacity:1 } }
+    @keyframes neonPulse { 0%,100% { box-shadow:0 0 16px rgba(255,30,128,.55), inset 0 0 0 1px rgba(255,255,255,.15) } 50% { box-shadow:0 0 26px rgba(255,30,128,.85), inset 0 0 0 1px rgba(255,255,255,.2) } }
+    .anim-pop   { animation: pop .15s ease-out }
+    .anim-toast { animation: slideIn .25s cubic-bezier(.2,.9,.3,1) }
+    .logo-glow  { animation: neonPulse 2.8s ease-in-out infinite }
+    ::-webkit-scrollbar { width:10px; height:10px }
+    ::-webkit-scrollbar-track { background: #0c0e44 }
+    ::-webkit-scrollbar-thumb { background:#2a2f7a; border-radius:8px }
+    ::-webkit-scrollbar-thumb:hover { background:#FF1E80 }
+    input::placeholder, textarea::placeholder { color:#7079b5 }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- ATENCAO: o conteudo abaixo e GERADO a partir de src/js/*.js pelo build.
+       Nao edite aqui. Edite os arquivos em src/ e rode:  node build.mjs  -->
+  <script type="text/plain" id="dgames-src">
+
+/* =====================  src/demo/seed.js  ===================== */
+/* =============================================================================
+ * demo/seed.js — Modo demonstracao (so entra no build com  node build.mjs --demo)
+ * Tudo aqui e ficticio: produtos, fornecedores e clientes foram inventados.
+ * O modo demo grava numa chave propria do navegador (nunca le nem mexe nos
+ * dados reais) e o botao "Restaurar demo" volta para este estado inicial.
+ * ============================================================================= */
+const DGAMES_DEMO = true;
+
+// Capa gerada em SVG (sem foto real): cor da categoria + nome do produto.
+function demoCover(name, category) {
+  const cor = { Console: '#FF1E80', Controle: '#22d3ee', Game: '#00E59B', 'Acessório': '#FFD700' }[category] || '#FF1E80';
+  const linhas = name.match(/.{1,18}(\s|$)/g) || [name];
+  const texto = linhas.slice(0, 3).map((l, i) =>
+    `<text x="200" y="${160 + i * 34}" text-anchor="middle" font-family="Orbitron, Arial" font-size="26" font-weight="700" fill="#fff">${l.trim()}</text>`
+  ).join('');
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+    <rect width="400" height="300" fill="#0c0e3a"/>
+    <rect x="12" y="12" width="376" height="276" fill="none" stroke="${cor}" stroke-width="4" stroke-dasharray="12 8"/>
+    <text x="200" y="100" text-anchor="middle" font-family="monospace" font-size="18" fill="${cor}">${category.toUpperCase()}</text>
+    ${texto}
+    <text x="200" y="272" text-anchor="middle" font-family="monospace" font-size="13" fill="#94a3b8">imagem ilustrativa</text>
+  </svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+function demoDate(daysAgo) {
+  const d = new Date();
+  d.setDate(d.getDate() - daysAgo);
+  return d.toISOString();
+}
+
+const DEMO_SUPPLIERS = [
+  { name: 'Distribuidora Pixel Ltda (fictícia)', address: 'Rua dos Cartuchos, 64', cep: '35010-000', phone: '(33) 3271-0000', email: 'contato@pixel.exemplo' },
+  { name: 'João Retrô (fictício)', address: 'Av. Fliperama, 1987', cep: '35020-100', phone: '(33) 99100-0001', email: 'joao@retro.exemplo' },
+  { name: 'Mega Import Games (fictícia)', address: 'Rua do Joystick, 8', cep: '35030-200', phone: '(33) 3222-0002', email: 'vendas@mega.exemplo' },
+];
+
+const DEMO_CUSTOMERS = [
+  { name: 'Ana Exemplo', address: 'Rua das Flores, 10', cep: '35040-000', phone: '(33) 98800-1111', email: 'ana@exemplo.com' },
+  { name: 'Bruno Teste', address: 'Av. Brasil, 200', cep: '35050-000', phone: '(33) 98800-2222', email: 'bruno@exemplo.com' },
+  { name: 'Carla Fictícia', address: 'Rua Sete, 77', cep: '35060-000', phone: '(33) 98800-3333', email: 'carla@exemplo.com' },
+  { name: 'Diego Demo', address: 'Rua Israel Pinheiro, 5', cep: '35070-000', phone: '(33) 98800-4444', email: 'diego@exemplo.com' },
+];
+
+function demoProduct(i, name, category, buyPrice, salePrice, extra = {}) {
+  return {
+    id: 'demo-' + i,
+    name,
+    description: extra.description || 'Produto de demonstração — dados fictícios.',
+    category,
+    photos: [demoCover(name, category)],
+    buyPrice,
+    salePrice,
+    unlocked: category === 'Console' ? !!extra.unlocked : undefined,
+    supplier: DEMO_SUPPLIERS[i % DEMO_SUPPLIERS.length],
+    status: extra.sale ? 'sold' : 'stock',
+    sale: extra.sale,
+    createdAt: demoDate(extra.days || i * 3 + 2),
+  };
+}
+
+function sold(daysAgo, c) {
+  return { soldAt: demoDate(daysAgo), customer: DEMO_CUSTOMERS[c] };
+}
+
+const DEMO_SEED = {
+  products: [
+    demoProduct(1, 'PlayStation 5 Slim', 'Console', 2900, 3599, { description: 'Seminovo, 1TB, com 1 controle.' }),
+    demoProduct(2, 'Xbox Series S', 'Console', 1700, 2199),
+    demoProduct(3, 'Nintendo Switch OLED', 'Console', 1650, 2250, { unlocked: true, description: 'Desbloqueado, acompanha case.' }),
+    demoProduct(4, 'DualSense Branco', 'Controle', 290, 419),
+    demoProduct(5, 'Controle Xbox Carbon Black', 'Controle', 280, 399),
+    demoProduct(6, 'EA Sports FC 26 (PS5)', 'Game', 150, 239),
+    demoProduct(7, 'The Legend of Zelda: Tears of the Kingdom', 'Game', 190, 289),
+    demoProduct(8, 'Headset Gamer 7.1', 'Acessório', 120, 219),
+    demoProduct(9, 'Base de Carregamento DualSense', 'Acessório', 60, 119),
+    demoProduct(10, 'PlayStation 4 Pro', 'Console', 1100, 1599, { sale: sold(2, 0) }),
+    demoProduct(11, 'Mario Kart 8 Deluxe', 'Game', 170, 259, { sale: sold(5, 1) }),
+    demoProduct(12, 'Nintendo Switch Lite', 'Console', 800, 1150, { unlocked: true, sale: sold(9, 2) }),
+    demoProduct(13, 'Pro Controller Switch', 'Controle', 230, 349, { sale: sold(12, 3) }),
+    demoProduct(14, 'God of War Ragnarök (PS5)', 'Game', 120, 199, { sale: sold(16, 0) }),
+  ],
+};
+
+
+/* =====================  src/js/01-constants.js  ===================== */
+/* =============================================================================
+ * 01-constants.js — Constantes e formatadores
+ * - Atalho dos "hooks" do React (useState, etc.)
+ * - CATEGORIES: categorias de produto disponiveis
+ * - CAT_STYLE: classes de cor (Tailwind) de cada categoria
+ * - fmt: formata numero como dinheiro em Real (R$)
+ * - dateBR: formata data no padrao brasileiro
+ * - uid: gera um identificador unico para cada produto
+ * ============================================================================= */
+const { useState, useEffect, useRef, useMemo } = React;
+
+
+const CATEGORIES = ['Console', 'Controle', 'Game', 'Acessório'];
+
+const CAT_STYLE = {
+  'Console':   'bg-fuchsia-500/15 text-arcade-pink ring-arcade-pink/40',
+  'Controle':  'bg-cyan-400/15 text-cyan-300 ring-cyan-400/40',
+  'Game':      'bg-emerald-400/15 text-arcade-green ring-arcade-green/40',
+  'Acessório': 'bg-amber-400/15 text-arcade-yellow ring-arcade-yellow/40',
+};
+
+const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+const fmt = (v) => BRL.format(Number(v) || 0);
+const dateBR = (iso) => iso ? new Date(iso).toLocaleDateString('pt-BR') : '';
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(16).slice(2));
+
+
+/* =====================  src/js/02-masks.js  ===================== */
+/* =============================================================================
+ * 02-masks.js — Mascaras de digitacao
+ * Formatam o texto automaticamente enquanto o usuario digita.
+ * - maskCEP:   00000000      -> 00000-000
+ * - maskPhone: 11999998888   -> (11) 99999-8888  (celular ou fixo)
+ * ============================================================================= */
+
+const onlyDigits = (v) => (v || '').replace(/\D/g, '');
+function maskCEP(v) {
+  const d = onlyDigits(v).slice(0, 8);
+  return d.length > 5 ? d.slice(0, 5) + '-' + d.slice(5) : d;
+}
+function maskPhone(v) {
+  const d = onlyDigits(v).slice(0, 11);
+  if (d.length <= 2) return d ? '(' + d : '';
+  if (d.length <= 6) return '(' + d.slice(0, 2) + ') ' + d.slice(2);
+  if (d.length <= 10) return '(' + d.slice(0, 2) + ') ' + d.slice(2, 6) + '-' + d.slice(6);
+  return '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7);
+}
+
+
+/* =====================  src/js/03-images.js  ===================== */
+/* =============================================================================
+ * 03-images.js — Imagens
+ * - resizeImage: reduz a foto enviada (ate ~1000px, JPEG) e devolve em base64,
+ *   mantendo o backup leve.
+ * - productPhotos: le a lista de fotos de um produto (compativel com backups
+ *   antigos que tinham apenas o campo "photo").
+ * ============================================================================= */
+
+function resizeImage(file, maxDim = 1000, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width >= height && width > maxDim) { height = Math.round(height * maxDim / width); width = maxDim; }
+        else if (height > maxDim) { width = Math.round(width * maxDim / height); height = maxDim; }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        try { resolve(canvas.toDataURL('image/jpeg', quality)); } catch (err) { reject(err); }
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+/* Lista de fotos do produto, com compatibilidade para backups antigos (campo "photo") */
+function productPhotos(p) {
+  if (p && Array.isArray(p.photos)) return p.photos;
+  if (p && p.photo) return [p.photo];
+  return [];
+}
+
+
+/* =====================  src/js/04-storage.js  ===================== */
+/* =============================================================================
+ * 04-storage.js — Persistencia local (os dados nunca se perdem)
+ * Salva tudo no IndexedDB do navegador e, como copia de seguranca, tambem no
+ * localStorage. Ao abrir, le primeiro do IndexedDB; se nao houver, do localStorage.
+ *   Storage.load()  -> recupera o estado salvo
+ *   Storage.save(s) -> grava o estado atual
+ * ============================================================================= */
+
+const DB_NAME = 'dgames', STORE = 'kv', KEY = 'state', LS_KEY = 'dgames_state';
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = () => { if (!req.result.objectStoreNames.contains(STORE)) req.result.createObjectStore(STORE); };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function idbGet(key) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const rq = db.transaction(STORE, 'readonly').objectStore(STORE).get(key);
+    rq.onsuccess = () => resolve(rq.result); rq.onerror = () => reject(rq.error);
+  });
+}
+async function idbSet(key, val) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, 'readwrite');
+    tx.objectStore(STORE).put(val, key);
+    tx.oncomplete = () => resolve(); tx.onerror = () => reject(tx.error);
+  });
+}
+// Modo demo (build com --demo): chave separada no localStorage, sem IndexedDB.
+// Assim a demo nunca le nem sobrescreve os dados reais da loja.
+const IS_DEMO = typeof DGAMES_DEMO !== 'undefined' && DGAMES_DEMO;
+const DEMO_LS_KEY = 'dgames_demo_state';
+
+const DemoStorage = {
+  async load() {
+    try { const s = localStorage.getItem(DEMO_LS_KEY); if (s) return JSON.parse(s); } catch (e) {}
+    return JSON.parse(JSON.stringify(DEMO_SEED));
+  },
+  async save(state) {
+    try { localStorage.setItem(DEMO_LS_KEY, JSON.stringify(state)); } catch (e) {}
+  },
+  reset() {
+    try { localStorage.removeItem(DEMO_LS_KEY); } catch (e) {}
+    return JSON.parse(JSON.stringify(DEMO_SEED));
+  },
+};
+
+const Storage = IS_DEMO ? DemoStorage : {
+  async load() {
+    try { const v = await idbGet(KEY); if (v) return v; } catch (e) {}
+    try { const s = localStorage.getItem(LS_KEY); if (s) return JSON.parse(s); } catch (e) {}
+    return null;
+  },
+  async save(state) {
+    let ok = false;
+    try { await idbSet(KEY, state); ok = true; } catch (e) {}
+    try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { if (!ok) throw e; }
+  }
+};
+
+
+/* =====================  src/js/05-icons.js  ===================== */
+/* =============================================================================
+ * 05-icons.js — Icones (desenhos SVG embutidos)
+ * "Ic" e um objeto onde cada chave (Ic.trash, Ic.edit, ...) e um pequeno icone.
+ * Usar assim no JSX:  <Ic.trash className="h-4 w-4" />
+ * ============================================================================= */
+
+const Ic = {
+  trash:  (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM10 11v6M14 11v6"/></svg>,
+  edit:   (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg>,
+  gear:   (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>,
+  down:   (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>,
+  up:     (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>,
+  plus:   (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>,
+  close:  (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>,
+  image:  (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>,
+  box:    (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>,
+  cart:   (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>,
+  check:  (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>,
+  lock:   (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>,
+  unlock: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 019.9-1"/></svg>,
+  user:   (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+};
+
+
+/* =====================  src/js/06-ui.js  ===================== */
+/* =============================================================================
+ * 06-ui.js — Componentes visuais basicos (reutilizaveis)
+ * - Logo, Badge (etiqueta de categoria), StatCard (cartao de numero),
+ *   SectionTitle (titulo de secao), EmptyState (tela vazia), Field (rotulo+campo)
+ * - inputCls / textareaCls: classes de estilo padrao dos campos de formulario
+ * ============================================================================= */
+
+function Logo() {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="logo-glow relative h-12 w-12 rounded-xl grid place-items-center shrink-0"
+        style={{ background: 'linear-gradient(135deg,#FF1E80,#7a1247)' }}>
+        <div className="absolute inset-0 rounded-xl scan opacity-20"></div>
+        <div className="relative text-center leading-none">
+          <div className="font-pixel text-white text-base">D</div>
+          <div className="font-pixel text-white/90 mt-1" style={{ fontSize: '5px', letterSpacing: '1px' }}>GAMES</div>
+        </div>
+      </div>
+      <div className="leading-tight">
+        <div className="font-display font-black text-xl tracking-wider text-white glow-pink">D GAMES</div>
+        <div className="font-pixel text-arcade-green mt-1" style={{ fontSize: '6px', letterSpacing: '1.5px' }}>ESTOQUE &amp; LUCRO</div>
+      </div>
+    </div>
+  );
+}
+
+function Badge({ category }) {
+  return <span className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-bold ring-1 ${CAT_STYLE[category] || 'bg-white/10 text-slate-300 ring-white/20'}`}>{category}</span>;
+}
+
+function StatCard({ label, value, sub, accent = 'text-white', glow = '' }) {
+  return (
+    <div className="rounded-2xl panel p-4">
+      <div className="font-pixel text-[7px] tracking-widest text-slate-400 uppercase">{label}</div>
+      <div className={`mt-2 font-display text-2xl font-extrabold ${accent} ${glow}`}>{value}</div>
+      {sub && <div className="text-xs text-slate-400 mt-1">{sub}</div>}
+    </div>
+  );
+}
+
+function SectionTitle({ icon, kicker, color = 'text-arcade-pink' }) {
+  return (
+    <div className="flex items-center gap-2 mb-3">
+      <span className={color}>{icon}</span>
+      <h2 className="font-display font-bold tracking-wide text-white text-lg">{kicker}</h2>
+    </div>
+  );
+}
+
+function EmptyState({ icon, title, text }) {
+  return (
+    <div className="col-span-full grid place-items-center py-16 text-center rounded-2xl panel">
+      <div className="h-16 w-16 rounded-2xl bg-white/5 ring-1 ring-white/10 grid place-items-center text-arcade-pink mb-4">{icon}</div>
+      <div className="font-display font-bold text-slate-100">{title}</div>
+      <div className="text-sm text-slate-400 mt-1 max-w-sm">{text}</div>
+    </div>
+  );
+}
+
+function Field({ label, required, error, children, hint }) {
+  return (
+    <label className="block">
+      <span className="block text-sm font-semibold text-slate-200 mb-1">
+        {label} {required && <span className="text-arcade-pink">*</span>}
+      </span>
+      {children}
+      {error && <span className="block text-xs text-rose-400 mt-1">{error}</span>}
+      {hint && !error && <span className="block text-xs text-slate-500 mt-1">{hint}</span>}
+    </label>
+  );
+}
+
+const inputCls = (err) => `w-full rounded-xl border px-3 py-2.5 text-sm text-white outline-none transition focus:ring-2 ${err ? 'border-rose-400/70 bg-rose-500/10 focus:ring-rose-400/50' : 'border-white/15 bg-white/5 focus:ring-arcade-pink/60 focus:border-arcade-pink'}`;
+const textareaCls = (err) => inputCls(err) + ' resize-none leading-snug';
+
+
+/* =====================  src/js/07-customer-fields.js  ===================== */
+/* =============================================================================
+ * 07-customer-fields.js — Ficha de contato (cliente OU fornecedor)
+ * - CustomerFields: os 5 campos (nome, endereco, CEP, telefone, e-mail). A prop
+ *   "who" so muda o texto de exemplo; "prefix" separa os erros (ex.: s_ / c_).
+ * - validateCustomer: valida que os 5 campos foram preenchidos (e o e-mail valido).
+ * ============================================================================= */
+
+function CustomerFields({ f, setF, errors, prefix = '', who = 'cliente' }) {
+  const e = (k) => errors[prefix + k];
+  return (
+    <>
+      <div className="sm:col-span-2">
+        <Field label="Nome completo" required error={e('name')}>
+          <input className={inputCls(e('name'))} value={f.name} onChange={(ev) => setF((s) => ({ ...s, name: ev.target.value }))} placeholder={'Nome do ' + who} />
+        </Field>
+      </div>
+      <div className="sm:col-span-2">
+        <Field label="Endereço completo" required error={e('address')}>
+          <input className={inputCls(e('address'))} value={f.address} onChange={(ev) => setF((s) => ({ ...s, address: ev.target.value }))} placeholder="Rua, número, bairro, cidade/UF" />
+        </Field>
+      </div>
+      <Field label="CEP" required error={e('cep')}>
+        <input className={inputCls(e('cep'))} value={f.cep} onChange={(ev) => setF((s) => ({ ...s, cep: maskCEP(ev.target.value) }))} placeholder="00000-000" inputMode="numeric" />
+      </Field>
+      <Field label="Telefone" required error={e('phone')}>
+        <input className={inputCls(e('phone'))} value={f.phone} onChange={(ev) => setF((s) => ({ ...s, phone: maskPhone(ev.target.value) }))} placeholder="(00) 00000-0000" inputMode="tel" />
+      </Field>
+      <div className="sm:col-span-2">
+        <Field label="E-mail" required error={e('email')}>
+          <input className={inputCls(e('email'))} value={f.email} onChange={(ev) => setF((s) => ({ ...s, email: ev.target.value }))} placeholder={who + '@email.com'} inputMode="email" />
+        </Field>
+      </div>
+    </>
+  );
+}
+
+function validateCustomer(f, prefix = '') {
+  const errs = {};
+  if (!f.name.trim()) errs[prefix + 'name'] = 'Obrigatório';
+  if (!f.address.trim()) errs[prefix + 'address'] = 'Obrigatório';
+  if (!f.cep.trim()) errs[prefix + 'cep'] = 'Obrigatório';
+  if (!f.phone.trim()) errs[prefix + 'phone'] = 'Obrigatório';
+  if (!f.email.trim()) errs[prefix + 'email'] = 'Obrigatório';
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) errs[prefix + 'email'] = 'E-mail inválido';
+  return errs;
+}
+
+
+/* =====================  src/js/08-photo-uploader.js  ===================== */
+/* =============================================================================
+ * 08-photo-uploader.js — Envio de fotos (ate 5)
+ * Mostra as miniaturas, marca a 1a como PRINCIPAL, permite remover e bloqueia
+ * acima do limite. Cada imagem passa por resizeImage antes de ser guardada.
+ * ============================================================================= */
+
+function PhotoUploader({ photos, setPhotos, max = 5, toast }) {
+  const [busy, setBusy] = useState(false);
+  const inputRef = useRef(null);
+  async function onFiles(e) {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const room = max - photos.length;
+    if (room <= 0) { toast(`Limite de ${max} fotos atingido.`, 'error'); if (inputRef.current) inputRef.current.value = ''; return; }
+    setBusy(true);
+    try {
+      const imgs = [];
+      for (const f of files.slice(0, room)) { if (f.type.startsWith('image/')) imgs.push(await resizeImage(f)); }
+      setPhotos([...photos, ...imgs].slice(0, max));
+      if (files.length > room) toast(`Adicionadas ${room} foto(s) — máximo de ${max}.`, 'info');
+    } catch (err) { toast('Não foi possível processar alguma imagem.', 'error'); }
+    finally { setBusy(false); if (inputRef.current) inputRef.current.value = ''; }
+  }
+  const removeAt = (i) => setPhotos(photos.filter((_, idx) => idx !== i));
+  return (
+    <div>
+      <span className="block text-sm font-semibold text-slate-200 mb-1">Fotos <span className="font-normal text-slate-500">(até {max})</span></span>
+      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+        {photos.map((src, i) => (
+          <div key={i} className="relative aspect-square rounded-lg overflow-hidden ring-1 ring-white/10 bg-black/30">
+            <img src={src} alt={'foto ' + (i + 1)} className="h-full w-full object-cover" />
+            {i === 0 && <span className="absolute bottom-1 left-1 text-[8px] font-bold bg-arcade-pink text-white px-1.5 py-0.5 rounded">PRINCIPAL</span>}
+            <button type="button" onClick={() => removeAt(i)} title="Remover foto"
+              className="absolute top-1 right-1 h-6 w-6 grid place-items-center rounded-full bg-black/65 text-white hover:bg-rose-600"><Ic.close className="h-3.5 w-3.5" /></button>
+          </div>
+        ))}
+        {photos.length < max && (
+          <label className="aspect-square rounded-lg border-2 border-dashed border-white/20 bg-white/5 grid place-items-center cursor-pointer text-slate-400 hover:text-arcade-pink hover:border-arcade-pink/50 text-center">
+            <span>
+              <Ic.image className="h-6 w-6 mx-auto mb-1" />
+              <span className="block text-[11px] font-medium">{busy ? '…' : 'Adicionar'}</span>
+            </span>
+            <input ref={inputRef} type="file" accept="image/*" multiple className="hidden" onChange={onFiles} />
+          </label>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+/* =====================  src/js/09-product-fields.js  ===================== */
+/* =============================================================================
+ * 09-product-fields.js — Bloco de campos do produto (reutilizado)
+ * Usado tanto no cadastro quanto na edicao: fotos, nome, descricao, categoria,
+ * "Desbloqueado" (so Console), valores de compra/venda e a ficha do FORNECEDOR.
+ * ============================================================================= */
+
+function ProductFields({ v, set, errors, photos, setPhotos, supplier, setSupplier, toast }) {
+  return (
+    <div className="space-y-5">
+      <PhotoUploader photos={photos} setPhotos={setPhotos} toast={toast} />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="sm:col-span-2">
+          <Field label="Nome do produto" required error={errors.name}>
+            <input className={inputCls(errors.name)} value={v.name} onChange={(e) => set('name', e.target.value)} placeholder="Ex.: PlayStation 2 Slim" />
+          </Field>
+        </div>
+
+        <div className="sm:col-span-2">
+          <Field label="Descrição">
+            <textarea rows="2" className={textareaCls(false)} value={v.description} onChange={(e) => set('description', e.target.value)} placeholder="Detalhes: estado de conservação, acompanha cabos/jogos, observações…" />
+          </Field>
+        </div>
+
+        <Field label="Categoria" required>
+          <select
+            className="w-full rounded-xl border border-white/15 bg-arcade-bg text-white px-3 py-2.5 text-sm outline-none transition focus:ring-2 focus:ring-arcade-pink/60 focus:border-arcade-pink"
+            style={{ colorScheme: 'dark' }} value={v.category} onChange={(e) => set('category', e.target.value)}>
+            {CATEGORIES.map((c) => <option key={c} value={c} style={{ background: '#0c0e3a', color: '#ffffff' }}>{c}</option>)}
+          </select>
+        </Field>
+
+        {v.category === 'Console' ? (
+          <div>
+            <span className="block text-sm font-semibold text-slate-200 mb-1">Situação</span>
+            <label className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-3 py-2.5 cursor-pointer select-none hover:bg-white/10">
+              <input type="checkbox" className="h-4 w-4 accent-arcade-pink" checked={v.unlocked} onChange={(e) => set('unlocked', e.target.checked)} />
+              <span className="text-sm font-semibold text-slate-200">Desbloqueado</span>
+              {v.unlocked ? <Ic.unlock className="h-4 w-4 text-arcade-green ml-auto" /> : <Ic.lock className="h-4 w-4 text-slate-500 ml-auto" />}
+            </label>
+          </div>
+        ) : <div className="hidden sm:block" />}
+
+        <Field label="Valor de compra" required error={errors.buyPrice}>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-500">R$</span>
+            <input type="number" step="0.01" min="0" className={inputCls(errors.buyPrice) + ' pl-9'} value={v.buyPrice} onChange={(e) => set('buyPrice', e.target.value)} placeholder="0,00" />
+          </div>
+        </Field>
+
+        <Field label="Valor de venda" required error={errors.salePrice}>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-500">R$</span>
+            <input type="number" step="0.01" min="0" className={inputCls(errors.salePrice) + ' pl-9'} value={v.salePrice} onChange={(e) => set('salePrice', e.target.value)} placeholder="0,00" />
+          </div>
+        </Field>
+      </div>
+
+      <div className="border-t border-white/10 pt-4">
+        <div className="flex items-center gap-1.5 font-pixel text-[8px] tracking-widest text-arcade-cyan mb-3">
+          <Ic.user className="h-3.5 w-3.5" /> FORNECEDOR — DE QUEM VOCÊ COMPROU
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <CustomerFields f={supplier} setF={setSupplier} errors={errors} prefix="s_" who="fornecedor" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+/* =====================  src/js/10-product-form.js  ===================== */
+/* =============================================================================
+ * 10-product-form.js — Formulario "Cadastrar produto"
+ * Controla os campos, valida (nome, valores e fornecedor obrigatorios), monta o
+ * objeto do produto e chama onAdd. Mostra o "Lucro previsto" em tempo real.
+ * ============================================================================= */
+
+function ProductForm({ onAdd, toast }) {
+  const emptyCore = { name: '', description: '', category: 'Game', buyPrice: '', salePrice: '', unlocked: false };
+  const emptySup = { name: '', address: '', cep: '', phone: '', email: '' };
+  const [v, setV] = useState(emptyCore);
+  const [photos, setPhotos] = useState([]);
+  const [supplier, setSupplier] = useState(emptySup);
+  const [errors, setErrors] = useState({});
+  const set = (k, val) => setV((s) => ({ ...s, [k]: val }));
+  function reset() { setV(emptyCore); setPhotos([]); setSupplier(emptySup); setErrors({}); }
+
+  function submit(e) {
+    e.preventDefault();
+    const errs = {};
+    if (!v.name.trim()) errs.name = 'Informe o nome do produto.';
+    if (v.buyPrice === '' || isNaN(Number(v.buyPrice)) || Number(v.buyPrice) < 0) errs.buyPrice = 'Valor inválido.';
+    if (v.salePrice === '' || isNaN(Number(v.salePrice)) || Number(v.salePrice) < 0) errs.salePrice = 'Valor inválido.';
+    Object.assign(errs, validateCustomer(supplier, 's_'));
+    setErrors(errs);
+    if (Object.keys(errs).length) { toast('Confira os campos destacados.', 'error'); return; }
+    onAdd({
+      id: uid(), name: v.name.trim(), description: v.description.trim(), category: v.category,
+      photos: photos.slice(0, 5), buyPrice: Number(v.buyPrice), salePrice: Number(v.salePrice),
+      unlocked: v.category === 'Console' ? v.unlocked : undefined,
+      supplier: { name: supplier.name.trim(), address: supplier.address.trim(), cep: supplier.cep.trim(), phone: supplier.phone.trim(), email: supplier.email.trim() },
+      status: 'stock', createdAt: new Date().toISOString(),
+    });
+    reset();
+    toast('Produto adicionado ao estoque! ⭐', 'success');
+  }
+
+  const margin = (Number(v.salePrice) || 0) - (Number(v.buyPrice) || 0);
+
+  return (
+    <form onSubmit={submit} className="rounded-2xl panel p-5">
+      <SectionTitle icon={<Ic.plus className="h-5 w-5" />} kicker="Cadastrar produto" />
+      <ProductFields v={v} set={set} errors={errors} photos={photos} setPhotos={setPhotos} supplier={supplier} setSupplier={setSupplier} toast={toast} />
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+        <div className="text-sm">
+          <span className="text-slate-400">Lucro previsto: </span>
+          <span className={`font-display font-bold ${margin >= 0 ? 'text-arcade-green glow-green' : 'text-rose-400'}`}>{fmt(margin)}</span>
+        </div>
+        <div className="flex gap-2">
+          <button type="button" onClick={reset} className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-300 hover:bg-white/10">Limpar</button>
+          <button type="submit" className="btn-pink inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold text-white active:scale-[.98] transition">
+            <Ic.plus className="h-4 w-4" /> Salvar produto
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+}
+
+
+/* =====================  src/js/11-cards.js  ===================== */
+/* =============================================================================
+ * 11-cards.js — Cartoes de produto
+ * - ProductCard: card do ESTOQUE (galeria de fotos, lucro, fornecedor, vender).
+ * - InfoBlock:   bloco de contato reutilizado dentro do card de vendido.
+ * - SoldCard:    card de VENDIDO (lucro + blocos do Fornecedor e do Cliente).
+ * ============================================================================= */
+
+function ProductCard({ p, onDelete, onEdit, onToggleUnlocked, onSell }) {
+  const photos = productPhotos(p);
+  const [idx, setIdx] = useState(0);
+  const cur = Math.min(idx, Math.max(0, photos.length - 1));
+  const active = photos[cur] || null;
+  const profit = (Number(p.salePrice) || 0) - (Number(p.buyPrice) || 0);
+  const sup = p.supplier || {};
+  return (
+    <div className="group rounded-2xl panel panel-hover overflow-hidden hover:-translate-y-0.5 transition anim-pop">
+      <div className="relative aspect-[4/3] bg-black/30">
+        {active
+          ? <img src={active} alt={p.name} className="h-full w-full object-cover" />
+          : <div className="h-full w-full grid place-items-center text-slate-600"><Ic.image className="h-10 w-10" /></div>}
+        <div className="absolute top-2 left-2"><Badge category={p.category} /></div>
+        <div className="absolute top-2 right-2 flex gap-1.5">
+          <button onClick={() => onEdit(p)} title="Editar"
+            className="h-8 w-8 grid place-items-center rounded-full bg-black/55 backdrop-blur text-slate-200 hover:bg-arcade-pink hover:text-white">
+            <Ic.edit className="h-4 w-4" />
+          </button>
+          <button onClick={() => onDelete(p)} title="Excluir"
+            className="h-8 w-8 grid place-items-center rounded-full bg-black/55 backdrop-blur text-slate-200 hover:bg-rose-600 hover:text-white">
+            <Ic.trash className="h-4 w-4" />
+          </button>
+        </div>
+        {photos.length > 1 && (
+          <span className="absolute bottom-2 right-2 rounded-md bg-black/65 text-white text-[11px] font-bold px-1.5 py-0.5">{cur + 1}/{photos.length}</span>
+        )}
+        {p.category === 'Console' && (
+          <div className={`absolute bottom-2 left-2 inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-bold ${p.unlocked ? 'bg-arcade-green text-arcade-bg' : 'bg-black/70 text-slate-200'}`}>
+            {p.unlocked ? <Ic.unlock className="h-3 w-3" /> : <Ic.lock className="h-3 w-3" />}
+            {p.unlocked ? 'Desbloqueado' : 'Bloqueado'}
+          </div>
+        )}
+      </div>
+
+      {photos.length > 1 && (
+        <div className="flex gap-1.5 px-3 pt-3 overflow-x-auto">
+          {photos.map((src, i) => (
+            <button key={i} type="button" onClick={() => setIdx(i)}
+              className={`h-10 w-10 shrink-0 rounded-md overflow-hidden ring-2 transition ${i === cur ? 'ring-arcade-pink' : 'ring-white/10 hover:ring-white/30'}`}>
+              <img src={src} alt="" className="h-full w-full object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="p-4">
+        <h3 className="font-display font-bold text-slate-100 leading-tight line-clamp-2 min-h-[2.5rem]">{p.name}</h3>
+        {p.description && <p className="text-xs text-slate-400 mt-1 line-clamp-2">{p.description}</p>}
+
+        <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+          <div className="rounded-lg bg-white/5 px-2.5 py-1.5">
+            <div className="text-[10px] uppercase tracking-wide text-slate-500">Compra</div>
+            <div className="font-semibold text-slate-200">{fmt(p.buyPrice)}</div>
+          </div>
+          <div className="rounded-lg bg-white/5 px-2.5 py-1.5">
+            <div className="text-[10px] uppercase tracking-wide text-slate-500">Venda</div>
+            <div className="font-semibold text-slate-200">{fmt(p.salePrice)}</div>
+          </div>
+        </div>
+        <div className="mt-2 text-sm">
+          <span className="text-slate-400">Lucro: </span>
+          <span className={`font-display font-bold ${profit >= 0 ? 'text-arcade-green glow-green' : 'text-rose-400'}`}>{fmt(profit)}</span>
+        </div>
+
+        {sup.name && (
+          <div className="mt-2 flex items-start gap-1.5 text-xs text-slate-400">
+            <Ic.user className="h-3.5 w-3.5 mt-0.5 text-arcade-cyan shrink-0" />
+            <span><span className="text-slate-500">Comprado de </span><span className="text-slate-300 font-medium">{sup.name}</span>{sup.phone ? <span className="text-slate-500"> · {sup.phone}</span> : null}</span>
+          </div>
+        )}
+
+        {p.category === 'Console' && (
+          <label className="mt-3 flex items-center gap-2 text-sm cursor-pointer select-none">
+            <input type="checkbox" className="h-4 w-4 accent-arcade-pink" checked={!!p.unlocked} onChange={() => onToggleUnlocked(p.id)} />
+            <span className="text-slate-300">Desbloqueado</span>
+          </label>
+        )}
+
+        <label className="mt-3 flex items-center justify-center gap-2 rounded-xl border-2 border-arcade-green text-arcade-green font-bold text-sm py-2.5 cursor-pointer hover:bg-arcade-green hover:text-arcade-bg transition select-none">
+          <input type="checkbox" className="hidden" checked={false} onChange={() => onSell(p)} />
+          <Ic.cart className="h-4 w-4" /> Marcar como vendido
+        </label>
+      </div>
+    </div>
+  );
+}
+function InfoBlock({ title, color, c }) {
+  return (
+    <div>
+      <div className={`flex items-center gap-1.5 font-pixel text-[8px] tracking-widest ${color} mb-2`}>
+        <Ic.user className="h-3.5 w-3.5" /> {title}
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-sm">
+        <div><span className="text-slate-500">Nome: </span><span className="text-slate-200 font-medium">{c.name || '—'}</span></div>
+        <div><span className="text-slate-500">Telefone: </span><span className="text-slate-200">{c.phone || '—'}</span></div>
+        <div className="sm:col-span-2"><span className="text-slate-500">Endereço: </span><span className="text-slate-200">{c.address || '—'}</span></div>
+        <div><span className="text-slate-500">CEP: </span><span className="text-slate-200">{c.cep || '—'}</span></div>
+        <div className="truncate"><span className="text-slate-500">E-mail: </span><span className="text-slate-200">{c.email || '—'}</span></div>
+      </div>
+    </div>
+  );
+}
+
+function SoldCard({ p, onDelete, onEdit, onReturn }) {
+  const profit = (Number(p.salePrice) || 0) - (Number(p.buyPrice) || 0);
+  const c = (p.sale && p.sale.customer) || {};
+  const sup = p.supplier || {};
+  const photos = productPhotos(p);
+  const main = photos[0] || null;
+  return (
+    <div className="rounded-2xl panel overflow-hidden anim-pop">
+      <div className="flex gap-4 p-4">
+        <div className="relative h-24 w-24 shrink-0 rounded-xl bg-black/30 ring-1 ring-white/10 overflow-hidden grid place-items-center">
+          {main ? <img src={main} alt={p.name} className="h-full w-full object-cover" /> : <Ic.image className="h-8 w-8 text-slate-600" />}
+          {photos.length > 1 && <span className="absolute bottom-1 right-1 rounded bg-black/70 text-white text-[10px] font-bold px-1">📷 {photos.length}</span>}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <Badge category={p.category} />
+              <h3 className="font-display font-bold text-slate-100 leading-tight mt-1 truncate">{p.name}</h3>
+            </div>
+            <div className="flex gap-1 shrink-0">
+              <button onClick={() => onEdit(p)} title="Editar"
+                className="h-8 w-8 grid place-items-center rounded-full text-slate-400 hover:bg-arcade-pink hover:text-white">
+                <Ic.edit className="h-4 w-4" />
+              </button>
+              <button onClick={() => onDelete(p)} title="Excluir registro"
+                className="h-8 w-8 grid place-items-center rounded-full text-slate-400 hover:bg-rose-600 hover:text-white">
+                <Ic.trash className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+            <span className="text-slate-400">Compra <b className="text-slate-200">{fmt(p.buyPrice)}</b></span>
+            <span className="text-slate-400">Venda <b className="text-slate-200">{fmt(p.salePrice)}</b></span>
+            <span className="inline-flex items-center gap-1 rounded-md bg-arcade-green/15 text-arcade-green ring-1 ring-arcade-green/40 px-2 py-0.5 font-bold">Lucro {fmt(profit)}</span>
+          </div>
+          {p.sale && p.sale.soldAt && <div className="text-xs text-slate-500 mt-1">Vendido em {dateBR(p.sale.soldAt)}</div>}
+          {p.description && <div className="text-xs text-slate-400 mt-1 line-clamp-2">{p.description}</div>}
+        </div>
+      </div>
+
+      <div className="border-t border-white/10 bg-black/20 px-4 py-3 space-y-3">
+        <InfoBlock title="FORNECEDOR (COMPRA)" color="text-arcade-cyan" c={sup} />
+        <InfoBlock title="CLIENTE (VENDA)" color="text-arcade-yellow" c={c} />
+        <button onClick={() => onReturn(p)} className="text-xs font-bold text-arcade-cyan hover:underline">↩ Devolver ao estoque</button>
+      </div>
+    </div>
+  );
+}
+
+
+/* =====================  src/js/12-modal.js  ===================== */
+/* =============================================================================
+ * 12-modal.js — Janela (modal) generica
+ * Caixa central escura com titulo, botao de fechar e fechamento por ESC ou
+ * clique fora. Serve de base para a Ficha de Venda, Edicao, Config e Importacao.
+ * ============================================================================= */
+
+function Modal({ title, onClose, children, maxW = 'max-w-lg' }) {
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+  return (
+    <div className="fixed inset-0 z-40 grid place-items-center p-4 bg-black/70 backdrop-blur-sm" onMouseDown={onClose}>
+      <div className={`w-full ${maxW} rounded-2xl bg-arcade-panel ring-1 ring-arcade-pink/30 shadow-2xl anim-pop max-h-[92vh] overflow-y-auto`}
+        style={{ boxShadow: '0 0 40px rgba(255,30,128,.25)' }} onMouseDown={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 sticky top-0 bg-arcade-panel rounded-t-2xl z-10">
+          <h3 className="font-display font-bold text-white tracking-wide">{title}</h3>
+          <button onClick={onClose} className="h-8 w-8 grid place-items-center rounded-full text-slate-400 hover:bg-white/10"><Ic.close className="h-5 w-5" /></button>
+        </div>
+        <div className="p-5">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+
+/* =====================  src/js/13-sale-modal.js  ===================== */
+/* =============================================================================
+ * 13-sale-modal.js — Ficha de Venda (dados do cliente)
+ * Abre ao marcar "vendido". Mostra o resumo do produto e pede os dados do
+ * cliente; ao confirmar, chama onConfirm com a ficha preenchida.
+ * ============================================================================= */
+
+function SaleModal({ product, onConfirm, onCancel }) {
+  const [f, setF] = useState({ name: '', address: '', cep: '', phone: '', email: '' });
+  const [errors, setErrors] = useState({});
+  const profit = (Number(product.salePrice) || 0) - (Number(product.buyPrice) || 0);
+
+  function submit(e) {
+    e.preventDefault();
+    const errs = validateCustomer(f);
+    setErrors(errs);
+    if (Object.keys(errs).length) return;
+    onConfirm({ name: f.name.trim(), address: f.address.trim(), cep: f.cep.trim(), phone: f.phone.trim(), email: f.email.trim() });
+  }
+
+  return (
+    <Modal title="🎮 Ficha de Venda" onClose={onCancel}>
+      <div className="flex items-center gap-3 rounded-xl bg-white/5 ring-1 ring-white/10 p-3 mb-4">
+        <div className="h-12 w-12 rounded-lg bg-black/30 overflow-hidden grid place-items-center shrink-0">
+          {productPhotos(product)[0] ? <img src={productPhotos(product)[0]} className="h-full w-full object-cover" /> : <Ic.image className="h-5 w-5 text-slate-500" />}
+        </div>
+        <div className="min-w-0">
+          <div className="font-semibold text-slate-100 truncate">{product.name}</div>
+          <div className="text-xs text-slate-400">Venda {fmt(product.salePrice)} · Lucro <b className="text-arcade-green">{fmt(profit)}</b></div>
+        </div>
+      </div>
+
+      <form onSubmit={submit} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <CustomerFields f={f} setF={setF} errors={errors} />
+        <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
+          <button type="button" onClick={onCancel} className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-300 hover:bg-white/10">Cancelar</button>
+          <button type="submit" className="btn-green inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold active:scale-[.98] transition">
+            <Ic.check className="h-4 w-4" /> Confirmar venda
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+
+/* =====================  src/js/14-edit-modal.js  ===================== */
+/* =============================================================================
+ * 14-edit-modal.js — Editar produto (estoque e vendidos)
+ * Reaproveita ProductFields. Se o item ja foi vendido, mostra tambem a ficha do
+ * CLIENTE para correcao. Ao salvar, devolve um "patch" com as alteracoes.
+ * ============================================================================= */
+
+function EditModal({ product, onSave, onClose, toast }) {
+  const isSold = product.status === 'sold';
+  const [v, setV] = useState({
+    name: product.name, description: product.description || '', category: product.category,
+    buyPrice: String(product.buyPrice), salePrice: String(product.salePrice), unlocked: !!product.unlocked,
+  });
+  const [photos, setPhotos] = useState(productPhotos(product));
+  const s0 = product.supplier || {};
+  const [supplier, setSupplier] = useState({ name: s0.name || '', address: s0.address || '', cep: s0.cep || '', phone: s0.phone || '', email: s0.email || '' });
+  const c0 = (product.sale && product.sale.customer) || {};
+  const [f, setF] = useState({ name: c0.name || '', address: c0.address || '', cep: c0.cep || '', phone: c0.phone || '', email: c0.email || '' });
+  const [errors, setErrors] = useState({});
+  const set = (k, val) => setV((s) => ({ ...s, [k]: val }));
+
+  function submit(e) {
+    e.preventDefault();
+    const errs = {};
+    if (!v.name.trim()) errs.name = 'Informe o nome do produto.';
+    if (v.buyPrice === '' || isNaN(Number(v.buyPrice)) || Number(v.buyPrice) < 0) errs.buyPrice = 'Valor inválido.';
+    if (v.salePrice === '' || isNaN(Number(v.salePrice)) || Number(v.salePrice) < 0) errs.salePrice = 'Valor inválido.';
+    Object.assign(errs, validateCustomer(supplier, 's_'));
+    if (isSold) Object.assign(errs, validateCustomer(f, 'c_'));
+    setErrors(errs);
+    if (Object.keys(errs).length) { toast('Confira os campos destacados.', 'error'); return; }
+
+    const patch = {
+      name: v.name.trim(), description: v.description.trim(), category: v.category, photo: undefined,
+      photos: photos.slice(0, 5), buyPrice: Number(v.buyPrice), salePrice: Number(v.salePrice),
+      unlocked: v.category === 'Console' ? v.unlocked : undefined,
+      supplier: { name: supplier.name.trim(), address: supplier.address.trim(), cep: supplier.cep.trim(), phone: supplier.phone.trim(), email: supplier.email.trim() },
+    };
+    if (isSold) {
+      patch.sale = { ...(product.sale || {}), customer: { name: f.name.trim(), address: f.address.trim(), cep: f.cep.trim(), phone: f.phone.trim(), email: f.email.trim() } };
+    }
+    onSave(product.id, patch);
+  }
+
+  return (
+    <Modal title="✏️ Editar produto" onClose={onClose} maxW="max-w-2xl">
+      <form onSubmit={submit}>
+        <ProductFields v={v} set={set} errors={errors} photos={photos} setPhotos={setPhotos} supplier={supplier} setSupplier={setSupplier} toast={toast} />
+
+        {isSold && (
+          <div className="mt-5 border-t border-white/10 pt-4">
+            <div className="flex items-center gap-1.5 font-pixel text-[8px] tracking-widest text-arcade-yellow mb-3">
+              <Ic.user className="h-3.5 w-3.5" /> CLIENTE — PARA QUEM VOCÊ VENDEU
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <CustomerFields f={f} setF={setF} errors={errors} prefix="c_" who="cliente" />
+            </div>
+          </div>
+        )}
+
+        <div className="mt-5 flex justify-end gap-2">
+          <button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-300 hover:bg-white/10">Cancelar</button>
+          <button type="submit" className="btn-pink inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold text-white active:scale-[.98] transition">
+            <Ic.check className="h-4 w-4" /> Salvar alterações
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+
+/* =====================  src/js/15-settings-modal.js  ===================== */
+/* =============================================================================
+ * 15-settings-modal.js — Configuracoes e Backup
+ * Exportar backup (.json com tudo), importar backup e "zona de perigo" para
+ * apagar todos os dados. As acoes em si ficam no App (passadas por props).
+ * ============================================================================= */
+
+function SettingsModal({ counts, onExport, onPickImport, onClearAll, onClose }) {
+  const importRef = useRef(null);
+  return (
+    <Modal title="⚙️ Configurações & Backup" onClose={onClose}>
+      <div className="space-y-5">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-xl bg-white/5 ring-1 ring-white/10 p-3 text-center">
+            <div className="font-display text-2xl font-extrabold text-arcade-pink glow-pink">{counts.stock}</div>
+            <div className="text-xs text-slate-400">Em estoque</div>
+          </div>
+          <div className="rounded-xl bg-white/5 ring-1 ring-white/10 p-3 text-center">
+            <div className="font-display text-2xl font-extrabold text-arcade-green glow-green">{counts.sold}</div>
+            <div className="text-xs text-slate-400">Vendidos</div>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-white/10 p-4">
+          <div className="font-bold text-slate-100 flex items-center gap-2"><Ic.down className="h-4 w-4 text-arcade-pink" /> Exportar backup</div>
+          <p className="text-sm text-slate-400 mt-1">Gera um arquivo <b>.json</b> com tudo: produtos, vendas, fichas de clientes e fotos (base64). Use para levar para outro PC.</p>
+          <button onClick={onExport} className="btn-pink mt-3 inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-white">
+            <Ic.down className="h-4 w-4" /> Exportar backup (.json)
+          </button>
+        </div>
+
+        <div className="rounded-xl border border-white/10 p-4">
+          <div className="font-bold text-slate-100 flex items-center gap-2"><Ic.up className="h-4 w-4 text-arcade-green" /> Importar backup</div>
+          <p className="text-sm text-slate-400 mt-1">Escolha um arquivo de backup. Você poderá <b>substituir</b> ou <b>mesclar</b> com os dados atuais — com confirmação.</p>
+          <input ref={importRef} type="file" accept="application/json,.json" className="hidden"
+            onChange={(e) => { const file = e.target.files[0]; if (file) onPickImport(file); e.target.value = ''; }} />
+          <button onClick={() => importRef.current.click()} className="mt-3 inline-flex items-center gap-2 rounded-xl border border-arcade-green text-arcade-green px-4 py-2.5 text-sm font-bold hover:bg-arcade-green hover:text-arcade-bg transition">
+            <Ic.up className="h-4 w-4" /> Selecionar arquivo…
+          </button>
+        </div>
+
+        <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4">
+          <div className="font-bold text-rose-300">Zona de perigo</div>
+          <p className="text-sm text-rose-300/70 mt-1">Apaga todos os produtos e vendas deste navegador. Exporte um backup antes!</p>
+          <button onClick={onClearAll} className="mt-3 inline-flex items-center gap-2 rounded-xl bg-transparent border border-rose-400/50 text-rose-300 px-4 py-2.5 text-sm font-bold hover:bg-rose-600 hover:text-white hover:border-rose-600">
+            <Ic.trash className="h-4 w-4" /> Apagar todos os dados
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+
+/* =====================  src/js/16-import-modal.js  ===================== */
+/* =============================================================================
+ * 16-import-modal.js — Confirmacao de importacao
+ * Mostra o resumo do arquivo e deixa escolher MESCLAR ou SUBSTITUIR, com aviso,
+ * antes de aplicar (evita sobrescrever dados sem querer).
+ * ============================================================================= */
+
+function ImportModal({ data, onApply, onCancel }) {
+  const [mode, setMode] = useState('merge');
+  const products = Array.isArray(data) ? data : (data.products || []);
+  const stock = products.filter((p) => p.status !== 'sold').length;
+  const sold = products.filter((p) => p.status === 'sold').length;
+
+  return (
+    <Modal title="📥 Importar backup" onClose={onCancel}>
+      <div className="rounded-xl bg-white/5 ring-1 ring-white/10 p-3 text-sm text-slate-300 mb-4">
+        Arquivo válido — contém <b>{stock}</b> produto(s) em estoque e <b>{sold}</b> venda(s).
+      </div>
+      <div className="space-y-2">
+        <label className={`flex items-start gap-3 rounded-xl border p-3 cursor-pointer ${mode === 'merge' ? 'border-arcade-green bg-arcade-green/10' : 'border-white/15'}`}>
+          <input type="radio" name="mode" className="mt-1 accent-arcade-green" checked={mode === 'merge'} onChange={() => setMode('merge')} />
+          <span>
+            <span className="block font-bold text-slate-100">Mesclar</span>
+            <span className="block text-sm text-slate-400">Mantém seus dados atuais e adiciona os itens do backup que ainda não existem.</span>
+          </span>
+        </label>
+        <label className={`flex items-start gap-3 rounded-xl border p-3 cursor-pointer ${mode === 'overwrite' ? 'border-rose-400 bg-rose-500/10' : 'border-white/15'}`}>
+          <input type="radio" name="mode" className="mt-1 accent-rose-500" checked={mode === 'overwrite'} onChange={() => setMode('overwrite')} />
+          <span>
+            <span className="block font-bold text-slate-100">Substituir tudo</span>
+            <span className="block text-sm text-slate-400">Apaga os dados atuais e usa somente os do backup. <b className="text-rose-300">Não pode ser desfeito.</b></span>
+          </span>
+        </label>
+      </div>
+      <div className="mt-3 flex items-start gap-2 rounded-lg bg-arcade-yellow/10 text-arcade-yellow text-sm p-3">
+        <span>⚠️</span>
+        <span>{mode === 'overwrite' ? 'Você está prestes a SUBSTITUIR todos os dados atuais. Tem certeza?' : 'Os itens serão adicionados aos seus dados atuais.'}</span>
+      </div>
+      <div className="mt-5 flex justify-end gap-2">
+        <button onClick={onCancel} className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-300 hover:bg-white/10">Cancelar</button>
+        <button onClick={() => onApply(mode, products)}
+          className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold text-white active:scale-[.98] transition ${mode === 'overwrite' ? 'bg-rose-600 hover:bg-rose-700' : 'btn-green'}`}>
+          <Ic.check className="h-4 w-4" /> Confirmar importação
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+
+/* =====================  src/js/17-toasts.js  ===================== */
+/* =============================================================================
+ * 17-toasts.js — Avisos (toasts)
+ * Mensagens curtas no canto inferior (sucesso / erro / info) que somem sozinhas.
+ * ============================================================================= */
+
+function Toasts({ items }) {
+  const style = {
+    success: 'bg-arcade-green text-arcade-bg',
+    error: 'bg-rose-600 text-white',
+    info: 'bg-arcade-panel text-white ring-1 ring-arcade-pink/40',
+  };
+  return (
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 w-[min(92vw,22rem)]">
+      {items.map((t) => (
+        <div key={t.id} className={`anim-toast flex items-center gap-2.5 rounded-xl ${style[t.type] || style.info} px-4 py-3 shadow-lg`}>
+          {t.type === 'success' ? <Ic.check className="h-5 w-5 shrink-0" /> : t.type === 'error' ? <Ic.close className="h-5 w-5 shrink-0" /> : <Ic.box className="h-5 w-5 shrink-0" />}
+          <span className="text-sm font-bold">{t.msg}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
+/* =====================  src/js/18-app.js  ===================== */
+/* =============================================================================
+ * 18-app.js — Componente principal (cola tudo)
+ * Guarda o estado (lista de produtos, aba ativa, modais abertos, busca),
+ * carrega/salva no Storage, e contem as acoes: adicionar, editar, excluir,
+ * vender, devolver ao estoque, exportar/importar backup e limpar tudo.
+ * No fim, renderiza o App na pagina.
+ * ============================================================================= */
+function App() {
+  // ----- Estado -----
+  const [state, setState] = useState({ products: [] }); // dados (produtos)
+  const [loaded, setLoaded] = useState(false);          // ja carregou do disco?
+  const [tab, setTab] = useState('estoque');            // aba ativa
+  const [toasts, setToasts] = useState([]);             // avisos na tela
+  const [saleTarget, setSaleTarget] = useState(null);   // produto sendo vendido
+  const [editTarget, setEditTarget] = useState(null);   // produto sendo editado
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [importData, setImportData] = useState(null);   // backup aguardando confirmacao
+  const [query, setQuery] = useState('');               // termo de busca
+
+  // ----- Carregar ao abrir / salvar a cada mudanca -----
+  useEffect(() => {
+    Storage.load().then((s) => { if (s && Array.isArray(s.products)) setState(s); }).finally(() => setLoaded(true));
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return; // nao salva antes do primeiro carregamento
+    Storage.save(state).catch(() => toast('Erro ao salvar — armazenamento pode estar cheio.', 'error'));
+  }, [state, loaded]);
+
+  // Mostra um aviso que some sozinho apos ~3s
+  function toast(msg, type = 'info') {
+    const id = uid();
+    setToasts((t) => [...t, { id, msg, type }]);
+    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 3200);
+  }
+
+  // ----- Acoes sobre produtos -----
+  const addProduct = (p) => setState((s) => ({ ...s, products: [p, ...s.products] }));
+  const updateProduct = (id, patch) => setState((s) => ({ ...s, products: s.products.map((p) => p.id === id ? { ...p, ...patch } : p) }));
+
+  function deleteProduct(p) {
+    if (!window.confirm(`Excluir "${p.name}"? Esta ação não pode ser desfeita.`)) return;
+    setState((s) => ({ ...s, products: s.products.filter((x) => x.id !== p.id) }));
+    toast('Produto excluído.', 'info');
+  }
+  const toggleUnlocked = (id) => setState((s) => ({ ...s, products: s.products.map((p) => p.id === id ? { ...p, unlocked: !p.unlocked } : p) }));
+
+  function saveEdit(id, patch) { updateProduct(id, patch); setEditTarget(null); toast('Produto atualizado! ⭐', 'success'); }
+
+  // ----- Fluxo de venda -----
+  function requestSale(p) { setSaleTarget(p); setTab('vendidos'); } // marca vendido -> vai p/ Vendidos e abre a ficha
+  function confirmSale(customer) {
+    updateProduct(saleTarget.id, { status: 'sold', sale: { soldAt: new Date().toISOString(), customer } });
+    setSaleTarget(null);
+    toast('Venda registrada com sucesso! 🏆', 'success');
+  }
+  function cancelSale() { setSaleTarget(null); setTab('estoque'); toast('Venda cancelada.', 'info'); }
+
+  function returnToStock(p) {
+    if (!window.confirm(`Devolver "${p.name}" ao estoque? Os dados do cliente serão removidos.`)) return;
+    updateProduct(p.id, { status: 'stock', sale: undefined });
+    toast('Produto devolvido ao estoque.', 'info');
+  }
+
+  // ----- Backup (exportar / importar) -----
+  function exportBackup() {
+    const payload = { app: 'DGAMES', version: 1, exportedAt: new Date().toISOString(), products: state.products };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `dgames-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    toast('Backup exportado!', 'success');
+  }
+
+  function pickImport(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        const products = Array.isArray(data) ? data : data.products;
+        if (!Array.isArray(products)) throw new Error('formato');
+        setImportData(data); setSettingsOpen(false);
+      } catch (err) { toast('Arquivo inválido — não é um backup do D GAMES.', 'error'); }
+    };
+    reader.onerror = () => toast('Não foi possível ler o arquivo.', 'error');
+    reader.readAsText(file);
+  }
+
+  function applyImport(mode, products) {
+    // Normaliza cada produto do backup (preenche campos novos / compatibiliza antigos)
+    const clean = products.map((p) => ({
+      id: p.id || uid(), name: p.name || 'Sem nome', description: p.description || '',
+      category: CATEGORIES.includes(p.category) ? p.category : 'Game',
+      photos: productPhotos(p).slice(0, 5), buyPrice: Number(p.buyPrice) || 0, salePrice: Number(p.salePrice) || 0,
+      unlocked: p.category === 'Console' ? !!p.unlocked : undefined,
+      supplier: p.supplier || {},
+      status: p.status === 'sold' ? 'sold' : 'stock', sale: p.sale || undefined,
+      createdAt: p.createdAt || new Date().toISOString(),
+    }));
+    if (mode === 'overwrite') {
+      setState({ products: clean });
+      toast(`Backup importado (substituição): ${clean.length} item(ns).`, 'success');
+    } else {
+      // Mesclar: adiciona apenas os que ainda nao existem (por id)
+      const ids = new Set(state.products.map((p) => p.id));
+      const added = clean.filter((p) => !ids.has(p.id));
+      setState((s) => ({ ...s, products: [...s.products, ...added] }));
+      toast(`Backup mesclado: ${added.length} novo(s) item(ns).`, 'success');
+    }
+    setImportData(null);
+  }
+
+  function clearAll() {
+    if (!window.confirm('APAGAR TODOS OS DADOS deste navegador? Exporte um backup antes. Esta ação não pode ser desfeita.')) return;
+    setState({ products: [] }); setSettingsOpen(false);
+    toast('Todos os dados foram apagados.', 'info');
+  }
+
+  // ----- Calculos derivados -----
+  // Estatisticas em UMA passada so (memoizadas: so recalculam quando os produtos mudam).
+  const stats = useMemo(() => {
+    let stockCount = 0, soldCount = 0, invested = 0, potential = 0, revenue = 0, totalProfit = 0;
+    for (const p of state.products) {
+      const buy = Number(p.buyPrice) || 0;
+      const sale = Number(p.salePrice) || 0;
+      if (p.status === 'sold') { soldCount++; revenue += sale; totalProfit += sale - buy; }
+      else { stockCount++; invested += buy; potential += sale - buy; }
+    }
+    return { stockCount, soldCount, invested, potential, revenue, totalProfit };
+  }, [state.products]);
+
+  // Listas filtradas pela busca (memoizadas por produtos + termo de busca).
+  const q = query.trim().toLowerCase();
+  const { stock, sold } = useMemo(() => {
+    const matches = (p) => !q || p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
+    return {
+      stock: state.products.filter((p) => p.status !== 'sold' && matches(p)),
+      sold: state.products.filter((p) => p.status === 'sold' && matches(p)),
+    };
+  }, [state.products, q]);
+
+  if (!loaded) return <div className="min-h-screen grid place-items-center font-pixel text-arcade-pink text-xs">CARREGANDO D GAMES…</div>;
+
+  // Botao de aba (Estoque / Vendidos) com contador
+  const TabBtn = ({ id, label, count }) => (
+    <button onClick={() => setTab(id)}
+      className={`relative flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-display font-bold transition ${tab === id ? 'bg-arcade-pink text-white shadow-[0_0_18px_rgba(255,30,128,.5)]' : 'text-slate-300 hover:text-white'}`}>
+      {label}
+      <span className={`inline-grid place-items-center min-w-[1.25rem] h-5 px-1 rounded-full text-[11px] font-bold ${tab === id ? 'bg-white/25 text-white' : 'bg-white/10 text-slate-300'}`}>{count}</span>
+    </button>
+  );
+
+  return (
+    <div className="min-h-screen pb-16">
+      {IS_DEMO && (
+        <div className="bg-arcade-yellow text-arcade-bg text-xs sm:text-sm font-semibold px-4 py-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center">
+          <span>Modo demonstração: todos os produtos, fornecedores e clientes são fictícios. Suas mudanças ficam só neste navegador.</span>
+          <button onClick={() => { setState(DemoStorage.reset()); toast('Demo restaurada.', 'info'); }}
+            className="underline underline-offset-2 font-bold">Restaurar demo</button>
+        </div>
+      )}
+      {/* Cabecalho fixo: logo, abas e acoes */}
+      <header className="sticky top-0 z-30 bg-arcade-bg/90 backdrop-blur border-b border-arcade-pink/20">
+        <div className="mx-auto max-w-6xl px-4 py-3 flex flex-wrap items-center gap-3 justify-between">
+          <Logo />
+          <nav className="order-3 sm:order-2 w-full sm:w-auto flex items-center gap-1 rounded-xl bg-white/5 ring-1 ring-white/10 p-1">
+            <TabBtn id="estoque" label="Estoque" count={stats.stockCount} />
+            <TabBtn id="vendidos" label="Vendidos" count={stats.soldCount} />
+          </nav>
+          <div className="order-2 sm:order-3 flex items-center gap-2">
+            <button onClick={exportBackup} title="Exportar backup"
+              className="hidden sm:inline-flex items-center gap-2 rounded-lg bg-white/5 ring-1 ring-white/10 px-3 py-2 text-sm font-semibold text-white hover:bg-white/15">
+              <Ic.down className="h-4 w-4" /> Backup
+            </button>
+            <button onClick={() => setSettingsOpen(true)} title="Configurações"
+              className="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-white/5 ring-1 ring-white/10 text-white hover:bg-white/15">
+              <Ic.gear className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-6xl px-4 mt-6">
+        {/* Busca por nome ou categoria */}
+        <div className="mb-5">
+          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="🔎 Buscar por nome ou categoria…"
+            className="w-full rounded-xl border border-white/15 bg-white/5 text-white px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-arcade-pink/60 focus:border-arcade-pink" />
+        </div>
+
+        {/* ===== ABA ESTOQUE ===== */}
+        {tab === 'estoque' && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <StatCard label="Itens em estoque" value={stats.stockCount} accent="text-arcade-pink" glow="glow-pink" />
+              <StatCard label="Investido" value={fmt(stats.invested)} />
+              <StatCard label="Lucro potencial" value={fmt(stats.potential)} accent="text-arcade-green" glow="glow-green" />
+              <StatCard label="Vendas feitas" value={stats.soldCount} sub={`${fmt(stats.totalProfit)} de lucro`} accent="text-arcade-yellow" glow="glow-yellow" />
+            </div>
+
+            <ProductForm onAdd={addProduct} toast={toast} />
+
+            <div>
+              <SectionTitle icon={<Ic.box className="h-5 w-5" />} kicker="Produtos em estoque" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {stock.length === 0
+                  ? <EmptyState icon={<Ic.box className="h-7 w-7" />} title={q ? 'Nenhum resultado' : 'Estoque vazio'} text={q ? 'Tente outro termo de busca.' : 'Cadastre seu primeiro produto no formulário acima. ⭐'} />
+                  : stock.map((p) => <ProductCard key={p.id} p={p} onDelete={deleteProduct} onEdit={setEditTarget} onToggleUnlocked={toggleUnlocked} onSell={requestSale} />)}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ===== ABA VENDIDOS ===== */}
+        {tab === 'vendidos' && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <StatCard label="Total de vendas" value={stats.soldCount} accent="text-arcade-pink" glow="glow-pink" />
+              <StatCard label="Faturamento" value={fmt(stats.revenue)} />
+              <div className="rounded-2xl p-4 text-arcade-bg" style={{ background: 'linear-gradient(135deg,#00E59B,#00b37a)', boxShadow: '0 0 28px rgba(0,229,155,.4)' }}>
+                <div className="font-pixel text-[7px] tracking-widest uppercase opacity-80">Lucro total acumulado</div>
+                <div className="mt-2 font-display text-2xl font-extrabold">{fmt(stats.totalProfit)}</div>
+                <div className="text-xs opacity-80 mt-0.5">soma de todas as vendas 🏆</div>
+              </div>
+            </div>
+
+            <div>
+              <SectionTitle icon={<Ic.cart className="h-5 w-5" />} kicker="Produtos vendidos" color="text-arcade-green" />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {sold.length === 0
+                  ? <EmptyState icon={<Ic.cart className="h-7 w-7" />} title={q ? 'Nenhum resultado' : 'Nenhuma venda ainda'} text={q ? 'Tente outro termo de busca.' : 'Marque um produto como "vendido" na aba Estoque para registrar a venda.'} />
+                  : sold.map((p) => <SoldCard key={p.id} p={p} onDelete={deleteProduct} onEdit={setEditTarget} onReturn={returnToStock} />)}
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Modais (so aparecem quando ha algo para mostrar) */}
+      {saleTarget && <SaleModal product={saleTarget} onConfirm={confirmSale} onCancel={cancelSale} />}
+      {editTarget && <EditModal product={editTarget} onSave={saveEdit} onClose={() => setEditTarget(null)} toast={toast} />}
+      {settingsOpen && <SettingsModal counts={{ stock: stats.stockCount, sold: stats.soldCount }} onExport={exportBackup} onPickImport={pickImport} onClearAll={clearAll} onClose={() => setSettingsOpen(false)} />}
+      {importData && <ImportModal data={importData} onApply={applyImport} onCancel={() => setImportData(null)} />}
+
+      <Toasts items={toasts} />
+
+      <footer className="mx-auto max-w-6xl px-4 mt-10 text-center text-xs text-slate-500">
+        🏆 D GAMES · Console Clássico, Valor de Verdade! · seus dados ficam neste navegador — faça backups regularmente.
+      </footer>
+    </div>
+  );
+}
+
+// Monta o aplicativo dentro da <div id="root"> da pagina.
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+  </script>
+
+  <!-- Bootstrap: compila o JSX com runtime "classic" (React.createElement),
+       evitando os imports automaticos que quebram em script comum. -->
+  <script>
+    (function () {
+      try {
+        var src = document.getElementById('dgames-src').textContent;
+        var compiled = Babel.transform(src, { presets: [['react', { runtime: 'classic' }]] }).code;
+        var s = document.createElement('script');
+        s.textContent = compiled;
+        document.body.appendChild(s);
+      } catch (err) {
+        document.getElementById('root').innerHTML =
+          '<div style="max-width:640px;margin:48px auto;font-family:sans-serif;color:#FF1E80">' +
+          '<h2>Erro ao iniciar o D GAMES</h2><pre style="white-space:pre-wrap">' +
+          String(err) + '</pre><p>Verifique sua conexão com a internet (o sistema carrega React e Tailwind na primeira vez).</p></div>';
+        console.error(err);
+      }
+    })();
+  </script>
+</body>
+</html>

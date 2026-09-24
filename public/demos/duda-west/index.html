@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Duda West · Agenda & Alunos (demo)</title>
+  <meta name="description" content="Sistema de gestão e agenda da Duda West — o inglês que parece fácil." />
+
+  <!-- ============================================================
+       MARCA DUDA WEST — Tipografia oficial: Fraunces + Jost
+       (gratuitas no Google Fonts, conforme guia de marca)
+       ============================================================ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Favicon: coração verde (emoji principal da marca) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💚</text></svg>" />
+
+  <!-- Tailwind (Play CDN — sem build, pronto pra uso) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Paleta e tipografia oficiais da marca Duda West
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            // Valores via CSS vars — dark mode troca as variáveis, tudo muda automaticamente
+            canvas:  'rgb(var(--c-canvas) / <alpha-value>)',
+            honey:   'rgb(var(--c-honey) / <alpha-value>)',
+            mist:    'rgb(var(--c-mist) / <alpha-value>)',
+            sage:    'rgb(var(--c-sage) / <alpha-value>)',
+            bay:     'rgb(var(--c-bay) / <alpha-value>)',
+            peach:   'rgb(var(--c-peach) / <alpha-value>)',
+            sun:     'rgb(var(--c-sun) / <alpha-value>)',
+            forest:  'rgb(var(--c-forest) / <alpha-value>)',
+          },
+          fontFamily: {
+            display: ['Fraunces', 'Caladea', 'Georgia', 'serif'],
+            body:    ['Jost', 'Carlito', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- React + Babel (runtime, mesmo padrão do projeto da loja) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+
+  <style>
+    /* ── Paleta de cores — modo claro ── */
+    :root {
+      color-scheme: light;
+      --c-canvas: 251 248 242;
+      --c-honey:  250 243 232;
+      --c-mist:   214 232 220;
+      --c-sage:   122 158 135;
+      --c-bay:     91 151 168;
+      --c-peach:  232 184 154;
+      --c-sun:    224 192 136;
+      --c-forest:  58  78  64;
+    }
+    /* ── Dark mode: floresta à noite ── */
+    html.dark {
+      color-scheme: dark;
+      --c-canvas:  26  40  30;
+      --c-honey:   32  48  36;
+      --c-mist:    42  62  48;
+      --c-sage:   122 158 135;
+      --c-bay:     91 151 168;
+      --c-peach:  232 184 154;
+      --c-sun:    224 192 136;
+      --c-forest: 210 204 190;
+    }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Jost', system-ui, sans-serif;
+      color: rgb(var(--c-forest));
+      background-color: rgb(var(--c-canvas));
+      /* A "regra da luz": atmosfera clara e arejada, com toques quentes */
+      background-image:
+        radial-gradient(900px 500px at 100% -10%, rgba(224,192,136,0.16), transparent 60%),
+        radial-gradient(900px 600px at -10% 110%, rgba(214,232,220,0.45), transparent 60%);
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
+    }
+    html.dark body {
+      background-image:
+        radial-gradient(900px 500px at 100% -10%, rgba(224,192,136,0.04), transparent 60%),
+        radial-gradient(900px 600px at -10% 110%, rgba(42,62,48,0.8), transparent 60%);
+    }
+    h1,h2,h3,h4,.font-display { font-family: 'Fraunces', Georgia, serif; }
+
+    ::selection { background: rgba(122,158,135,0.25); }
+
+    /* Scrollbars suaves */
+    .scroll-soft::-webkit-scrollbar { width: 10px; height: 10px; }
+    .scroll-soft::-webkit-scrollbar-thumb { background: rgba(58,78,64,0.16); border-radius: 999px; border: 3px solid transparent; background-clip: padding-box; }
+    .scroll-soft::-webkit-scrollbar-thumb:hover { background: rgba(58,78,64,0.28); background-clip: padding-box; }
+    .scroll-soft::-webkit-scrollbar-track { background: transparent; }
+    html.dark .scroll-soft::-webkit-scrollbar-thumb { background: rgba(210,204,190,0.14); border-radius: 999px; border: 3px solid transparent; background-clip: padding-box; }
+    html.dark .scroll-soft::-webkit-scrollbar-thumb:hover { background: rgba(210,204,190,0.26); background-clip: padding-box; }
+
+    /* Animações leves */
+    @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+    @keyframes scaleIn { from { opacity: 0; transform: translateY(8px) scale(.98) } to { opacity: 1; transform: none } }
+    @keyframes slideInRight { from { transform: translateX(100%) } to { transform: translateX(0) } }
+    @keyframes popIn { 0% { opacity:0; transform: scale(.9) } 60% { opacity:1; transform: scale(1.02) } 100% { transform: scale(1) } }
+    @keyframes toastIn { from { opacity:0; transform: translateY(12px) } to { opacity:1; transform:none } }
+    .anim-fade { animation: fadeIn .18s ease both; }
+    .anim-scale { animation: scaleIn .22s cubic-bezier(.2,.8,.2,1) both; }
+    .anim-drawer { animation: slideInRight .28s cubic-bezier(.2,.8,.2,1) both; }
+    .anim-pop { animation: popIn .3s ease both; }
+    .anim-toast { animation: toastIn .25s ease both; }
+
+    /* Linha "agora" do calendário pulsando suavemente */
+    @keyframes pulseDot { 0%,100% { transform: scale(1); opacity:1 } 50% { transform: scale(1.25); opacity:.7 } }
+    .now-dot { animation: pulseDot 2.4s ease-in-out infinite; }
+
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="time"]::-webkit-calendar-picker-indicator { opacity:.5; cursor:pointer; }
+  </style>
+</head>
+<body>
+  
+  <div id="demo-faixa" style="position:sticky;top:0;z-index:9999;background:#E0C088;color:#2f3a33;font:600 13px/1.4 Jost,system-ui,sans-serif;padding:8px 16px;text-align:center">
+    Modo demonstração: alunos, aulas e valores são fictícios. Suas mudanças ficam só neste navegador.
+    <button type="button" onclick="['dw_demo_students','dw_demo_events','dw_demo_dark_mode'].forEach(function(k){try{localStorage.removeItem(k)}catch(e){}});location.reload()"
+      style="margin-left:8px;background:none;border:0;padding:0;font:inherit;font-weight:700;text-decoration:underline;cursor:pointer;color:inherit">Restaurar demo</button>
+  </div>
+  <div id="root"></div>
+
+  <script type="text/babel" data-presets="react">
+  const { useState, useEffect, useMemo, useRef, useLayoutEffect } = React;
+
+  /* ============================================================
+     1. CONSTANTES DA MARCA / NEGÓCIO
+     ============================================================ */
+  const BRAND = {
+    nome: 'Duda West',
+    tagline: 'O inglês que parece fácil — porque é feito só pra você.',
+    instagram: '@_dudawest',
+    telefone: '(33) 90000-0000',
+    cidade: 'Governador Valadares · MG',
+  };
+
+  // Paleta de acentos do calendário — pelo menos 6 cores, harmonizadas
+  // com a marca (tons claros e quentes, seguindo a "regra da luz").
+  const EVENT_COLORS = [
+    { nome: 'Sage',    value: '#7A9E87' }, // verde âncora
+    { nome: 'Bay',     value: '#5B97A8' }, // azul apoio
+    { nome: 'Peach',   value: '#E8896B' }, // laranja/pêssego
+    { nome: 'Honey',   value: '#E0C088' }, // amarelo sol
+    { nome: 'Rosa',    value: '#E6A6B0' }, // rosa pastel
+    { nome: 'Lavanda', value: '#A99BD4' }, // roxo suave
+  ];
+  const DEFAULT_EVENT_COLOR = EVENT_COLORS[0].value;
+
+  const STORAGE = { students: 'dw_demo_students', events: 'dw_demo_events' };
+
+  // Janela de horas exibida nas visões Semana/Dia
+  const HOUR_START = 7;
+  const HOUR_END = 22;
+  const HOUR_PX = 56; // altura de cada hora em pixels
+
+  /* ============================================================
+     2. UTILIDADES
+     ============================================================ */
+  const uuid = () =>
+    (crypto && crypto.randomUUID) ? crypto.randomUUID()
+      : 'id-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+  const cap = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+
+  // Máscara de telefone brasileiro: (99) 99999-9999
+  function maskPhone(value) {
+    const d = (value || '').replace(/\D/g, '').slice(0, 11);
+    if (d.length <= 2) return d.length ? '(' + d : '';
+    if (d.length <= 6) return `(${d.slice(0,2)}) ${d.slice(2)}`;
+    if (d.length <= 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+    return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+  }
+  const onlyDigits = (s) => (s || '').replace(/\D/g, '');
+
+  const formatBRL = (n) =>
+    (Number(n) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+  // -------- Datas (armazenadas como 'YYYY-MM-DD' p/ evitar fuso) --------
+  const pad2 = (n) => String(n).padStart(2, '0');
+  const toDateStr = (d) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  const fromDateStr = (s) => { const [y, m, dd] = s.split('-').map(Number); return new Date(y, m - 1, dd); };
+  const todayStr = () => toDateStr(new Date());
+  const addDaysStr = (s, n) => { const d = fromDateStr(s); d.setDate(d.getDate() + n); return toDateStr(d); };
+
+  const WEEKDAYS_SHORT = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+  function monthLabel(date) {
+    const s = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(date);
+    return cap(s);
+  }
+  function formatDateLong(dateOrStr) {
+    const d = typeof dateOrStr === 'string' ? fromDateStr(dateOrStr) : dateOrStr;
+    return cap(new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }).format(d));
+  }
+  function formatDateShort(dateStr) {
+    if (!dateStr) return '—';
+    return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(fromDateStr(dateStr));
+  }
+  function formatDateTime(iso) {
+    const d = new Date(iso);
+    return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(d);
+  }
+
+  // Matriz de 6 semanas (42 dias) para a visão mensal
+  function getMonthMatrix(refDate) {
+    const first = new Date(refDate.getFullYear(), refDate.getMonth(), 1);
+    const start = new Date(first);
+    start.setDate(first.getDate() - first.getDay()); // volta até domingo
+    const days = [];
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      days.push({ date: d, dateStr: toDateStr(d), inMonth: d.getMonth() === refDate.getMonth() });
+    }
+    return days;
+  }
+  function getWeekDays(refDate) {
+    const start = new Date(refDate);
+    start.setDate(refDate.getDate() - refDate.getDay());
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      return d;
+    });
+  }
+
+  const timeToMin = (t) => { const [h, m] = (t || '0:0').split(':').map(Number); return h * 60 + m; };
+  const minToTime = (m) => `${pad2(Math.floor(m / 60))}:${pad2(m % 60)}`;
+
+  function hexToRgba(hex, a) {
+    let h = hex.replace('#', '');
+    if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+    const n = parseInt(h, 16);
+    return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
+  }
+
+  const waLink = (telefone) => {
+    const d = onlyDigits(telefone);
+    if (!d) return null;
+    return `https://wa.me/55${d}`;
+  };
+
+  /* ============================================================
+     3. HOOK DE PERSISTÊNCIA (localStorage)
+     Estrutura isolada e pronta p/ futura conexão (Supabase, etc.)
+     ============================================================ */
+  function useLocalStorage(key, initial) {
+    const [value, setValue] = useState(() => {
+      try {
+        const raw = localStorage.getItem(key);
+        if (raw != null) return JSON.parse(raw);
+      } catch (e) { /* ignore */ }
+      return typeof initial === 'function' ? initial() : initial;
+    });
+    useEffect(() => {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* ignore */ }
+    }, [key, value]);
+    return [value, setValue];
+  }
+
+  /* ============================================================
+     4. ÍCONES (SVG inline, traço estilo "lucide")
+     ============================================================ */
+  const ICONS = {
+    dashboard: <><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></>,
+    calendar: <><rect x="3" y="4" width="18" height="18" rx="2.5"/><path d="M16 2v4M8 2v4M3 10h18"/></>,
+    users: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>,
+    plus: <path d="M12 5v14M5 12h14"/>,
+    minus: <path d="M5 12h14"/>,
+    search: <><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></>,
+    left: <path d="m15 18-6-6 6-6"/>,
+    right: <path d="m9 18 6-6-6-6"/>,
+    down: <path d="m6 9 6 6 6-6"/>,
+    x: <path d="M18 6 6 18M6 6l12 12"/>,
+    edit: <><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></>,
+    trash: <><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6M14 11v6"/></>,
+    phone: <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92Z"/>,
+    check: <path d="M20 6 9 17l-5-5"/>,
+    checkCircle: <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></>,
+    menu: <path d="M4 12h16M4 6h16M4 18h16"/>,
+    clock: <><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></>,
+    star: <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>,
+    leaf: <><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/></>,
+    wallet: <><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></>,
+    collapse: <><path d="m11 17-5-5 5-5"/><path d="m18 17-5-5 5-5"/></>,
+    note: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>,
+    info: <><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></>,
+    alert: <><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/></>,
+    grid: <><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></>,
+    list: <><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></>,
+    sparkle: <path d="M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17l-1.9-5.6L4.5 10l5.6-1.4L12 3z"/>,
+    moon: <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>,
+    sun: <><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></>,
+    mapPin: <><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></>,
+    globe: <><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></>,
+  };
+  function Icon({ name, className = 'w-5 h-5', sw = 1.8, fill = 'none' }) {
+    return (
+      <svg className={className} viewBox="0 0 24 24" fill={fill} stroke="currentColor"
+           strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        {ICONS[name]}
+      </svg>
+    );
+  }
+
+  /* ============================================================
+     5. ESTILOS REUTILIZÁVEIS
+     ============================================================ */
+  const C = {
+    card: 'rounded-2xl border border-forest/5 bg-canvas/80 backdrop-blur-sm shadow-[0_1px_3px_rgba(58,78,64,0.05),0_10px_30px_-18px_rgba(58,78,64,0.25)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.25),0_10px_30px_-18px_rgba(0,0,0,0.45)]',
+    btnPrimary: 'inline-flex items-center justify-center gap-2 rounded-xl bg-sage px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-[#6b8d77] active:scale-[.98] disabled:opacity-50',
+    btnSoft: 'inline-flex items-center justify-center gap-2 rounded-xl bg-mist px-4 py-2.5 text-sm font-medium text-forest transition hover:bg-[#c7ddce] active:scale-[.98]',
+    btnGhost: 'inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-forest/60 transition hover:bg-sage/10 hover:text-forest',
+    btnDanger: 'inline-flex items-center justify-center gap-2 rounded-xl bg-[#E6A6B0]/20 px-4 py-2.5 text-sm font-medium text-[#b3596a] transition hover:bg-[#E6A6B0]/30',
+    input: 'w-full rounded-xl border border-forest/10 bg-canvas/70 px-3.5 py-2.5 text-sm text-forest placeholder:text-forest/30 outline-none transition focus:border-sage focus:ring-2 focus:ring-sage/20',
+    label: 'block text-[11px] font-medium uppercase tracking-wide text-forest/45 mb-1.5',
+  };
+
+  /* ============================================================
+     6. COMPONENTES BÁSICOS
+     ============================================================ */
+
+  // Logo da marca: monograma DW formando um balão de fala + estrela
+  function Logo({ withWordmark = true, size = 40 }) {
+    return (
+      <div className="flex items-center gap-3">
+        <svg width={size} height={size} viewBox="0 0 48 48" className="shrink-0" aria-label="Duda West">
+          <path d="M11 5h26a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H22l-8 7v-7h-3a6 6 0 0 1-6-6V11a6 6 0 0 1 6-6Z" fill="#7A9E87"/>
+          <text x="23" y="27" textAnchor="middle" fontFamily="Fraunces, serif" fontSize="16" fontWeight="600" fill="#FBF8F2">DW</text>
+          <path d="M37 6c0 3 1 4 4 4-3 0-4 1-4 4 0-3-1-4-4-4 3 0 4-1 4-4Z" fill="#E0C088"/>
+        </svg>
+        {withWordmark && (
+          <div className="leading-tight">
+            <div className="font-display text-lg font-semibold text-forest">Duda West</div>
+            <div className="text-[11px] tracking-wide text-forest/45">Aulas de Inglês</div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Badge de créditos — feedback visual imediato quando saldo < 2
+  function CreditBadge({ aulas, size = 'md' }) {
+    const n = Number(aulas) || 0;
+    let style, label;
+    if (n <= 0)      { style = 'bg-[#E6A6B0]/20 text-[#b3596a] ring-1 ring-[#E6A6B0]/40'; label = 'Sem créditos'; }
+    else if (n < 2)  { style = 'bg-sun/25 text-[#9a7d2e] ring-1 ring-sun/50'; label = `${n} aula`; }
+    else             { style = 'bg-sage/15 text-[#4f6b58] ring-1 ring-sage/25'; label = `${n} aulas`; }
+    const pad = size === 'sm' ? 'px-2 py-0.5 text-[11px]' : 'px-2.5 py-1 text-xs';
+    return (
+      <span className={`inline-flex items-center gap-1 rounded-full font-medium ${pad} ${style}`}>
+        {n < 2 && <Icon name="alert" className="w-3 h-3" sw={2.2} />}
+        {label}
+      </span>
+    );
+  }
+
+  function Avatar({ name, color, size = 40 }) {
+    const initials = (name || '?').trim().split(/\s+/).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
+    return (
+      <div className="grid place-items-center rounded-full font-display font-semibold text-white shrink-0"
+           style={{ width: size, height: size, fontSize: size * 0.38, background: color || '#7A9E87' }}>
+        {initials}
+      </div>
+    );
+  }
+  // cor determinística a partir do nome (paleta da marca)
+  const PALETTE_FOR_AVATAR = ['#7A9E87', '#5B97A8', '#E8896B', '#A99BD4', '#E6A6B0', '#E0C088'];
+  const avatarColor = (id) => {
+    let h = 0; for (const c of String(id)) h = (h * 31 + c.charCodeAt(0)) % 997;
+    return PALETTE_FOR_AVATAR[h % PALETTE_FOR_AVATAR.length];
+  };
+
+  function EmptyState({ icon = 'leaf', title, subtitle, action }) {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-forest/15 bg-canvas/40 px-6 py-12 text-center">
+        <div className="grid place-items-center w-14 h-14 rounded-2xl bg-mist text-sage mb-3">
+          <Icon name={icon} className="w-7 h-7" />
+        </div>
+        <p className="font-display text-lg text-forest">{title}</p>
+        {subtitle && <p className="mt-1 max-w-sm text-sm text-forest/50">{subtitle}</p>}
+        {action && <div className="mt-4">{action}</div>}
+      </div>
+    );
+  }
+
+  // Modal genérico (centralizado)
+  function Modal({ open, onClose, title, subtitle, children, footer, maxW = 'max-w-lg' }) {
+    useEffect(() => {
+      if (!open) return;
+      const onKey = (e) => e.key === 'Escape' && onClose();
+      window.addEventListener('keydown', onKey);
+      return () => window.removeEventListener('keydown', onKey);
+    }, [open, onClose]);
+    if (!open) return null;
+    return (
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div className="absolute inset-0 bg-forest/30 backdrop-blur-[2px] anim-fade" onClick={onClose} />
+        <div className={`relative w-full ${maxW} max-h-[92vh] overflow-hidden rounded-t-3xl sm:rounded-3xl bg-canvas shadow-2xl anim-scale flex flex-col`}>
+          <div className="flex items-start justify-between gap-4 px-6 pt-5 pb-3 border-b border-forest/5">
+            <div>
+              <h2 className="font-display text-xl font-semibold text-forest">{title}</h2>
+              {subtitle && <p className="text-sm text-forest/50 mt-0.5">{subtitle}</p>}
+            </div>
+            <button onClick={onClose} className="grid place-items-center w-9 h-9 rounded-xl text-forest/40 hover:bg-forest/5 hover:text-forest transition">
+              <Icon name="x" />
+            </button>
+          </div>
+          <div className="px-6 py-5 overflow-y-auto scroll-soft">{children}</div>
+          {footer && <div className="px-6 py-4 border-t border-forest/5 bg-honey/40 flex items-center justify-end gap-3">{footer}</div>}
+        </div>
+      </div>
+    );
+  }
+
+  // Diálogo de confirmação (no lugar do confirm() nativo — voz da marca)
+  function ConfirmDialog({ data, onClose }) {
+    if (!data) return null;
+    return (
+      <Modal open onClose={onClose} title={data.title} subtitle={data.message} maxW="max-w-md"
+        footer={<>
+          <button className={C.btnGhost} onClick={onClose}>Cancelar</button>
+          <button className={C.btnDanger} onClick={() => { data.onConfirm(); onClose(); }}>{data.confirmLabel || 'Confirmar'}</button>
+        </>}>
+        <p className="text-sm text-forest/60">Essa ação não pode ser desfeita.</p>
+      </Modal>
+    );
+  }
+
+  // Toasts
+  function Toasts({ items, dismiss }) {
+    return (
+      <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] flex flex-col items-center gap-2 pointer-events-none">
+        {items.map((t) => (
+          <div key={t.id} onClick={() => dismiss(t.id)}
+               className="anim-toast pointer-events-auto cursor-pointer flex items-center gap-2.5 rounded-2xl bg-forest px-4 py-2.5 text-sm text-canvas shadow-lg">
+            <span className="grid place-items-center w-5 h-5 rounded-full bg-sage/40"><Icon name="check" className="w-3.5 h-3.5" sw={2.5} /></span>
+            {t.msg}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  function Stepper({ value, onChange, min = 0 }) {
+    return (
+      <div className="inline-flex items-center rounded-xl border border-forest/10 bg-canvas/70 overflow-hidden">
+        <button type="button" onClick={() => onChange(Math.max(min, (Number(value)||0) - 1))}
+                className="grid place-items-center w-10 h-10 text-forest/60 hover:bg-mist transition"><Icon name="minus" className="w-4 h-4" sw={2.2}/></button>
+        <input type="number" value={value} min={min}
+               onChange={(e) => onChange(Math.max(min, Number(e.target.value) || 0))}
+               className="w-14 text-center text-lg font-display font-semibold text-forest outline-none bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+        <button type="button" onClick={() => onChange((Number(value)||0) + 1)}
+                className="grid place-items-center w-10 h-10 text-sage hover:bg-mist transition"><Icon name="plus" className="w-4 h-4" sw={2.2}/></button>
+      </div>
+    );
+  }
+
+  /* ============================================================
+     7. DADOS DE EXEMPLO (somente no primeiro acesso)
+     ============================================================ */
+  function seedStudents() {
+    const t = todayStr();
+    return [
+      { id: 'stu-helena', nome: 'Helena Prado', telefone: '(33) 99811-2233', aulas_pagas: 6, data_pagamento: addDaysStr(t, -8), valor_mensalidade: 360,
+        anotacoes: [
+          { id: uuid(), data: new Date(Date.now() - 86400000 * 2).toISOString(), texto: 'Focamos em Simple Past hoje. Ela mandou super bem nos verbos regulares — só revisar a pronúncia do "-ed" final na próxima. 🌱' },
+          { id: uuid(), data: new Date(Date.now() - 86400000 * 9).toISOString(), texto: 'Primeira aula sobre rotina. Adorou falar sobre os pets. Lição de casa: 5 frases no presente.' },
+        ] },
+      { id: 'stu-theo', nome: 'Theo Martins', telefone: '(33) 99744-5566', aulas_pagas: 1, data_pagamento: addDaysStr(t, -26), valor_mensalidade: 360, anotacoes: [
+          { id: uuid(), data: new Date(Date.now() - 86400000 * 4).toISOString(), texto: 'Trabalhamos cores e números. Bastante tímido no começo, mas soltou a voz no jogo de adivinhação.' },
+        ] },
+      { id: 'stu-laura', nome: 'Laura Mendes', telefone: '(33) 99622-7788', aulas_pagas: 0, data_pagamento: addDaysStr(t, -33), valor_mensalidade: 400, anotacoes: [] },
+      { id: 'stu-bento', nome: 'Bento Carvalho', telefone: '(33) 99500-9911', aulas_pagas: 8, data_pagamento: addDaysStr(t, -3), valor_mensalidade: 480, anotacoes: [
+          { id: uuid(), data: new Date(Date.now() - 86400000 * 1).toISOString(), texto: 'Conversation aula. Tema: férias na Califórnia 🌅. Vocabulário novo: surf, hiking, sunset.' },
+        ] },
+    ];
+  }
+  function seedEvents() {
+    const t = todayStr();
+    return [
+      { id: uuid(), titulo: 'Aula · Helena Prado', aluno_id: 'stu-helena', data: t, hora_inicio: '09:00', hora_termino: '10:00', cor: '#7A9E87', observacoes: 'Revisar pronúncia do "-ed". Trazer música nova.', descontar_credito: true, credito_descontado: false, realizada: false },
+      { id: uuid(), titulo: 'Aula · Theo Martins', aluno_id: 'stu-theo', data: t, hora_inicio: '14:00', hora_termino: '15:00', cor: '#5B97A8', observacoes: 'Jogo de cores e números — reforço lúdico.', descontar_credito: true, credito_descontado: false, realizada: false },
+      { id: uuid(), titulo: 'Aula · Bento Carvalho', aluno_id: 'stu-bento', data: t, hora_inicio: '16:30', hora_termino: '17:30', cor: '#E0C088', observacoes: 'Conversation — tema livre.', descontar_credito: true, credito_descontado: false, realizada: false },
+      { id: uuid(), titulo: 'Aula · Helena Prado', aluno_id: 'stu-helena', data: addDaysStr(t, 2), hora_inicio: '09:00', hora_termino: '10:00', cor: '#7A9E87', observacoes: '', descontar_credito: true, credito_descontado: false, realizada: false },
+      { id: uuid(), titulo: 'Aula · Bento Carvalho', aluno_id: 'stu-bento', data: addDaysStr(t, 1), hora_inicio: '16:30', hora_termino: '17:30', cor: '#E0C088', observacoes: '', descontar_credito: true, credito_descontado: false, realizada: false },
+      { id: uuid(), titulo: 'Group class · Teens', aluno_id: null, data: addDaysStr(t, 3), hora_inicio: '18:00', hora_termino: '19:00', cor: '#A99BD4', observacoes: 'Turma de adolescentes — speaking.', descontar_credito: false, credito_descontado: false, realizada: false },
+    ];
+  }
+
+  /* ============================================================
+     8. FORMULÁRIO DE ALUNO (cadastro / edição)
+     ============================================================ */
+  function StudentForm({ open, onClose, onSave, student }) {
+    const blank = { nome: '', telefone: '', aulas_pagas: 0, data_pagamento: todayStr(), valor_mensalidade: '' };
+    const [form, setForm] = useState(blank);
+    const [err, setErr] = useState('');
+
+    useEffect(() => {
+      if (open) { setForm(student ? { ...blank, ...student } : blank); setErr(''); }
+    }, [open, student]);
+
+    const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+
+    const submit = () => {
+      if (!form.nome.trim()) { setErr('O nome é obrigatório.'); return; }
+      onSave({
+        ...student,
+        id: student?.id || uuid(),
+        nome: form.nome.trim(),
+        telefone: form.telefone,
+        aulas_pagas: Number(form.aulas_pagas) || 0,
+        data_pagamento: form.data_pagamento || null,
+        valor_mensalidade: Number(form.valor_mensalidade) || 0,
+        anotacoes: student?.anotacoes || [],
+      });
+      onClose();
+    };
+
+    return (
+      <Modal open={open} onClose={onClose}
+        title={student ? 'Editar aluno' : 'Novo aluno'}
+        subtitle={student ? form.nome : 'Cadastre quem você acompanha com carinho.'}
+        footer={<>
+          <button className={C.btnGhost} onClick={onClose}>Cancelar</button>
+          <button className={C.btnPrimary} onClick={submit}><Icon name="check" className="w-4 h-4" sw={2.2}/>Salvar</button>
+        </>}>
+        <div className="space-y-4">
+          <div>
+            <label className={C.label}>Nome*</label>
+            <input className={C.input} value={form.nome} autoFocus placeholder="Ex.: Helena Prado"
+                   onChange={(e) => set('nome', e.target.value)} />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={C.label}>Telefone</label>
+              <input className={C.input} value={form.telefone} inputMode="numeric" placeholder="(33) 99999-9999"
+                     onChange={(e) => set('telefone', maskPhone(e.target.value))} />
+            </div>
+            <div>
+              <label className={C.label}>Valor da mensalidade</label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-forest/40">R$</span>
+                <input className={C.input + ' pl-9'} type="number" min="0" step="10" value={form.valor_mensalidade}
+                       placeholder="0,00" onChange={(e) => set('valor_mensalidade', e.target.value)} />
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+            <div>
+              <label className={C.label}>Aulas pagas (créditos)</label>
+              <Stepper value={form.aulas_pagas} onChange={(v) => set('aulas_pagas', v)} />
+            </div>
+            <div>
+              <label className={C.label}>Data do pagamento</label>
+              <input className={C.input} type="date" value={form.data_pagamento || ''}
+                     onChange={(e) => set('data_pagamento', e.target.value)} />
+            </div>
+          </div>
+          {err && <p className="text-sm text-[#b3596a] flex items-center gap-1.5"><Icon name="alert" className="w-4 h-4"/>{err}</p>}
+        </div>
+      </Modal>
+    );
+  }
+
+  /* ============================================================
+     9. CARD / TABELA DE ALUNOS
+     ============================================================ */
+  function StudentCard({ student, onOpen, onEdit }) {
+    const low = (Number(student.aulas_pagas) || 0) < 2;
+    const wa = waLink(student.telefone);
+    return (
+      <div onClick={() => onOpen(student.id)}
+           className={`group ${C.card} p-4 cursor-pointer transition hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-12px_rgba(58,78,64,0.3)] ${low ? 'ring-1 ring-sun/50' : ''}`}>
+        <div className="flex items-start gap-3">
+          <Avatar name={student.nome} color={avatarColor(student.id)} />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="font-display text-base font-semibold text-forest truncate">{student.nome}</h3>
+              <button onClick={(e) => { e.stopPropagation(); onEdit(student); }}
+                      className="opacity-0 group-hover:opacity-100 grid place-items-center w-8 h-8 rounded-lg text-forest/40 hover:bg-mist hover:text-forest transition">
+                <Icon name="edit" className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-sm text-forest/50 flex items-center gap-1.5 mt-0.5">
+              <Icon name="phone" className="w-3.5 h-3.5" /> {student.telefone || 'sem telefone'}
+            </p>
+          </div>
+        </div>
+        <div className="mt-4 flex items-center justify-between">
+          <CreditBadge aulas={student.aulas_pagas} />
+          <span className="text-sm font-medium text-forest/70">{formatBRL(student.valor_mensalidade)}<span className="text-xs text-forest/40">/mês</span></span>
+        </div>
+        {wa && (
+          <a href={wa} target="_blank" rel="noopener" onClick={(e) => e.stopPropagation()}
+             className="mt-3 flex items-center justify-center gap-1.5 rounded-xl bg-sage/10 py-2 text-xs font-medium text-[#4f6b58] hover:bg-sage/20 transition">
+            <Icon name="phone" className="w-3.5 h-3.5"/> Falar no WhatsApp
+          </a>
+        )}
+      </div>
+    );
+  }
+
+  function StudentsTable({ students, onOpen, onEdit }) {
+    return (
+      <div className={`${C.card} overflow-hidden`}>
+        <div className="overflow-x-auto scroll-soft">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-[11px] uppercase tracking-wide text-forest/45 bg-honey/50">
+                <th className="px-4 py-3 font-medium">Aluno</th>
+                <th className="px-4 py-3 font-medium">Telefone</th>
+                <th className="px-4 py-3 font-medium">Créditos</th>
+                <th className="px-4 py-3 font-medium">Mensalidade</th>
+                <th className="px-4 py-3 font-medium">Últ. pagamento</th>
+                <th className="px-4 py-3"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {students.map((s) => {
+                const low = (Number(s.aulas_pagas) || 0) < 2;
+                return (
+                  <tr key={s.id} onClick={() => onOpen(s.id)}
+                      className={`border-t border-forest/5 cursor-pointer transition hover:bg-mist/30 ${low ? 'bg-sun/[0.06]' : ''}`}>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <Avatar name={s.nome} color={avatarColor(s.id)} size={32} />
+                        <span className="font-medium text-forest">{s.nome}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-forest/60">{s.telefone || '—'}</td>
+                    <td className="px-4 py-3"><CreditBadge aulas={s.aulas_pagas} size="sm" /></td>
+                    <td className="px-4 py-3 text-forest/70">{formatBRL(s.valor_mensalidade)}</td>
+                    <td className="px-4 py-3 text-forest/50">{formatDateShort(s.data_pagamento)}</td>
+                    <td className="px-4 py-3 text-right">
+                      <button onClick={(e) => { e.stopPropagation(); onEdit(s); }}
+                              className="grid place-items-center w-8 h-8 rounded-lg text-forest/40 hover:bg-mist hover:text-forest transition ml-auto">
+                        <Icon name="edit" className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+
+  /* ============================================================
+     10. GAVETA (DRAWER) — FICHA INDIVIDUAL DO ALUNO
+     ============================================================ */
+  function StudentDrawer({ student, events, onClose, onEdit, onDelete, onAddCredits, onAddNote, onDeleteNote, onOpenEvent }) {
+    const [tab, setTab] = useState('info');
+    const [noteText, setNoteText] = useState('');
+    useEffect(() => { setTab('info'); setNoteText(''); }, [student && student.id]);
+    if (!student) return null;
+
+    const wa = waLink(student.telefone);
+    const upcoming = events
+      .filter((e) => e.aluno_id === student.id && e.data >= todayStr())
+      .sort((a, b) => (a.data + a.hora_inicio).localeCompare(b.data + b.hora_inicio))
+      .slice(0, 5);
+    const notes = [...(student.anotacoes || [])].sort((a, b) => b.data.localeCompare(a.data));
+
+    const addNote = () => { if (!noteText.trim()) return; onAddNote(student.id, noteText.trim()); setNoteText(''); };
+
+    return (
+      <div className="fixed inset-0 z-50">
+        <div className="absolute inset-0 bg-forest/30 backdrop-blur-[2px] anim-fade" onClick={onClose} />
+        <aside className="absolute right-0 top-0 h-full w-full sm:w-[460px] bg-canvas shadow-2xl anim-drawer flex flex-col">
+          {/* Cabeçalho */}
+          <div className="relative px-6 pt-6 pb-5 bg-gradient-to-br from-mist to-honey">
+            <button onClick={onClose} className="absolute top-4 right-4 grid place-items-center w-9 h-9 rounded-xl text-forest/50 hover:bg-canvas/50 transition"><Icon name="x" /></button>
+            <div className="flex items-center gap-4">
+              <Avatar name={student.nome} color={avatarColor(student.id)} size={56} />
+              <div className="min-w-0">
+                <h2 className="font-display text-2xl font-semibold text-forest truncate">{student.nome}</h2>
+                <div className="mt-1"><CreditBadge aulas={student.aulas_pagas} /></div>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {wa && <a href={wa} target="_blank" rel="noopener" className={C.btnSoft + ' !py-2 !px-3 text-xs'}><Icon name="phone" className="w-4 h-4"/>WhatsApp</a>}
+              <button onClick={() => onEdit(student)} className={C.btnSoft + ' !py-2 !px-3 text-xs'}><Icon name="edit" className="w-4 h-4"/>Editar</button>
+              <button onClick={() => onDelete(student)} className="inline-flex items-center gap-1.5 rounded-xl bg-canvas/40 px-3 py-2 text-xs font-medium text-[#b3596a] hover:bg-canvas/70 transition"><Icon name="trash" className="w-4 h-4"/>Remover</button>
+            </div>
+          </div>
+
+          {/* Abas */}
+          <div className="flex gap-1 px-4 pt-3 border-b border-forest/5 overflow-x-auto">
+            {[['info', 'Informações', 'wallet'], ['historico', 'Histórico', 'clock'], ['notes', 'Anotações', 'note']].map(([id, lbl, ic]) => (
+              <button key={id} onClick={() => setTab(id)}
+                className={`flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-t-lg transition border-b-2 -mb-px whitespace-nowrap ${tab === id ? 'border-sage text-forest' : 'border-transparent text-forest/45 hover:text-forest/70'}`}>
+                <Icon name={ic} className="w-4 h-4" />{lbl}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex-1 overflow-y-auto scroll-soft px-6 py-5">
+            {tab === 'historico' ? (
+              /* ── Histórico de aulas — observações cronológicas ── */
+              (() => {
+                const history = events
+                  .filter((e) => e.aluno_id === student.id && (e.observacoes || '').trim())
+                  .sort((a, b) => (b.data + b.hora_inicio).localeCompare(a.data + a.hora_inicio));
+                return history.length === 0 ? (
+                  <p className="text-sm text-forest/40 italic text-center py-10">
+                    Nenhuma observação registrada ainda. Ao criar uma aula e preencher o campo "Observações da aula", ela aparece aqui automaticamente — com data e horário. 🌱
+                  </p>
+                ) : (
+                  <ol className="relative border-l-2 border-mist ml-2 space-y-4">
+                    {history.map((ev) => (
+                      <li key={ev.id} className="ml-5">
+                        <span className="absolute -left-[7px] mt-1.5 w-3 h-3 rounded-full ring-4 ring-canvas" style={{ background: ev.cor }} />
+                        <div className={C.card + ' p-3.5'}>
+                          <div className="flex items-start justify-between gap-2 mb-1.5 flex-wrap">
+                            <div>
+                              <time className="text-[11px] font-medium uppercase tracking-wide text-forest/40">
+                                {formatDateShort(ev.data)} · {ev.hora_inicio}–{ev.hora_termino}
+                              </time>
+                              <p className="text-[12px] font-semibold text-forest/60 mt-0.5 flex items-center gap-1">
+                                {ev.modalidade === 'presencial' && <span className="text-[10px]">📍</span>}
+                                {ev.titulo}
+                              </p>
+                            </div>
+                            {ev.realizada && (
+                              <span className="text-[10px] bg-sage/10 text-sage px-1.5 py-0.5 rounded-md font-medium shrink-0">Realizada ✓</span>
+                            )}
+                          </div>
+                          <p className="text-sm text-forest/80 whitespace-pre-wrap leading-relaxed">{ev.observacoes}</p>
+                          <button onClick={() => onOpenEvent(ev)}
+                            className="mt-2.5 text-xs text-sage/70 hover:text-sage transition flex items-center gap-1">
+                            <Icon name="edit" className="w-3 h-3" /> Abrir aula
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                );
+              })()
+            ) : tab === 'info' ? (
+              <div className="space-y-5">
+                {/* Créditos rápidos */}
+                <div className={C.card + ' p-4'}>
+                  <p className={C.label}>Créditos de aula</p>
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="font-display text-3xl font-semibold text-forest">{student.aulas_pagas || 0}</div>
+                    <div className="flex flex-wrap gap-2 justify-end">
+                      <button onClick={() => onAddCredits(student.id, -1)} className="rounded-lg bg-forest/5 px-3 py-1.5 text-sm font-medium text-forest/60 hover:bg-forest/10 transition">−1</button>
+                      {[1, 4, 8].map((n) => (
+                        <button key={n} onClick={() => onAddCredits(student.id, n)} className="rounded-lg bg-sage/15 px-3 py-1.5 text-sm font-medium text-[#4f6b58] hover:bg-sage/25 transition">+{n}</button>
+                      ))}
+                    </div>
+                  </div>
+                  {(Number(student.aulas_pagas) || 0) < 2 && (
+                    <p className="mt-3 flex items-center gap-1.5 text-xs text-[#9a7d2e] bg-sun/15 rounded-lg px-2.5 py-2">
+                      <Icon name="alert" className="w-4 h-4 shrink-0"/> Saldo baixo — talvez seja um bom momento pra um convite gentil de renovação. 💛
+                    </p>
+                  )}
+                </div>
+
+                {/* Dados */}
+                <div className={C.card + ' divide-y divide-forest/5'}>
+                  <Row icon="phone" label="Telefone" value={student.telefone || '—'} />
+                  <Row icon="wallet" label="Mensalidade" value={formatBRL(student.valor_mensalidade)} />
+                  <Row icon="calendar" label="Último pagamento" value={formatDateShort(student.data_pagamento)} />
+                </div>
+
+                {/* Próximas aulas */}
+                <div>
+                  <p className={C.label}>Próximas aulas</p>
+                  {upcoming.length === 0 ? (
+                    <p className="text-sm text-forest/40 italic">Nenhuma aula agendada por enquanto.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {upcoming.map((ev) => (
+                        <button key={ev.id} onClick={() => onOpenEvent(ev)}
+                          className="w-full flex items-center gap-3 rounded-xl border border-forest/5 bg-canvas/70 px-3 py-2.5 text-left hover:bg-mist/40 transition">
+                          <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: ev.cor }} />
+                          <span className="flex-1 text-sm text-forest truncate">{formatDateShort(ev.data)}</span>
+                          <span className="text-xs text-forest/50">{ev.hora_inicio}–{ev.hora_termino}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* Nova anotação */}
+                <div className={C.card + ' p-4'}>
+                  <label className={C.label}>O que rolou na aula de hoje?</label>
+                  <textarea rows={3} value={noteText} onChange={(e) => setNoteText(e.target.value)}
+                    placeholder='Ex.: "Focamos em Simple Past hoje. Teve dificuldade na pronúncia do -ed final, mas evoluiu muito no vocabulário. 🌱"'
+                    className={C.input + ' resize-none'} />
+                  <div className="mt-3 flex justify-end">
+                    <button onClick={addNote} disabled={!noteText.trim()} className={C.btnPrimary}>
+                      <Icon name="plus" className="w-4 h-4" sw={2.2}/> Salvar anotação
+                    </button>
+                  </div>
+                </div>
+
+                {/* Timeline (mais novas primeiro) */}
+                {notes.length === 0 ? (
+                  <p className="text-sm text-forest/40 italic text-center py-6">Ainda não há anotações. Cada registro vira memória do caminho percorrido. 🍃</p>
+                ) : (
+                  <ol className="relative border-l-2 border-mist ml-2 space-y-4">
+                    {notes.map((n) => (
+                      <li key={n.id} className="ml-5 group">
+                        <span className="absolute -left-[7px] mt-1.5 w-3 h-3 rounded-full bg-sage ring-4 ring-canvas" />
+                        <div className={C.card + ' p-3.5'}>
+                          <div className="flex items-center justify-between gap-2 mb-1">
+                            <time className="text-[11px] font-medium uppercase tracking-wide text-forest/40">{formatDateTime(n.data)}</time>
+                            <button onClick={() => onDeleteNote(student.id, n.id)}
+                              className="opacity-0 group-hover:opacity-100 grid place-items-center w-7 h-7 rounded-lg text-forest/30 hover:bg-[#E6A6B0]/15 hover:text-[#b3596a] transition">
+                              <Icon name="trash" className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                          <p className="text-sm text-forest/80 whitespace-pre-wrap leading-relaxed">{n.texto}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+              </div>
+            )}
+          </div>
+        </aside>
+      </div>
+    );
+  }
+  function Row({ icon, label, value }) {
+    return (
+      <div className="flex items-center gap-3 px-4 py-3">
+        <span className="grid place-items-center w-8 h-8 rounded-lg bg-mist text-sage shrink-0"><Icon name={icon} className="w-4 h-4" /></span>
+        <span className="text-sm text-forest/50 flex-1">{label}</span>
+        <span className="text-sm font-medium text-forest">{value}</span>
+      </div>
+    );
+  }
+
+  /* ============================================================
+     11. FORMULÁRIO DE EVENTO / AULA
+     ============================================================ */
+  function EventForm({ open, onClose, onSave, onDelete, onToggleDone, event, students, defaults }) {
+    const blank = { titulo: '', aluno_id: '', data: todayStr(), hora_inicio: '09:00', hora_termino: '10:00', cor: DEFAULT_EVENT_COLOR, observacoes: '', descontar_credito: false, modalidade: 'online', endereco: '' };
+    const [form, setForm] = useState(blank);
+    const [err, setErr] = useState('');
+
+    useEffect(() => {
+      if (!open) return;
+      if (event) setForm({ ...blank, ...event, aluno_id: event.aluno_id || '' });
+      else setForm({ ...blank, ...defaults });
+      setErr('');
+    }, [open, event, defaults]);
+
+    const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+
+    // Ao escolher um aluno, autocompleta o título da aula
+    const pickStudent = (id) => {
+      setForm((f) => {
+        const stu = students.find((s) => s.id === id);
+        const autoTitle = stu ? `Aula · ${stu.nome}` : '';
+        const wasAuto = !f.titulo || f.titulo.startsWith('Aula · ');
+        return { ...f, aluno_id: id, titulo: (wasAuto && autoTitle) ? autoTitle : f.titulo, descontar_credito: id ? f.descontar_credito : false };
+      });
+    };
+
+    const submit = () => {
+      if (!form.titulo.trim() && !form.aluno_id) { setErr('Dê um título à aula ou selecione um aluno.'); return; }
+      if (timeToMin(form.hora_termino) <= timeToMin(form.hora_inicio)) { setErr('O horário de término deve ser depois do início.'); return; }
+      const stu = students.find((s) => s.id === form.aluno_id);
+      onSave({
+        ...event,
+        id: event?.id || uuid(),
+        titulo: form.titulo.trim() || (stu ? `Aula · ${stu.nome}` : 'Aula'),
+        aluno_id: form.aluno_id || null,
+        data: form.data,
+        hora_inicio: form.hora_inicio,
+        hora_termino: form.hora_termino,
+        cor: form.cor,
+        observacoes: form.observacoes,
+        modalidade: form.modalidade || 'online',
+        endereco: form.modalidade === 'presencial' ? (form.endereco || '') : '',
+        descontar_credito: !!form.descontar_credito,
+        credito_descontado: event?.credito_descontado || false,
+        realizada: event?.realizada || false,
+      });
+      onClose();
+    };
+
+    return (
+      <Modal open={open} onClose={onClose}
+        title={event ? 'Editar aula' : 'Nova aula'}
+        subtitle={form.data ? formatDateLong(form.data) : ''}
+        footer={<>
+          {event && <button className={C.btnDanger + ' mr-auto'} onClick={() => { onDelete(event.id); onClose(); }}><Icon name="trash" className="w-4 h-4"/>Excluir</button>}
+          <button className={C.btnGhost} onClick={onClose}>Cancelar</button>
+          <button className={C.btnPrimary} onClick={submit}><Icon name="check" className="w-4 h-4" sw={2.2}/>Salvar</button>
+        </>}>
+        <div className="space-y-4">
+          {/* Concluir aula — dispara o desconto de crédito (automação) */}
+          {event && (
+            <button type="button" onClick={() => { onToggleDone(event.id); onClose(); }}
+              className={`w-full flex items-center gap-3 rounded-xl border p-3.5 text-left transition ${event.realizada ? 'border-sage/40 bg-sage/10 hover:bg-sage/15' : 'border-forest/10 bg-canvas/60 hover:bg-mist/40'}`}>
+              <span className={`grid place-items-center w-9 h-9 rounded-lg shrink-0 ${event.realizada ? 'bg-sage text-white' : 'bg-mist text-sage'}`}>
+                <Icon name={event.realizada ? 'checkCircle' : 'clock'} className="w-5 h-5" />
+              </span>
+              <span className="flex-1">
+                <span className="block text-sm font-medium text-forest">{event.realizada ? 'Aula realizada' : 'Marcar como realizada'}</span>
+                <span className="block text-xs text-forest/50">{event.realizada ? 'Toque para reabrir (devolve o crédito, se descontado).' : event.descontar_credito && event.aluno_id ? 'Vai descontar 1 crédito do aluno.' : 'Registra a conclusão da aula.'}</span>
+              </span>
+            </button>
+          )}
+
+          <div>
+            <label className={C.label}>Aluno</label>
+            <div className="relative">
+              <select value={form.aluno_id} onChange={(e) => pickStudent(e.target.value)}
+                      className={C.input + ' appearance-none pr-10 cursor-pointer'}>
+                <option value="">— Sem aluno vinculado (ex.: Group class) —</option>
+                {students.map((s) => <option key={s.id} value={s.id}>{s.nome} · {s.aulas_pagas || 0} crédito(s)</option>)}
+              </select>
+              <Icon name="down" className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-forest/40 pointer-events-none" />
+            </div>
+          </div>
+
+          <div>
+            <label className={C.label}>Título da aula</label>
+            <input className={C.input} value={form.titulo} placeholder='Ex.: "Aula VIP · João" ou "Group class · Advanced"'
+                   onChange={(e) => set('titulo', e.target.value)} />
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className={C.label}>Data</label>
+              <input type="date" className={C.input} value={form.data} onChange={(e) => set('data', e.target.value)} />
+            </div>
+            <div>
+              <label className={C.label}>Início</label>
+              <input type="time" className={C.input} value={form.hora_inicio} onChange={(e) => set('hora_inicio', e.target.value)} />
+            </div>
+            <div>
+              <label className={C.label}>Término</label>
+              <input type="time" className={C.input} value={form.hora_termino} onChange={(e) => set('hora_termino', e.target.value)} />
+            </div>
+          </div>
+
+          <div>
+            <label className={C.label}>Cor da aula</label>
+            <div className="flex flex-wrap gap-2.5">
+              {EVENT_COLORS.map((c) => (
+                <button key={c.value} type="button" title={c.nome} onClick={() => set('cor', c.value)}
+                  className={`relative w-9 h-9 rounded-full transition hover:scale-110 ${form.cor === c.value ? 'ring-2 ring-offset-2 ring-offset-canvas' : ''}`}
+                  style={{ background: c.value, boxShadow: form.cor === c.value ? `0 0 0 2px ${c.value}` : 'none' }}>
+                  {form.cor === c.value && <Icon name="check" className="w-4 h-4 text-white absolute inset-0 m-auto" sw={3} />}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Modalidade: Online ou Presencial */}
+          <div>
+            <label className={C.label}>Modalidade</label>
+            <div className="grid grid-cols-2 gap-2">
+              {[['online', 'globe', 'Online'], ['presencial', 'mapPin', 'Presencial']].map(([val, ic, lbl]) => (
+                <button key={val} type="button" onClick={() => set('modalidade', val)}
+                  className={`flex items-center justify-center gap-2 rounded-xl border py-2.5 text-sm font-medium transition
+                    ${form.modalidade === val
+                      ? 'border-sage bg-sage/10 text-forest'
+                      : 'border-forest/10 bg-canvas/50 text-forest/50 hover:border-forest/25 hover:text-forest'}`}>
+                  <Icon name={ic} className="w-4 h-4" /> {lbl}
+                </button>
+              ))}
+            </div>
+            {form.modalidade === 'presencial' && (
+              <div className="mt-2">
+                <input className={C.input} value={form.endereco}
+                  placeholder="Ex.: Rua das Flores, 123 — Sala 4"
+                  onChange={(e) => set('endereco', e.target.value)} />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className={C.label}>Observações da aula</label>
+            <textarea rows={2} className={C.input + ' resize-none'} value={form.observacoes}
+                      placeholder="Detalhe rápido do que será trabalhado hoje…"
+                      onChange={(e) => set('observacoes', e.target.value)} />
+          </div>
+
+          {/* Automação opcional: desconta 1 crédito ao concluir a aula */}
+          <label className={`flex items-start gap-3 rounded-xl border p-3.5 cursor-pointer transition ${form.aluno_id ? 'border-sage/30 bg-sage/[0.06] hover:bg-sage/10' : 'border-forest/10 bg-forest/[0.03] opacity-60 cursor-not-allowed'}`}>
+            <input type="checkbox" disabled={!form.aluno_id} checked={form.descontar_credito}
+                   onChange={(e) => set('descontar_credito', e.target.checked)}
+                   className="mt-0.5 w-5 h-5 rounded-md accent-sage cursor-pointer" />
+            <span className="text-sm text-forest/80">
+              <span className="font-medium text-forest">Descontar 1 crédito ao concluir esta aula</span>
+              <br/><span className="text-forest/50 text-xs">Quando você marcar a aula como realizada, 1 crédito sai do saldo do aluno automaticamente.{!form.aluno_id && ' (selecione um aluno para ativar)'}</span>
+            </span>
+          </label>
+        </div>
+      </Modal>
+    );
+  }
+
+  /* ============================================================
+     12. CALENDÁRIO — POPOVER DE EVENTO (hover/click)
+     ============================================================ */
+  function EventChip({ ev, student, compact, onClick }) {
+    const done = ev.realizada;
+    return (
+      <button onClick={(e) => { e.stopPropagation(); onClick(ev); }}
+        className={`group/chip relative w-full text-left rounded-md px-1.5 pt-0.5 pb-1 text-[11px] leading-tight transition hover:brightness-95 ${done ? 'opacity-55' : ''}`}
+        style={{ background: hexToRgba(ev.cor, 0.18), borderLeft: `3px solid ${ev.cor}`, color: '#3A4E40' }}>
+        {!compact && (
+          <div className="tabular-nums font-semibold text-[10px] mb-0.5" style={{ color: ev.cor, filter: 'brightness(0.75)' }}>
+            {ev.hora_inicio}
+          </div>
+        )}
+        <div className="font-medium truncate">
+          {done && '✓ '}
+          {ev.modalidade === 'presencial' && <span title="Presencial">📍</span>}
+          {ev.titulo}
+        </div>
+      </button>
+    );
+  }
+
+  /* ============================================================
+     13. VISÃO MENSAL
+     ============================================================ */
+  function MonthView({ cursor, events, onDayClick, onEventClick, onMoreClick }) {
+    const days = useMemo(() => getMonthMatrix(cursor), [cursor]);
+    const today = todayStr();
+    const byDay = useMemo(() => {
+      const map = {};
+      for (const e of events) (map[e.data] = map[e.data] || []).push(e);
+      for (const k in map) map[k].sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
+      return map;
+    }, [events]);
+
+    return (
+      <div className={`${C.card} overflow-hidden`}>
+        <div className="grid grid-cols-7 bg-honey/60 border-b border-forest/5">
+          {WEEKDAYS_SHORT.map((d) => <div key={d} className="px-2 py-2.5 text-center text-[11px] font-medium uppercase tracking-wide text-forest/45">{d}</div>)}
+        </div>
+        <div className="grid grid-cols-7 grid-rows-6">
+          {days.map((d, i) => {
+            const list = byDay[d.dateStr] || [];
+            const isToday = d.dateStr === today;
+            const visible = list.slice(0, 3);
+            const extra = list.length - visible.length;
+            return (
+              <div key={i} onClick={() => onDayClick(d.dateStr)}
+                className={`group min-h-[148px] border-b border-r border-forest/5 p-1.5 cursor-pointer transition hover:bg-mist/20 ${d.inMonth ? '' : 'bg-forest/[0.02]'} ${(i + 1) % 7 === 0 ? 'border-r-0' : ''}`}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className={`grid place-items-center w-7 h-7 rounded-full text-sm font-medium ${isToday ? 'bg-sage text-white' : d.inMonth ? 'text-forest/70' : 'text-forest/25'}`}>
+                    {d.date.getDate()}
+                  </span>
+                  <span className="opacity-0 group-hover:opacity-100 grid place-items-center w-6 h-6 rounded-md text-sage hover:bg-sage/15 transition"><Icon name="plus" className="w-4 h-4" sw={2.2}/></span>
+                </div>
+                <div className="space-y-1">
+                  {visible.map((ev) => <EventChip key={ev.id} ev={ev} onClick={onEventClick} />)}
+                  {extra > 0 && (
+                    <button onClick={(e) => { e.stopPropagation(); onMoreClick(d.dateStr); }}
+                      className="w-full text-left px-1.5 text-[11px] font-medium text-forest/50 hover:text-forest transition">
+                      + {extra} mais
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  /* ============================================================
+     14. GRADE DE TEMPO (Semana / Dia) — layout de sobreposição
+     ============================================================ */
+  function layoutDayEvents(list) {
+    const evs = list.map((e) => ({ ...e, _s: timeToMin(e.hora_inicio), _e: timeToMin(e.hora_termino) }))
+      .sort((a, b) => a._s - b._s || a._e - b._e);
+    const colEnds = [];
+    for (const ev of evs) {
+      let placed = false;
+      for (let i = 0; i < colEnds.length; i++) {
+        if (ev._s >= colEnds[i]) { ev._col = i; colEnds[i] = ev._e; placed = true; break; }
+      }
+      if (!placed) { ev._col = colEnds.length; colEnds.push(ev._e); }
+    }
+    for (const ev of evs) {
+      let cols = 1;
+      for (const o of evs) if (o._s < ev._e && o._e > ev._s) cols = Math.max(cols, o._col + 1);
+      ev._cols = cols;
+    }
+    return evs;
+  }
+
+  function TimedEvent({ ev, onClick }) {
+    const top = ((ev._s - HOUR_START * 60) / 60) * HOUR_PX;
+    const height = Math.max(22, ((ev._e - ev._s) / 60) * HOUR_PX - 2);
+    const widthPct = 100 / ev._cols;
+    const done = ev.realizada;
+    return (
+      <button onClick={(e) => { e.stopPropagation(); onClick(ev); }}
+        className={`absolute rounded-lg px-2 py-1 text-left overflow-hidden transition hover:z-10 hover:shadow-md ${done ? 'opacity-60' : ''}`}
+        style={{
+          top, height, left: `calc(${ev._col * widthPct}% + 2px)`, width: `calc(${widthPct}% - 4px)`,
+          background: hexToRgba(ev.cor, 0.16), borderLeft: `3px solid ${ev.cor}`, color: '#3A4E40',
+        }}>
+        <div className="text-[11px] font-semibold truncate">{done && '✓ '}{ev.modalidade === 'presencial' && '📍'}{ev.titulo}</div>
+        <div className="text-[10px] text-forest/55 tabular-nums">{ev.hora_inicio}–{ev.hora_termino}</div>
+        {height > 52 && ev.observacoes && <div className="mt-0.5 text-[10px] text-forest/50 line-clamp-2">{ev.observacoes}</div>}
+      </button>
+    );
+  }
+
+  // Linha "agora"
+  function NowLine() {
+    const [min, setMin] = useState(() => { const n = new Date(); return n.getHours() * 60 + n.getMinutes(); });
+    useEffect(() => { const t = setInterval(() => { const n = new Date(); setMin(n.getHours() * 60 + n.getMinutes()); }, 60000); return () => clearInterval(t); }, []);
+    if (min < HOUR_START * 60 || min > HOUR_END * 60) return null;
+    const top = ((min - HOUR_START * 60) / 60) * HOUR_PX;
+    return (
+      <div className="absolute left-0 right-0 z-20 pointer-events-none" style={{ top }}>
+        <div className="relative h-0 border-t-2 border-[#E8896B]">
+          <span className="now-dot absolute -left-1 -top-[5px] w-2.5 h-2.5 rounded-full bg-[#E8896B]" />
+        </div>
+      </div>
+    );
+  }
+
+  function TimeGrid({ daysArr, events, onSlotClick, onEventClick, showWeekday }) {
+    const hours = [];
+    for (let h = HOUR_START; h <= HOUR_END; h++) hours.push(h);
+    const today = todayStr();
+    const scrollRef = useRef(null);
+    useEffect(() => { // rola até ~8h ao abrir
+      if (scrollRef.current) scrollRef.current.scrollTop = Math.max(0, (8 - HOUR_START) * HOUR_PX - 20);
+    }, []);
+
+    const onColClick = (dateStr) => (e) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const y = e.clientY - rect.top;
+      let min = HOUR_START * 60 + Math.round((y / HOUR_PX) * 60 / 30) * 30;
+      min = Math.max(HOUR_START * 60, Math.min(HOUR_END * 60 - 60, min));
+      onSlotClick(dateStr, minToTime(min), minToTime(min + 60));
+    };
+
+    return (
+      <div className={`${C.card} overflow-hidden`}>
+        {/* Cabeçalho dos dias */}
+        <div className="flex border-b border-forest/5 bg-honey/50">
+          <div className="w-14 shrink-0" />
+          {daysArr.map((d) => {
+            const ds = toDateStr(d);
+            const isToday = ds === today;
+            return (
+              <div key={ds} className="flex-1 py-2 text-center">
+                {showWeekday && <div className="text-[11px] uppercase tracking-wide text-forest/45">{WEEKDAYS_SHORT[d.getDay()]}</div>}
+                <div className={`mx-auto mt-0.5 grid place-items-center w-8 h-8 rounded-full text-sm font-medium ${isToday ? 'bg-sage text-white' : 'text-forest/70'}`}>{d.getDate()}</div>
+              </div>
+            );
+          })}
+        </div>
+        {/* Grade */}
+        <div ref={scrollRef} className="overflow-y-auto scroll-soft" style={{ maxHeight: '64vh' }}>
+          <div className="flex relative" style={{ height: (HOUR_END - HOUR_START) * HOUR_PX }}>
+            {/* coluna de horas */}
+            <div className="w-14 shrink-0 relative">
+              {hours.map((h, i) => (
+                <div key={h} className="absolute right-2 -translate-y-1/2 text-[11px] text-forest/40 tabular-nums" style={{ top: i * HOUR_PX }}>
+                  {i > 0 ? `${pad2(h)}:00` : ''}
+                </div>
+              ))}
+            </div>
+            {/* dias */}
+            {daysArr.map((d) => {
+              const ds = toDateStr(d);
+              const laid = layoutDayEvents(events.filter((e) => e.data === ds));
+              const isToday = ds === today;
+              return (
+                <div key={ds} onClick={onColClick(ds)} className="flex-1 relative border-l border-forest/5 cursor-pointer hover:bg-mist/10">
+                  {hours.map((h, i) => <div key={h} className="absolute left-0 right-0 border-t border-forest/[0.06]" style={{ top: i * HOUR_PX }} />)}
+                  {laid.map((ev) => <TimedEvent key={ev.id} ev={ev} onClick={onEventClick} />)}
+                  {isToday && <NowLine />}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ============================================================
+     15. PÁGINA: AGENDA (CALENDÁRIO)
+     ============================================================ */
+  function AgendaPage({ events, onNewEvent, onEventClick, onDayMore }) {
+    const [view, setView] = useState('month'); // month | week | day
+    const [cursor, setCursor] = useState(() => new Date());
+
+    const go = (dir) => {
+      const d = new Date(cursor);
+      if (view === 'month') d.setMonth(d.getMonth() + dir);
+      else if (view === 'week') d.setDate(d.getDate() + 7 * dir);
+      else d.setDate(d.getDate() + dir);
+      setCursor(d);
+    };
+
+    const title = view === 'month' ? monthLabel(cursor)
+      : view === 'day' ? formatDateLong(cursor)
+      : (() => { const w = getWeekDays(cursor); return `${w[0].getDate()} – ${w[6].getDate()} de ${monthLabel(w[6]).toLowerCase()}`; })();
+
+    return (
+      <div className="space-y-4">
+        {/* Barra de controle */}
+        <div className="flex flex-wrap items-center gap-3 justify-between">
+          <div className="flex items-center gap-2">
+            <button onClick={() => setCursor(new Date())} className={C.btnSoft + ' !py-2'}>Hoje</button>
+            <div className="flex items-center rounded-xl bg-canvas/70 border border-forest/10">
+              <button onClick={() => go(-1)} className="grid place-items-center w-9 h-9 text-forest/50 hover:text-forest hover:bg-mist rounded-l-xl transition"><Icon name="left" className="w-5 h-5"/></button>
+              <button onClick={() => go(1)} className="grid place-items-center w-9 h-9 text-forest/50 hover:text-forest hover:bg-mist rounded-r-xl transition"><Icon name="right" className="w-5 h-5"/></button>
+            </div>
+            <h2 className="font-display text-xl sm:text-2xl font-semibold text-forest ml-1">{title}</h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="inline-flex rounded-xl bg-canvas/70 border border-forest/10 p-1">
+              {[['month', 'Mês'], ['week', 'Semana'], ['day', 'Dia']].map(([v, lbl]) => (
+                <button key={v} onClick={() => setView(v)}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-lg transition ${view === v ? 'bg-sage text-white shadow-sm' : 'text-forest/55 hover:text-forest'}`}>{lbl}</button>
+              ))}
+            </div>
+            <button onClick={() => onNewEvent({ data: view === 'month' ? todayStr() : toDateStr(cursor), hora_inicio: '09:00', hora_termino: '10:00' })} className={C.btnPrimary}>
+              <Icon name="plus" className="w-4 h-4" sw={2.2}/><span className="hidden sm:inline">Nova aula</span>
+            </button>
+          </div>
+        </div>
+
+        {view === 'month' && (
+          <MonthView cursor={cursor} events={events}
+            onDayClick={(ds) => onNewEvent({ data: ds, hora_inicio: '09:00', hora_termino: '10:00' })}
+            onEventClick={onEventClick}
+            onMoreClick={onDayMore} />
+        )}
+        {view === 'week' && (
+          <TimeGrid daysArr={getWeekDays(cursor)} events={events} showWeekday
+            onSlotClick={(ds, ini, fim) => onNewEvent({ data: ds, hora_inicio: ini, hora_termino: fim })}
+            onEventClick={onEventClick} />
+        )}
+        {view === 'day' && (
+          <TimeGrid daysArr={[cursor]} events={events} showWeekday={false}
+            onSlotClick={(ds, ini, fim) => onNewEvent({ data: ds, hora_inicio: ini, hora_termino: fim })}
+            onEventClick={onEventClick} />
+        )}
+      </div>
+    );
+  }
+
+  // Modal "+ mais" — todos os eventos de um dia
+  function DayEventsModal({ dateStr, events, students, onClose, onEventClick, onNew }) {
+    if (!dateStr) return null;
+    const list = events.filter((e) => e.data === dateStr).sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
+    return (
+      <Modal open onClose={onClose} title={formatDateLong(dateStr)} subtitle={`${list.length} aula(s)`} maxW="max-w-md"
+        footer={<button className={C.btnPrimary} onClick={() => onNew({ data: dateStr, hora_inicio: '09:00', hora_termino: '10:00' })}><Icon name="plus" className="w-4 h-4" sw={2.2}/>Agendar aula</button>}>
+        <div className="space-y-2">
+          {list.map((ev) => (
+            <button key={ev.id} onClick={() => onEventClick(ev)}
+              className="w-full flex items-center gap-3 rounded-xl border border-forest/5 bg-canvas/70 px-3 py-2.5 text-left hover:bg-mist/40 transition">
+              <span className="w-1 self-stretch rounded-full shrink-0" style={{ background: ev.cor }} />
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium text-forest truncate">{ev.realizada && '✓ '}{ev.titulo}</div>
+                {ev.observacoes && <div className="text-xs text-forest/45 truncate">{ev.observacoes}</div>}
+              </div>
+              <span className="text-xs text-forest/50 tabular-nums shrink-0">{ev.hora_inicio}–{ev.hora_termino}</span>
+            </button>
+          ))}
+        </div>
+      </Modal>
+    );
+  }
+
+  /* ============================================================
+     16. PÁGINA: DASHBOARD
+     ============================================================ */
+  function DashboardPage({ students, events, onNewEvent, onNewStudent, onEventClick, onOpenStudent, goAgenda }) {
+    const today = todayStr();
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
+
+    const todays = events.filter((e) => e.data === today).sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
+    const pending = todays.filter((e) => !e.realizada);
+    const faturamento = students.reduce((s, st) => s + (Number(st.valor_mensalidade) || 0), 0);
+    const lowCredit = students.filter((s) => (Number(s.aulas_pagas) || 0) < 2);
+    const studentById = (id) => students.find((s) => s.id === id);
+
+    const stats = [
+      { icon: 'users', label: 'Alunos ativos', value: students.length, tint: 'bg-mist text-sage' },
+      { icon: 'calendar', label: 'Aulas de hoje', value: todays.length, sub: pending.length ? `${pending.length} pendente(s)` : 'tudo concluído 💚', tint: 'bg-bay/15 text-bay' },
+      { icon: 'wallet', label: 'Faturamento estimado', value: formatBRL(faturamento), sub: 'no mês', tint: 'bg-sun/20 text-[#9a7d2e]' },
+      { icon: 'alert', label: 'Créditos baixos', value: lowCredit.length, sub: lowCredit.length ? 'precisam de atenção' : 'todos em dia', tint: 'bg-[#E6A6B0]/15 text-[#b3596a]' },
+    ];
+
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="font-display text-3xl font-semibold text-forest">{greeting}, Duda <span className="align-middle">💚</span></h1>
+            <p className="font-display italic text-forest/55 mt-1">{BRAND.tagline}</p>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={onNewStudent} className={C.btnSoft}><Icon name="users" className="w-4 h-4"/>Novo aluno</button>
+            <button onClick={() => onNewEvent({ data: today, hora_inicio: '09:00', hora_termino: '10:00' })} className={C.btnPrimary}><Icon name="plus" className="w-4 h-4" sw={2.2}/>Nova aula</button>
+          </div>
+        </div>
+
+        {/* Cards de resumo */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {stats.map((s) => (
+            <div key={s.label} className={C.card + ' p-4'}>
+              <div className={`grid place-items-center w-10 h-10 rounded-xl ${s.tint} mb-3`}><Icon name={s.icon} className="w-5 h-5" /></div>
+              <div className="font-display text-2xl font-semibold text-forest">{s.value}</div>
+              <div className="text-sm text-forest/50">{s.label}</div>
+              {s.sub && <div className="text-xs text-forest/40 mt-0.5">{s.sub}</div>}
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Aulas de hoje */}
+          <div className="lg:col-span-2 space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-lg font-semibold text-forest flex items-center gap-2"><Icon name="calendar" className="w-5 h-5 text-sage"/>Aulas de hoje</h2>
+              <button onClick={goAgenda} className="text-sm font-medium text-sage hover:text-[#6b8d77] transition">Ver agenda →</button>
+            </div>
+            {todays.length === 0 ? (
+              <EmptyState icon="leaf" title="Nenhuma aula hoje 🍃" subtitle="Um dia tranquilo pela frente. Que tal agendar a próxima?"
+                action={<button onClick={() => onNewEvent({ data: today, hora_inicio: '09:00', hora_termino: '10:00' })} className={C.btnPrimary}><Icon name="plus" className="w-4 h-4" sw={2.2}/>Agendar aula</button>} />
+            ) : (
+              <div className="space-y-2">
+                {todays.map((ev) => {
+                  const stu = studentById(ev.aluno_id);
+                  return (
+                    <button key={ev.id} onClick={() => onEventClick(ev)}
+                      className={`${C.card} w-full flex items-center gap-3 p-3 text-left hover:bg-mist/30 transition ${ev.realizada ? 'opacity-60' : ''}`}>
+                      <div className="flex flex-col items-center w-14 shrink-0">
+                        <span className="text-sm font-semibold text-forest tabular-nums">{ev.hora_inicio}</span>
+                        <span className="text-[11px] text-forest/40 tabular-nums">{ev.hora_termino}</span>
+                      </div>
+                      <span className="w-1 self-stretch rounded-full" style={{ background: ev.cor }} />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-forest truncate">{ev.realizada && '✓ '}{ev.titulo}</div>
+                        {ev.observacoes && <div className="text-xs text-forest/45 truncate">{ev.observacoes}</div>}
+                      </div>
+                      {stu && <CreditBadge aulas={stu.aulas_pagas} size="sm" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Atenção carinhosa */}
+          <div className="space-y-3">
+            <h2 className="font-display text-lg font-semibold text-forest flex items-center gap-2"><Icon name="sparkle" className="w-5 h-5 text-sun" fill="currentColor"/>Atenção carinhosa</h2>
+            {lowCredit.length === 0 ? (
+              <div className={C.card + ' p-5 text-center'}>
+                <div className="text-2xl mb-1">🌱</div>
+                <p className="text-sm text-forest/60">Todos os alunos com créditos em dia. Que delícia!</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {lowCredit.map((s) => (
+                  <button key={s.id} onClick={() => onOpenStudent(s.id)}
+                    className={`${C.card} w-full flex items-center gap-3 p-3 text-left hover:bg-mist/30 transition ring-1 ring-sun/30`}>
+                    <Avatar name={s.nome} color={avatarColor(s.id)} size={36} />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-forest truncate">{s.nome}</div>
+                      <div className="text-xs text-forest/45">{s.telefone}</div>
+                    </div>
+                    <CreditBadge aulas={s.aulas_pagas} size="sm" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ============================================================
+     17. PÁGINA: ALUNOS (CRM)
+     ============================================================ */
+  function AlunosPage({ students, events, onNewStudent, onOpenStudent, onEditStudent }) {
+    const [q, setQ] = useState('');
+    const [layout, setLayout] = useState('cards'); // cards | table
+
+    const filtered = useMemo(() => {
+      const t = q.trim().toLowerCase();
+      const tDigits = onlyDigits(q);
+      return students
+        .filter((s) => !t || s.nome.toLowerCase().includes(t) || (tDigits && onlyDigits(s.telefone).includes(tDigits)))
+        .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+    }, [students, q]);
+
+    return (
+      <div className="space-y-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="font-display text-3xl font-semibold text-forest">Alunos</h1>
+            <p className="text-sm text-forest/50 mt-0.5">{students.length} aluno(s) sob seus cuidados.</p>
+          </div>
+          <button onClick={onNewStudent} className={C.btnPrimary}><Icon name="plus" className="w-4 h-4" sw={2.2}/>Novo aluno</button>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[220px]">
+            <Icon name="search" className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-forest/35" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por nome ou telefone…"
+                   className={C.input + ' pl-10'} />
+          </div>
+          <div className="inline-flex rounded-xl bg-canvas/70 border border-forest/10 p-1">
+            {[['cards', 'grid'], ['table', 'list']].map(([v, ic]) => (
+              <button key={v} onClick={() => setLayout(v)}
+                className={`grid place-items-center w-9 h-9 rounded-lg transition ${layout === v ? 'bg-sage text-white' : 'text-forest/45 hover:text-forest'}`}>
+                <Icon name={ic} className="w-4 h-4" />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {filtered.length === 0 ? (
+          <EmptyState icon="users" title={q ? 'Ninguém encontrado' : 'Nenhum aluno ainda'}
+            subtitle={q ? 'Tente outro nome ou número.' : 'Cadastre o primeiro aluno para começar.'}
+            action={!q && <button onClick={onNewStudent} className={C.btnPrimary}><Icon name="plus" className="w-4 h-4" sw={2.2}/>Cadastrar aluno</button>} />
+        ) : layout === 'cards' ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            {filtered.map((s) => <StudentCard key={s.id} student={s} onOpen={onOpenStudent} onEdit={onEditStudent} />)}
+          </div>
+        ) : (
+          <StudentsTable students={filtered} onOpen={onOpenStudent} onEdit={onEditStudent} />
+        )}
+      </div>
+    );
+  }
+
+  /* ============================================================
+     18. SIDEBAR
+     ============================================================ */
+  function Sidebar({ page, setPage, collapsed, setCollapsed, mobileOpen, setMobileOpen, onExport, onImport, darkMode, onToggleDark }) {
+    const items = [
+      { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+      { id: 'agenda', label: 'Agenda', icon: 'calendar' },
+      { id: 'alunos', label: 'Alunos', icon: 'users' },
+    ];
+    const nav = (id) => { setPage(id); setMobileOpen(false); };
+
+    return (
+      <>
+        {mobileOpen && <div className="fixed inset-0 z-40 bg-forest/30 backdrop-blur-[2px] md:hidden anim-fade" onClick={() => setMobileOpen(false)} />}
+        <aside className={`fixed top-0 left-0 z-40 h-full bg-canvas/85 backdrop-blur-md border-r border-forest/5 flex flex-col transition-all duration-300
+          ${collapsed ? 'md:w-20' : 'md:w-64'} w-64
+          ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+          {/* Topo */}
+          <div className="flex items-center justify-between h-[72px] px-4 border-b border-forest/5">
+            {collapsed ? <Logo withWordmark={false} size={36} /> : <Logo />}
+            <div className="flex items-center gap-1">
+              <button onClick={onToggleDark} title={darkMode ? 'Modo claro' : 'Modo escuro'}
+                className="hidden md:grid place-items-center w-8 h-8 rounded-lg text-forest/35 hover:bg-mist/60 hover:text-forest transition">
+                <Icon name={darkMode ? 'sun' : 'moon'} className="w-4 h-4" />
+              </button>
+              <button onClick={() => setCollapsed(!collapsed)}
+                className="hidden md:grid place-items-center w-8 h-8 rounded-lg text-forest/35 hover:bg-mist/60 hover:text-forest transition">
+                <Icon name="collapse" className={`w-4 h-4 transition-transform ${collapsed ? 'rotate-180' : ''}`} />
+              </button>
+            </div>
+            <button onClick={() => setMobileOpen(false)} className="md:hidden grid place-items-center w-8 h-8 rounded-lg text-forest/40"><Icon name="x" /></button>
+          </div>
+
+          {/* Navegação */}
+          <nav className="flex-1 px-3 py-4 space-y-1">
+            {items.map((it) => {
+              const active = page === it.id;
+              return (
+                <button key={it.id} onClick={() => nav(it.id)} title={it.label}
+                  className={`group w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${collapsed ? 'md:justify-center' : ''}
+                    ${active ? 'bg-sage text-white shadow-sm' : 'text-forest/60 hover:bg-sage/10 hover:text-forest'}`}>
+                  <Icon name={it.icon} className="w-5 h-5 shrink-0" sw={active ? 2 : 1.8} />
+                  <span className={collapsed ? 'md:hidden' : ''}>{it.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Dark mode — visível no collapsed como ícone */}
+          <div className="px-3 py-2 border-t border-forest/5">
+            <button onClick={onToggleDark}
+              className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${darkMode ? 'bg-canvas/40 text-forest' : 'text-forest/50 hover:bg-sage/10 hover:text-forest'} ${collapsed ? 'md:justify-center' : ''}`}>
+              <Icon name={darkMode ? 'sun' : 'moon'} className="w-5 h-5 shrink-0" />
+              <span className={collapsed ? 'md:hidden' : ''}>{darkMode ? 'Modo claro' : 'Modo escuro'}</span>
+            </button>
+          </div>
+
+          {/* Backup — exportar / importar */}
+          <div className={`px-3 pb-2 border-t border-forest/5 pt-3 ${collapsed ? 'md:hidden' : ''}`}>
+            <p className="text-[10px] uppercase tracking-wider text-forest/35 font-medium px-1 mb-2">Backup de dados</p>
+            <div className="grid grid-cols-2 gap-2">
+              <button onClick={onExport}
+                className="flex items-center justify-center gap-1.5 rounded-xl bg-mist/60 px-2 py-2 text-xs font-medium text-forest/70 hover:bg-mist transition">
+                <Icon name="down" className="w-3.5 h-3.5 rotate-180" /> Exportar
+              </button>
+              <button onClick={onImport}
+                className="flex items-center justify-center gap-1.5 rounded-xl bg-mist/60 px-2 py-2 text-xs font-medium text-forest/70 hover:bg-mist transition">
+                <Icon name="down" className="w-3.5 h-3.5" /> Importar
+              </button>
+            </div>
+          </div>
+
+          {/* Rodapé — identidade da marca */}
+          <div className={`p-4 border-t border-forest/5 ${collapsed ? 'md:hidden' : ''}`}>
+            <div className="rounded-2xl bg-gradient-to-br from-mist to-honey p-3.5">
+              <p className="font-display italic text-sm text-forest/80 leading-snug">"{BRAND.tagline}"</p>
+              <div className="mt-2.5 text-[11px] text-forest/50 space-y-0.5">
+                <div>{BRAND.instagram}</div>
+                <div>{BRAND.telefone}</div>
+                <div>{BRAND.cidade}</div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </>
+    );
+  }
+
+  /* ============================================================
+     19. APP — estado global, ações e roteamento
+     ============================================================ */
+  function App() {
+    const [students, setStudents] = useLocalStorage(STORAGE.students, seedStudents);
+    const [events, setEvents] = useLocalStorage(STORAGE.events, seedEvents);
+
+    const [darkMode, setDarkMode] = useLocalStorage('dw_demo_dark_mode', false);
+    useEffect(() => {
+      if (darkMode) document.documentElement.classList.add('dark');
+      else document.documentElement.classList.remove('dark');
+    }, [darkMode]);
+    const toggleDark = () => setDarkMode((d) => !d);
+
+    const [page, setPage] = useState('dashboard');
+    const [collapsed, setCollapsed] = useState(false);
+    const [mobileOpen, setMobileOpen] = useState(false);
+
+    // Modais / gaveta
+    const [studentModal, setStudentModal] = useState({ open: false, student: null });
+    const [eventModal, setEventModal] = useState({ open: false, event: null, defaults: {} });
+    const [drawerId, setDrawerId] = useState(null);
+    const [dayModal, setDayModal] = useState(null); // dateStr
+    const [confirm, setConfirm] = useState(null);
+    const [toasts, setToasts] = useState([]);
+
+    const notify = (msg) => {
+      const id = uuid();
+      setToasts((t) => [...t, { id, msg }]);
+      setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 2800);
+    };
+    const dismissToast = (id) => setToasts((t) => t.filter((x) => x.id !== id));
+
+    const drawerStudent = students.find((s) => s.id === drawerId) || null;
+
+    /* ---------- Ações de aluno ---------- */
+    const saveStudent = (stu) => {
+      setStudents((prev) => prev.some((s) => s.id === stu.id) ? prev.map((s) => s.id === stu.id ? stu : s) : [...prev, stu]);
+      notify(prevHas(students, stu.id) ? 'Aluno atualizado 💚' : 'Aluno cadastrado 💚');
+    };
+    const prevHas = (arr, id) => arr.some((s) => s.id === id);
+
+    const deleteStudent = (stu) => setConfirm({
+      title: `Remover ${stu.nome}?`, message: 'A ficha e as anotações serão apagadas. As aulas ficam, mas sem vínculo.',
+      confirmLabel: 'Remover aluno',
+      onConfirm: () => {
+        setStudents((prev) => prev.filter((s) => s.id !== stu.id));
+        setEvents((prev) => prev.map((e) => e.aluno_id === stu.id ? { ...e, aluno_id: null } : e));
+        setDrawerId(null);
+        notify('Aluno removido.');
+      },
+    });
+
+    const addCredits = (id, delta) => setStudents((prev) => prev.map((s) =>
+      s.id === id ? { ...s, aulas_pagas: Math.max(0, (Number(s.aulas_pagas) || 0) + delta) } : s));
+
+    const addNote = (id, texto) => {
+      setStudents((prev) => prev.map((s) => s.id === id
+        ? { ...s, anotacoes: [...(s.anotacoes || []), { id: uuid(), data: new Date().toISOString(), texto }] } : s));
+      notify('Anotação salva 🍃');
+    };
+    const deleteNote = (id, noteId) => setStudents((prev) => prev.map((s) =>
+      s.id === id ? { ...s, anotacoes: (s.anotacoes || []).filter((n) => n.id !== noteId) } : s));
+
+    /* ---------- Ações de evento ---------- */
+    // Reconciliação de crédito ao salvar uma aula já concluída
+    const saveEvent = (ev) => {
+      const old = events.find((e) => e.id === ev.id);
+      let next = { ...ev };
+      if (old && old.realizada) {
+        // mantém status de realizada e ajusta crédito se a regra/aluno mudou
+        next.realizada = true;
+        const shouldDeduct = next.descontar_credito && next.aluno_id;
+        if (old.credito_descontado && (!shouldDeduct || old.aluno_id !== next.aluno_id)) {
+          if (old.aluno_id) addCredits(old.aluno_id, +1); // devolve ao aluno antigo
+        }
+        if (shouldDeduct && (!old.credito_descontado || old.aluno_id !== next.aluno_id)) {
+          addCredits(next.aluno_id, -1);
+          next.credito_descontado = true;
+        } else if (!shouldDeduct) {
+          next.credito_descontado = false;
+        }
+      }
+      setEvents((prev) => prev.some((e) => e.id === ev.id) ? prev.map((e) => e.id === ev.id ? next : e) : [...prev, next]);
+      notify(old ? 'Aula atualizada 💚' : 'Aula agendada 💚');
+    };
+
+    const deleteEvent = (id) => {
+      const ev = events.find((e) => e.id === id);
+      if (ev && ev.realizada && ev.credito_descontado && ev.aluno_id) addCredits(ev.aluno_id, +1); // devolve crédito
+      setEvents((prev) => prev.filter((e) => e.id !== id));
+      notify('Aula excluída.');
+    };
+
+    // Marca/desmarca aula como realizada (aplica/estorna o crédito)
+    const toggleDone = (id) => {
+      const ev = events.find((e) => e.id === id);
+      if (!ev) return;
+      const novo = !ev.realizada;
+      let descontado = ev.credito_descontado, delta = 0;
+      if (ev.descontar_credito && ev.aluno_id) {
+        if (novo && !ev.credito_descontado) { delta = -1; descontado = true; }
+        else if (!novo && ev.credito_descontado) { delta = +1; descontado = false; }
+      }
+      setEvents((prev) => prev.map((e) => e.id === id ? { ...e, realizada: novo, credito_descontado: descontado } : e));
+      if (delta !== 0) addCredits(ev.aluno_id, delta);
+      notify(novo ? (delta === -1 ? 'Aula concluída — 1 crédito descontado ✓' : 'Aula concluída ✓') : 'Aula reaberta.');
+    };
+
+    /* ---------- Exportar / Importar backup ---------- */
+    const fileInputRef = useRef(null);
+
+    const exportData = () => {
+      const payload = { version: 1, exportedAt: new Date().toISOString(), students, events };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `duda-west-backup-${todayStr()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      notify('Backup exportado com sucesso 💚');
+    };
+
+    const handleImportFile = (file) => {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (!Array.isArray(data.students) || !Array.isArray(data.events))
+            throw new Error('Formato inválido');
+          setConfirm({
+            title: 'Importar backup?',
+            message: `Vai substituir todos os dados atuais pelos dados do arquivo: ${data.students.length} aluno(s) e ${data.events.length} aula(s).`,
+            confirmLabel: 'Importar agora',
+            onConfirm: () => {
+              setStudents(data.students);
+              setEvents(data.events);
+              notify('Dados importados com sucesso 💚');
+            },
+          });
+        } catch {
+          notify('Arquivo inválido — nada foi alterado.');
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    /* ---------- Abridores ---------- */
+    const openNewStudent = () => setStudentModal({ open: true, student: null });
+    const openEditStudent = (s) => setStudentModal({ open: true, student: s });
+    const openNewEvent = (defaults) => setEventModal({ open: true, event: null, defaults: defaults || {} });
+    const openEditEvent = (ev) => { setDayModal(null); setEventModal({ open: true, event: ev, defaults: {} }); };
+
+    return (
+      <div className="min-h-screen">
+        <Sidebar page={page} setPage={setPage} collapsed={collapsed} setCollapsed={setCollapsed} mobileOpen={mobileOpen} setMobileOpen={setMobileOpen}
+          onExport={exportData} onImport={() => fileInputRef.current && fileInputRef.current.click()}
+          darkMode={darkMode} onToggleDark={toggleDark} />
+        <input ref={fileInputRef} type="file" accept=".json" className="hidden"
+          onChange={(e) => { handleImportFile(e.target.files[0]); e.target.value = ''; }} />
+
+        <div className={`transition-all duration-300 ${collapsed ? 'md:pl-20' : 'md:pl-64'}`}>
+          {/* Topo mobile */}
+          <header className="md:hidden sticky top-0 z-30 flex items-center gap-3 h-16 px-4 bg-canvas/80 backdrop-blur border-b border-forest/5">
+            <button onClick={() => setMobileOpen(true)} className="grid place-items-center w-10 h-10 rounded-xl text-forest/60 hover:bg-mist transition"><Icon name="menu" /></button>
+            <Logo size={32} />
+          </header>
+
+          <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+            {page === 'dashboard' && (
+              <DashboardPage students={students} events={events}
+                onNewEvent={openNewEvent} onNewStudent={openNewStudent}
+                onEventClick={openEditEvent} onOpenStudent={setDrawerId} goAgenda={() => setPage('agenda')} />
+            )}
+            {page === 'agenda' && (
+              <AgendaPage events={events} onNewEvent={openNewEvent} onEventClick={openEditEvent} onDayMore={setDayModal} />
+            )}
+            {page === 'alunos' && (
+              <AlunosPage students={students} events={events}
+                onNewStudent={openNewStudent} onOpenStudent={setDrawerId} onEditStudent={openEditStudent} />
+            )}
+          </main>
+        </div>
+
+        {/* Modais e gaveta */}
+        <StudentForm open={studentModal.open} student={studentModal.student}
+          onClose={() => setStudentModal({ open: false, student: null })} onSave={saveStudent} />
+
+        <EventForm open={eventModal.open} event={eventModal.event} defaults={eventModal.defaults} students={students}
+          onClose={() => setEventModal({ open: false, event: null, defaults: {} })}
+          onSave={saveEvent} onDelete={deleteEvent} onToggleDone={toggleDone} />
+
+        {drawerStudent && (
+          <StudentDrawer student={drawerStudent} events={events}
+            onClose={() => setDrawerId(null)}
+            onEdit={(s) => { openEditStudent(s); }}
+            onDelete={deleteStudent}
+            onAddCredits={(id, n) => { addCredits(id, n); }}
+            onAddNote={addNote} onDeleteNote={deleteNote}
+            onOpenEvent={(ev) => { setDrawerId(null); openEditEvent(ev); }} />
+        )}
+
+        <DayEventsModal dateStr={dayModal} events={events} students={students}
+          onClose={() => setDayModal(null)} onEventClick={openEditEvent} onNew={(d) => { setDayModal(null); openNewEvent(d); }} />
+
+        <ConfirmDialog data={confirm} onClose={() => setConfirm(null)} />
+        <Toasts items={toasts} dismiss={dismissToast} />
+      </div>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

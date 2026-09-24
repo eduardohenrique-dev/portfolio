@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Demos estáticas (dados fictícios) em public/demos/<nome>/index.html,
+  // servidas em /demos/<nome> — o Next não resolve index.html de pasta sozinho.
+  async rewrites() {
+    return [{ source: "/demos/:nome", destination: "/demos/:nome/index.html" }];
+  },
   async headers() {
     return [
       {
