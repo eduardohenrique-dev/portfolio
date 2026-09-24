@@ -20,13 +20,12 @@ import { CANECA, CONTROLE, GATO_DORMINDO, IBITURUNA, SUCULENTA, VAPOR } from "./
 import { gerarFonte } from "./fonte/gerar";
 import { desenharTexto, medirTexto } from "./fonte/texto";
 import { ampliar, pngIndexado } from "./png";
+import { CURSORES } from "./sprites/cursores";
 import { ICONES } from "./sprites/icones";
 import {
   andarilho,
   caderno,
   cartucho,
-  cursorMao,
-  cursorSeta,
   favicon,
   fichario,
   iconeLua,
@@ -160,6 +159,7 @@ GATO_DORMINDO.forEach((q, i) => itensSprite.push([`gato-${i}`, deDesenho(q)]));
 itensSprite.push(["caneca", deDesenho(CANECA)], ["suculenta", deDesenho(SUCULENTA)], ["controle", deDesenho(CONTROLE)]);
 VAPOR.forEach((q, i) => itensSprite.push([`vapor-${i}`, deDesenho(q)]));
 itensSprite.push(["ibituruna", deDesenho(IBITURUNA)]);
+for (const [nome, cursor] of Object.entries(CURSORES)) itensSprite.push([`cursor-${nome}`, deDesenho(cursor.desenho)]);
 
 // ——— fluxo do Aseprite ———
 // referencia/<nome>.png: o sprite gerado em código, no tamanho exato, para redesenhar por cima.
@@ -200,13 +200,16 @@ const hashLuz = hash(pngLuz);
 limparAntigos("luz");
 writeFileSync(join(PASTA_ARTE, `luz.${hashLuz}.png`), pngLuz);
 
-// ——— cursores ———
+// ——— cursores do sistema ———
+// Reserva para quando o cursor em pixel art não liga (toque, alto contraste, preferência do visitante):
+// os mesmos desenhos da folha (inclusive os do Aseprite), ampliados 2× em PNG.
 mkdirSync(join(RAIZ, "public", "cursores"), { recursive: true });
-for (const [nome, p] of [
-  ["seta", cursorSeta()],
-  ["mao", cursorMao()],
-] as const) {
-  writeFileSync(join(RAIZ, "public", "cursores", `${nome}.png`), pngIndexado(24, 24, ampliar(12, 12, p.dados, 2), PALETAS.noite));
+const spritesPorNome = new Map(itensSprite);
+for (const nome of Object.keys(CURSORES)) {
+  const img = spritesPorNome.get(`cursor-${nome}`);
+  if (!img) continue;
+  const png = pngIndexado(img.largura * 2, img.altura * 2, ampliar(img.largura, img.altura, img.dados, 2), PALETAS.noite);
+  writeFileSync(join(RAIZ, "public", "cursores", `${nome}.png`), png);
 }
 
 // ——— ícones do app ———
@@ -265,6 +268,7 @@ const atlas = {
   regioes: { ...sprites.regioes },
   regioesLuz: { ...luz.regioes },
   cenas: refsCena,
+  cursores: Object.fromEntries(Object.entries(CURSORES).map(([nome, c]) => [nome, { regiao: `cursor-${nome}`, ponta: c.ponta }])),
 };
 writeFileSync(
   join(RAIZ, "src", "arte", "atlas.gerado.ts"),

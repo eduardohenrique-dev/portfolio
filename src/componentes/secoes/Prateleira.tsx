@@ -108,6 +108,9 @@ export function Prateleira({ projetos, titulo, texto }: Props) {
                   className="objeto flex w-full flex-col items-center"
                   aria-expanded={false}
                   aria-controls="painel-projeto"
+                  data-cursor="lupa"
+                  data-cursor-acao="abrir"
+                  data-cursor-objeto={p.nome}
                   onClick={() => trocar(p.id)}
                 >
                   <span data-flip-id={`moldura-${p.id}`} className="objeto-moldura block">

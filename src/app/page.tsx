@@ -1,3 +1,4 @@
+import { Cursor } from "@/componentes/cursor/Cursor";
 import { Hud } from "@/componentes/Hud";
 import { MovimentoRaiz } from "@/componentes/movimento/MovimentoRaiz";
 import { Abertura } from "@/componentes/secoes/Abertura";
@@ -38,6 +39,7 @@ export default function Pagina() {
     <>
       <MovimentoRaiz />
       <Hud secoes={secoes} />
+      <Cursor />
       <main id="conteudo" tabIndex={-1}>
         <Abertura />
         <Sobre comTerminal={comTerminal} />

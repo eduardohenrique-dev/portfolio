@@ -101,7 +101,6 @@
   html {
     background-color: var(--color-fundo);
     color: var(--color-creme);
-    cursor: url("/cursores/seta.png") 0 0, auto;
     -webkit-text-size-adjust: 100%;
   }
 
@@ -117,12 +116,45 @@
   summary,
   [role="button"],
   label[for] {
-    cursor: url("/cursores/mao.png") 6 0, pointer;
+    cursor: pointer;
   }
 
   input,
   textarea {
     cursor: text;
+  }
+
+  /*
+   * Cursores em pixel art pelo CSS: valem antes do JS, sem JS e onde o cursor desenhado não liga.
+   * Pontos ativos = `ponta` de arte/sprites/cursores.ts × 2. Saem quando o visitante escolhe o cursor
+   * do sistema e no alto contraste, que costuma trazer um cursor próprio, maior.
+   */
+  @media not (forced-colors: active) {
+    html:not(.cursor-do-sistema) {
+      cursor: url("/cursores/seta.png") 0 0, auto;
+    }
+
+    html:not(.cursor-do-sistema) :where(a, button, summary, [role="button"], label[for]) {
+      cursor: url("/cursores/mao.png") 12 0, pointer;
+    }
+
+    html:not(.cursor-do-sistema) :where(a, button, summary, [role="button"], label[for]):active {
+      cursor: url("/cursores/mao-apertando.png") 12 0, pointer;
+    }
+
+    html:not(.cursor-do-sistema) [data-cursor="lupa"] {
+      cursor: url("/cursores/lupa.png") 10 10, zoom-in;
+    }
+
+    html:not(.cursor-do-sistema) :where(input, textarea) {
+      cursor: url("/cursores/texto.png") 6 16, text;
+    }
+  }
+
+  /* o cursor em pixel art já está desenhado na página: o do sistema sai de cena */
+  html.com-cursor-pixel,
+  html.com-cursor-pixel * {
+    cursor: none !important;
   }
 
   ::selection {
@@ -435,6 +467,56 @@
   /* ——— contato ——— */
   .postal-cartao {
     transform-origin: 50% 50%;
+  }
+
+  /* ——— cursor em pixel art ——— */
+  .cursor-pixel {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  .cursor-pixel[data-visivel="true"] {
+    visibility: visible;
+  }
+
+  .cursor-pixel-sprite,
+  .cursor-pixel-rotulo {
+    position: absolute;
+    left: 0;
+    top: 0;
+    will-change: transform;
+  }
+
+  .cursor-pixel-sprite {
+    image-rendering: pixelated;
+  }
+
+  /* o rótulo abre da esquerda para a direita em 3 passos; o recorte deixa a moldura (4px fora) à mostra */
+  .cursor-pixel-rotulo {
+    display: flex;
+    gap: 8px;
+    padding: 4px 8px;
+    white-space: nowrap;
+    clip-path: inset(-4px calc(100% + 4px) -4px -4px);
+  }
+
+  .cursor-pixel-rotulo[data-visivel="true"] {
+    clip-path: inset(-4px);
+    transition: clip-path 96ms steps(3, jump-end);
+  }
+
+  .cursor-pixel-rotulo > :empty {
+    display: none;
+  }
+
+  @media print {
+    .cursor-pixel {
+      display: none;
+    }
   }
 }
 

@@ -355,6 +355,7 @@ export function Cena({ composicao, rotulo, horarioParado, interativa = false, ga
               className="cena-luminaria"
               aria-pressed={ligada}
               aria-label={ligada ? "Apagar a luminária" : "Acender a luminária"}
+              data-cursor-acao={ligada ? "apagar a luminária" : "acender a luminária"}
               onClick={alternarLuminaria}
               style={{ left: alvo.x * escala, top: alvo.y * escala, width: alvo.w * escala, height: alvo.h * escala }}
             />

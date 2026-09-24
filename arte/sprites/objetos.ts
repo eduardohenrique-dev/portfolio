@@ -1,6 +1,6 @@
 /**
  * Objetos desenhados por código: os projetos na prateleira, o personagem da
- * trajetória, ícones do HUD, cartão-postal, selo, cursores e favicon.
+ * trajetória, ícones do HUD, cartão-postal, selo e favicon. Os cursores ficam em cursores.ts.
  */
 import { CORES } from "../cena/sprites";
 import { Pincel } from "./pincel";
@@ -231,52 +231,6 @@ export function selo(gato: readonly string[]): Pincel {
   p.degrade(4, 4, 20, 14, [A, R]);
   p.desenho(gato, 6, 14);
   p.mini("GV", 4, 23, C);
-  return p;
-}
-
-export function cursorSeta(): Pincel {
-  const p = new Pincel(12, 12);
-  p.desenho(
-    [
-      "F...........",
-      "FF..........",
-      "FCF.........",
-      "FCCF........",
-      "FCCCF.......",
-      "FCCCCF......",
-      "FCCCCCF.....",
-      "FCCCCCCF....",
-      "FCCCCFFFF...",
-      "FCFFCF......",
-      "FF..FCF.....",
-      "....FFF.....",
-    ],
-    0,
-    0,
-  );
-  return p;
-}
-
-export function cursorMao(): Pincel {
-  const p = new Pincel(12, 12);
-  p.desenho(
-    [
-      "...FF.......",
-      "..FCCF......",
-      "..FCCF......",
-      "..FCCFFF....",
-      "..FCCFCCFF..",
-      "FFFCCFCCFCF.",
-      "FCFCCCCCCCCF",
-      "FCCCCCCCCCCF",
-      ".FCCCCCCCCCF",
-      "..FCCCCCCCF.",
-      "...FCCCCCF..",
-      "...FFFFFFF..",
-    ],
-    0,
-    0,
-  );
   return p;
 }
 

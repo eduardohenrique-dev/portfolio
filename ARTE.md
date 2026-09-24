@@ -66,9 +66,21 @@ escurecer anda o caminho de volta. A cena nunca tem mais de 8 cores.
 | `suculenta` | 7×6 | vaso pequeno | prateleira |
 | `controle` | 9×5 | controle de videogame | prateleira |
 | `ibituruna` | 46×12 | silhueta do pico vista da janela | céu da cena |
+| `cursor-seta` | 11×16 | seta | página toda |
+| `cursor-mao`, `cursor-mao-apertando` | 16×16 | mão apontando; no clique o indicador afunda 2px | links e botões |
+| `cursor-lupa` | 16×16 | lupa (examinar) | objetos da prateleira, espaços do inventário |
+| `cursor-texto` | 7×16 | barra de texto | campo do terminal |
 
-Fora da folha (gerados direto): cursores `public/cursores/seta.png` e `mao.png` (12×12 ampliados 2×),
-favicon 16×16 (`src/app/icon.png`, `apple-icon.png`) e a OG image 1200×630 (`public/og.png`).
+Fora da folha (gerados direto): favicon 16×16 (`src/app/icon.png`, `apple-icon.png`), a OG image
+1200×630 (`public/og.png`) e cópias dos cursores ampliadas 2× em `public/cursores/`, que o CSS usa
+enquanto o cursor desenhado não liga (antes do JS, sem JS, no toque).
+
+## Cursores
+
+Os desenhos e o ponto ativo de cada um (`ponta`, onde o clique acontece) ficam em
+`arte/sprites/cursores.ts`. Dá para redesenhar no Aseprite como qualquer sprite (`cursor-mao.png` etc.).
+Se o ponto ativo mudar de lugar, ajuste a `ponta` no arquivo e os pontos do CSS em `globals.css`
+(são a `ponta` × 2).
 
 O personagem é genérico (cabelo escuro, moletom sálvia). Se quiser que ele pareça você, os cinco
 quadros de `andarilho` são o lugar.

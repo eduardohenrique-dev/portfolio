@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter_Tight } from "next/font/google";
 import localFont from "next/font/local";
+import { SCRIPT_PREFERENCIA_CURSOR } from "@/componentes/cursor/preferencia";
 import { PERFIL } from "@/conteudo/perfil";
 import "./globals.css";
 
@@ -73,8 +74,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="pt-BR" className={`${pixel.variable} ${texto.variable}`} suppressHydrationWarning>
       <head>
-        {/* marca que há JS antes da primeira pintura: o título só se esconde se for ser animado */}
-        <script dangerouslySetInnerHTML={{ __html: `document.documentElement.classList.add("js")` }} />
+        {/* antes da primeira pintura: marca que há JS (o título só se esconde se for ser animado)
+            e aplica a escolha de cursor do visitante */}
+        <script dangerouslySetInnerHTML={{ __html: `document.documentElement.classList.add("js");${SCRIPT_PREFERENCIA_CURSOR}` }} />
       </head>
       <body>
         <script

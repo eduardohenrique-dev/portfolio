@@ -82,6 +82,9 @@ export function Inventario({ itens, total, titulo, texto }: Props) {
                     data-ativo={ativo}
                     aria-pressed={ativo}
                     tabIndex={ativo ? 0 : -1}
+                    data-cursor="lupa"
+                    data-cursor-acao="examinar"
+                    data-cursor-objeto={it.nome}
                     onClick={() => setSelecionado(i)}
                     onMouseEnter={() => setSelecionado(i)}
                     onFocus={() => setSelecionado(i)}

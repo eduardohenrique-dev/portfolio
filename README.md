@@ -25,6 +25,15 @@ calcula a escala com `devicePixelRatio` e alinha o canto ao pixel físico), grad
 pixel só em 12/24/36/48px com entrelinha que deixa a linha de base num pixel inteiro, movimento em
 `steps()`.
 
+**Cursor de jogo de apontar e clicar.** Com mouse, o cursor vira um sprite da folha: seta, mão (o
+indicador afunda no clique), lupa sobre o que dá para examinar e barra de texto nos campos. Objetos
+mostram o verbo e o nome ao lado ("abrir EINERD Scrims", "examinar TypeScript", "acender a
+luminária"). Ele troca de cor com o horário, como o resto da arte, e fica nítido em 125% e 150% pela
+mesma regra da cena. O cursor do sistema só some depois que o desenhado aparece; com toque, alto
+contraste ou se o visitante preferir (botão no rodapé, guardado no navegador), volta o do sistema de
+verdade. Para marcar um elemento novo: `data-cursor="lupa"`, `data-cursor-acao` e
+`data-cursor-objeto`. Código em `src/componentes/cursor/`.
+
 ## Movimento
 
 | Onde | O quê | Plugin |
@@ -34,6 +43,7 @@ pixel só em 12/24/36/48px com entrelinha que deixa a linha de base num pixel in
 | Projetos | o objeto da prateleira cresce até virar o painel | Flip |
 | Trajetória | seção presa, trilha horizontal, personagem anda em quadros e para quando a rolagem para | ScrollTrigger, Observer |
 | Contato | cartão-postal vira achatando em passos | core |
+| Cursor | troca de sprite conforme o alvo; o rótulo abre em `steps(3)` | nenhum (canvas e CSS) |
 
 Com `prefers-reduced-motion`, a página fica parada no entardecer (também pelo CSS, sem depender de
 JS), a trajetória vira lista e as trocas acontecem sem animação.
@@ -83,7 +93,7 @@ npm run build
 ```
 src/conteudo/     todos os textos e fatos (página e terminal leem daqui)
 src/arte/         paleta, compositor de luz, céu, carregamento da folha, relógio da página
-src/componentes/  cena em canvas, sprites, HUD e seções
+src/componentes/  cena em canvas, sprites, HUD, cursor e seções
 src/app/api/      rota do terminal
 src/lib/          limite de uso e modo offline
 arte/             geração da arte e da fonte (roda no build local, não na Vercel)
