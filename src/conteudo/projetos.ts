@@ -29,7 +29,7 @@ export const PROJETOS: Projeto[] = [
     objetoDescricao: "um cartucho de jogo com VS no rótulo",
     url: "https://einerd-scrims-demo.vercel.app",
     link: "demo",
-    acesso: "Demo com dados fictícios. Entre com o usuário visitante e a senha demo.",
+    acesso: "Demo com dados fictícios. Você já entra logado, e o que mudar fica só no seu navegador.",
     quando: "desde julho de 2026",
     resumo: "Registro de treinos e leitura de dados de partida para o time de LoL da Ei Nerd.",
     problema:

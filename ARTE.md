@@ -56,8 +56,11 @@ escurecer anda o caminho de volta. A cena nunca tem mais de 8 cores.
 | `guia` | 30×40 | guia de mapa dobrado com GV, rio Doce e alfinete | GVTEM |
 | `caixa-deck` | 28×42 | caixa de deck com carta saindo, cantos do visor da câmera, cinco cores de mana | Deck Scanner |
 | `caixa-loja` | 34×36 | caixa de papelão com o D da marca e etiqueta de preço | DGAMES |
-| `andarilho-0` … `-4` | 12×18 | personagem: parado, passo, junto, passo, junto (virado para a direita) | quem sou, trajetória |
-| `marco` | 12×16 | placa de madeira | trajetória |
+| `andarilho-0` | 12×18 | personagem parado | quem sou |
+| `televisao` | 148×110 | TV de tubo; a tela (128×80 a partir de 10,10) fica vazia | demos |
+| `console-apagado`, `console-aceso` | 100×30 | console de cartucho, com a luz apagada ou acesa | demos |
+| `cartucho-scrims`, `-hq`, `-dgames` | 24×30 | cartuchos com VS, HQ e D | demos |
+| `tela-scrims`, `-hq`, `-dgames` | 128×80 | captura real de cada demo (`arte/telas/*.png`, 1024×640) reduzida com pontilhado Bayer | demos |
 | `hud-sol`, `hud-por-do-sol`, `hud-lua` | 11×11 | ícone do relógio | HUD |
 | `icone-*` (17) | 16×16 | typescript, react, nextjs, vite, tailwind, supabase, postgresql, nodejs, vercel, python, opencv, prisma, vitest, grid, dndkit, claude, gsap | inventário |
 | `postal` | 120×76 | Ibituruna no fim de tarde, Rio Doce, parapente | contato |
@@ -84,8 +87,11 @@ Os desenhos e o ponto ativo de cada um (`ponta`, onde o clique acontece) ficam e
 Se o ponto ativo mudar de lugar, ajuste a `ponta` no arquivo e os pontos do CSS em `globals.css`
 (são a `ponta` × 2).
 
-O personagem é genérico (cabelo escuro, moletom sálvia). Se quiser que ele pareça você, os cinco
-quadros de `andarilho` são o lugar.
+O personagem é genérico (cabelo escuro, moletom sálvia). Se quiser que ele pareça você, redesenhe
+`andarilho-0`.
+
+As telas do console são capturas das demos em 1024×640. Se uma demo mudar, troque o PNG em
+`arte/telas/` e rode `npm run arte`.
 
 ## A cena por dentro
 

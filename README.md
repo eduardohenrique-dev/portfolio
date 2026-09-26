@@ -41,12 +41,12 @@ verdade. Para marcar um elemento novo: `data-cursor="lupa"`, `data-cursor-acao` 
 | Abertura | nome letra por letra em `steps(2)`; a cena monta camada por camada; o fim de tarde passa enquanto a seção fica presa | SplitText, ScrollTrigger |
 | Página toda | a rolagem move o relógio (16:40 → 23:10); cada seção ancora um horário; paleta, luz da cena e HUD trocam em passos | ScrollTrigger |
 | Projetos | o objeto da prateleira cresce até virar o painel | Flip |
-| Trajetória | seção presa, trilha horizontal, personagem anda em quadros e para quando a rolagem para | ScrollTrigger, Observer |
+| Demos | o cartucho voa até o console, desce na fenda em passos, a luz acende e a TV liga como tubo (linha que abre até a tela cheia); trocar ejeta o anterior | Flip, core |
 | Contato | cartão-postal vira achatando em passos | core |
 | Cursor | troca de sprite conforme o alvo; o rótulo abre em `steps(3)` | nenhum (canvas e CSS) |
 
 Com `prefers-reduced-motion`, a página fica parada no entardecer (também pelo CSS, sem depender de
-JS), a trajetória vira lista e as trocas acontecem sem animação.
+JS), o cartucho encaixa direto e as trocas acontecem sem animação.
 
 ## Terminal com IA
 
@@ -55,7 +55,7 @@ conteúdo que a página exibe (`src/conteudo/`). Sem fato na base, o modelo diz 
 
 - **Só com chave:** a página é estática e confere `ANTHROPIC_API_KEY` no build. Sem a chave, o terminal
   só teria respostas prontas, então a seção não é renderizada e saem junto as frases que apontam para
-  ela (parágrafo do "Quem sou", item do inventário, marco da trajetória e colofão). Cadastrou a chave,
+  ela (parágrafo do "Quem sou", item do inventário e colofão). Cadastrou a chave,
   faça um novo deploy e tudo volta.
 - **Limite:** 6 perguntas por hora por visitante (IP com hash) e teto diário (`IA_LIMITE_DIARIO`, padrão 300).
 - **Fallback:** sem chave, com cota esgotada, erro, demora (> 15 s) ou recusa, a rota responde com uma

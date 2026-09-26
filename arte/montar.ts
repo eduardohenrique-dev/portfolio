@@ -14,9 +14,9 @@ import { join } from "node:path";
 import { CEUS, desenharCeu } from "../src/arte/ceu";
 import { comporIndices } from "../src/arte/compositor";
 import { HORARIOS, INDICE, PALETAS, VAZIO, type Rgb } from "../src/arte/paleta";
-import { lerPngIndices } from "./pngLer";
+import { capturaEmPixelArt, lerPngIndices } from "./pngLer";
 import { type CenaExportada, exportarCena } from "./cena/exportar";
-import { CANECA, CONTROLE, GATO_DORMINDO, IBITURUNA, SUCULENTA, VAPOR } from "./cena/sprites";
+import { CANECA, CONTROLE, CORES, GATO_DORMINDO, IBITURUNA, SUCULENTA, VAPOR } from "./cena/sprites";
 import { gerarFonte } from "./fonte/gerar";
 import { desenharTexto, medirTexto } from "./fonte/texto";
 import { ampliar, pngIndexado } from "./png";
@@ -27,15 +27,19 @@ import {
   caixaDeck,
   caixaLoja,
   cartucho,
+  cartuchoDemo,
+  consoleDemos,
+  FENDA,
   favicon,
   fichario,
   guia,
   iconeLua,
   iconePorDoSol,
   iconeSol,
-  marco,
   postal,
   selo,
+  TELA,
+  televisao,
 } from "./sprites/objetos";
 import { Pincel } from "./sprites/pincel";
 import { desenhoParaIndices } from "./util";
@@ -155,8 +159,20 @@ for (const composicao of ["larga", "alta"] as const) {
 for (const [nome, linhas] of Object.entries(ICONES)) itensSprite.push([`icone-${nome}`, deDesenho(linhas)]);
 itensSprite.push(["cartucho", cartucho()], ["fichario", fichario()]);
 itensSprite.push(["guia", guia()], ["caixa-deck", caixaDeck()], ["caixa-loja", caixaLoja()]);
-andarilho().forEach((q, i) => itensSprite.push([`andarilho-${i}`, q]));
-itensSprite.push(["marco", marco()], ["hud-sol", iconeSol()], ["hud-por-do-sol", iconePorDoSol()], ["hud-lua", iconeLua()]);
+// console das demos: TV, console apagado/aceso, cartuchos e as telas (capturas reais reduzidas a pixel art)
+{
+  const { F, A: Am, R: Ro, C: Cr, B: Br } = CORES;
+  itensSprite.push(["televisao", televisao()], ["console-apagado", consoleDemos(false)], ["console-aceso", consoleDemos(true)]);
+  itensSprite.push(
+    ["cartucho-scrims", cartuchoDemo("VS", Br, Am, F)],
+    ["cartucho-hq", cartuchoDemo("HQ", Ro, Cr, F)],
+    ["cartucho-dgames", cartuchoDemo("D", Am, Ro, Cr)],
+  );
+  for (const nome of ["scrims", "hq", "dgames"])
+    itensSprite.push([`tela-${nome}`, capturaEmPixelArt(join(RAIZ, "arte", "telas", `${nome}.png`), TELA.largura, TELA.altura, PALETAS.entardecer, 40)]);
+}
+itensSprite.push(["andarilho-0", andarilho()[0]]);
+itensSprite.push(["hud-sol", iconeSol()], ["hud-por-do-sol", iconePorDoSol()], ["hud-lua", iconeLua()]);
 itensSprite.push(["postal", postal(IBITURUNA)], ["selo", selo(GATO_DORMINDO[0])]);
 GATO_DORMINDO.forEach((q, i) => itensSprite.push([`gato-${i}`, deDesenho(q)]));
 itensSprite.push(["caneca", deDesenho(CANECA)], ["suculenta", deDesenho(SUCULENTA)], ["controle", deDesenho(CONTROLE)]);
@@ -271,6 +287,7 @@ const atlas = {
   regioes: { ...sprites.regioes },
   regioesLuz: { ...luz.regioes },
   cenas: refsCena,
+  console: { tela: TELA, fenda: FENDA },
   cursores: Object.fromEntries(Object.entries(CURSORES).map(([nome, c]) => [nome, { regiao: `cursor-${nome}`, ponta: c.ponta }])),
 };
 writeFileSync(

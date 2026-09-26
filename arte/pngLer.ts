@@ -1,10 +1,10 @@
 /**
- * Leitor PNG mínimo (8 bits: indexado, RGB ou RGBA) para importar sprites exportados do Aseprite.
- * Cada pixel volta para o índice mais próximo da paleta de referência.
+ * Leitor PNG mínimo (8 bits: indexado, RGB ou RGBA) para importar sprites exportados do Aseprite
+ * e as capturas de tela das demos.
  */
 import { readFileSync } from "node:fs";
 import { inflateSync } from "node:zlib";
-import { VAZIO, type Rgb } from "../src/arte/paleta";
+import { BAYER4, VAZIO, type Rgb } from "../src/arte/paleta";
 
 function paeth(a: number, b: number, c: number): number {
   const p = a + b - c;
@@ -15,7 +15,8 @@ function paeth(a: number, b: number, c: number): number {
   return pb <= pc ? b : c;
 }
 
-export function lerPngIndices(caminho: string, referencia: readonly Rgb[]): { largura: number; altura: number; dados: Uint8Array } {
+/** Devolve os pixels em RGBA, 4 bytes por pixel. */
+export function lerPngRgba(caminho: string): { largura: number; altura: number; rgba: Uint8Array } {
   const buf = readFileSync(caminho);
   let pos = 8;
   let largura = 0;
@@ -64,8 +65,22 @@ export function lerPngIndices(caminho: string, referencia: readonly Rgb[]): { la
     }
   }
 
+  const rgba = new Uint8Array(largura * altura * 4);
+  for (let p = 0; p < largura * altura; p++) {
+    if (tipoCor === 3) {
+      const cor = paleta[pixels[p]] ?? [0, 0, 0];
+      rgba.set([cor[0], cor[1], cor[2], alfaPaleta[pixels[p]] ?? 255], p * 4);
+    } else {
+      const o = p * canais;
+      rgba.set([pixels[o], pixels[o + 1], pixels[o + 2], canais === 4 ? pixels[o + 3] : 255], p * 4);
+    }
+  }
+  return { largura, altura, rgba };
+}
+
+function criarMaisProximo(referencia: readonly Rgb[]) {
   const cache = new Map<number, number>();
-  const maisProximo = (r: number, g: number, bl: number) => {
+  return (r: number, g: number, bl: number) => {
     const chave = (r << 16) | (g << 8) | bl;
     const pronto = cache.get(chave);
     if (pronto !== undefined) return pronto;
@@ -81,18 +96,47 @@ export function lerPngIndices(caminho: string, referencia: readonly Rgb[]): { la
     cache.set(chave, melhor);
     return melhor;
   };
+}
 
+/** Cada pixel vira o índice mais próximo da paleta de referência (transparente vira VAZIO). */
+export function lerPngIndices(caminho: string, referencia: readonly Rgb[]): { largura: number; altura: number; dados: Uint8Array } {
+  const { largura, altura, rgba } = lerPngRgba(caminho);
+  const maisProximo = criarMaisProximo(referencia);
   const dados = new Uint8Array(largura * altura);
   for (let p = 0; p < dados.length; p++) {
-    if (tipoCor === 3) {
-      const i = pixels[p];
-      if ((alfaPaleta[i] ?? 255) < 128 || !paleta[i]) dados[p] = VAZIO;
-      else dados[p] = maisProximo(...paleta[i]);
-    } else {
-      const o = p * canais;
-      if (canais === 4 && pixels[o + 3] < 128) dados[p] = VAZIO;
-      else dados[p] = maisProximo(pixels[o], pixels[o + 1], pixels[o + 2]);
-    }
+    const o = p * 4;
+    dados[p] = rgba[o + 3] < 128 ? VAZIO : maisProximo(rgba[o], rgba[o + 1], rgba[o + 2]);
   }
+  return { largura, altura, dados };
+}
+
+/**
+ * Reduz uma captura de tela para largura×altura (média de cada bloco) e leva para a paleta com
+ * pontilhado Bayer 4×4: a tela das demos vira pixel art de 8 cores, que troca com o horário.
+ */
+export function capturaEmPixelArt(caminho: string, largura: number, altura: number, referencia: readonly Rgb[], espalhamento = 56) {
+  const img = lerPngRgba(caminho);
+  const maisProximo = criarMaisProximo(referencia);
+  const dados = new Uint8Array(largura * altura);
+  const bx = img.largura / largura;
+  const by = img.altura / altura;
+  for (let y = 0; y < altura; y++)
+    for (let x = 0; x < largura; x++) {
+      let r = 0;
+      let g = 0;
+      let b = 0;
+      let n = 0;
+      for (let j = Math.floor(y * by); j < Math.floor((y + 1) * by); j++)
+        for (let i = Math.floor(x * bx); i < Math.floor((x + 1) * bx); i++) {
+          const o = (j * img.largura + i) * 4;
+          r += img.rgba[o];
+          g += img.rgba[o + 1];
+          b += img.rgba[o + 2];
+          n++;
+        }
+      const limiar = ((BAYER4[y & 3][x & 3] + 0.5) / 16 - 0.5) * espalhamento;
+      const c = (v: number) => Math.max(0, Math.min(255, Math.round(v / n + limiar)));
+      dados[y * largura + x] = maisProximo(c(r), c(g), c(b));
+    }
   return { largura, altura, dados };
 }

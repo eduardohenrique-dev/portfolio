@@ -389,29 +389,11 @@
       inset 0 0 0 8px var(--color-fundo);
   }
 
-  /* ——— trajetória ——— */
-  .caminho {
-    height: 16px;
-    background-color: var(--color-linha);
-    box-shadow:
-      inset 0 4px 0 0 var(--color-rosa),
-      inset 0 -4px 0 0 var(--color-superficie);
-  }
-
-  .andarilho .quadro {
-    display: none;
-  }
-
-  .andarilho[data-quadro="0"] .quadro:nth-child(1),
-  .andarilho[data-quadro="1"] .quadro:nth-child(2),
-  .andarilho[data-quadro="2"] .quadro:nth-child(3),
-  .andarilho[data-quadro="3"] .quadro:nth-child(4),
-  .andarilho[data-quadro="4"] .quadro:nth-child(5) {
-    display: block;
-  }
-
-  .andarilho.voltando {
-    transform: scaleX(-1);
+  /* ——— console das demos ——— */
+  /* a fenda: o cartucho só aparece acima do tampo; o que desce some dentro do console */
+  .console-fenda {
+    position: absolute;
+    overflow: hidden;
   }
 
   /* ——— terminal ——— */

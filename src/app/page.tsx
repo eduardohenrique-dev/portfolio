@@ -8,19 +8,18 @@ import { Prateleira } from "@/componentes/secoes/Prateleira";
 import { Rodape } from "@/componentes/secoes/Rodape";
 import { Sobre } from "@/componentes/secoes/Sobre";
 import { Terminal } from "@/componentes/secoes/Terminal";
-import { Trajetoria } from "@/componentes/secoes/Trajetoria";
+import { ConsoleDemos } from "@/componentes/secoes/ConsoleDemos";
 import { INVENTARIO, TOTAL_PROJETOS } from "@/conteudo/inventario";
 import { CONTATO, PERFIL } from "@/conteudo/perfil";
 import { PROJETOS } from "@/conteudo/projetos";
 import { TERMINAL } from "@/conteudo/terminal";
-import { AGORA, TRAJETORIA } from "@/conteudo/trajetoria";
 
 const SECOES = [
   { id: "inicio", rotulo: "início" },
   { id: "quem-sou", rotulo: "quem sou" },
   { id: "projetos", rotulo: "projetos" },
   { id: "inventario", rotulo: "inventário" },
-  { id: "trajetoria", rotulo: "trajetória" },
+  { id: "demos", rotulo: "demos" },
   { id: "terminal", rotulo: "terminal" },
   { id: "contato", rotulo: "contato" },
 ];
@@ -31,9 +30,6 @@ export default function Pagina() {
   const comTerminal = Boolean(process.env.ANTHROPIC_API_KEY);
   const secoes = comTerminal ? SECOES : SECOES.filter((s) => s.id !== "terminal");
   const itens = comTerminal ? INVENTARIO : INVENTARIO.filter((i) => !i.soComTerminal);
-  const marcos = TRAJETORIA.map(({ textoSemTerminal, ...marco }) =>
-    comTerminal || !textoSemTerminal ? marco : { ...marco, texto: textoSemTerminal },
-  );
 
   return (
     <>
@@ -54,7 +50,11 @@ export default function Pagina() {
           titulo="Inventário"
           texto={`O que eu levo para os projetos. O número no canto de cada espaço é em quantos deles o item entrou — contando os cinco da prateleira e este site, ${TOTAL_PROJETOS} ao todo.`}
         />
-        <Trajetoria marcos={marcos} agora={AGORA} titulo="Trajetória" texto="Do primeiro repositório de curso a este site, em ordem." />
+        <ConsoleDemos
+          demos={PROJETOS.filter((p) => p.link === "demo")}
+          titulo="Demos para jogar"
+          texto="O Scrims, o HQ e o DGAMES são de uso interno, então cada um tem uma cópia com dados fictícios. Escolha um cartucho e ligue o console."
+        />
         {comTerminal && (
           <Terminal titulo={TERMINAL.titulo} texto={TERMINAL.texto} boasVindas={TERMINAL.boasVindas} sugestoes={TERMINAL.sugestoes} />
         )}
