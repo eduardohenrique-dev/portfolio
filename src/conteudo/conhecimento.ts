@@ -6,6 +6,7 @@ import "server-only";
 import { INVENTARIO } from "./inventario";
 import { ABERTURA, CONTATO, PERFIL, SOBRE } from "./perfil";
 import { PROJETOS } from "./projetos";
+import { SERVICOS } from "./servicos";
 
 function fatos(): string {
   const projetos = PROJETOS.map(
@@ -17,6 +18,7 @@ function fatos(): string {
     `# Pessoa\nNome: ${PERFIL.nomeCompleto} (assina Eduardo Henrique). ${PERFIL.papel}. Cidade: ${PERFIL.cidade}. Formação: ${PERFIL.formacao}. Idiomas: ${PERFIL.idiomas.join(" e ")}.`,
     `# Apresentação (escrita por ele)\n${ABERTURA.lead}\n${[...SOBRE.paragrafos, SOBRE.paragrafoTerminal].join("\n")}`,
     `# Projetos no ar\n${projetos}`,
+    `# Serviços (do rascunho ao ar; dá para contratar uma parada ou o caminho inteiro)\n${SERVICOS.map((s) => `- ${s.nome} (${s.area}): ${s.descricao} Entrega: ${s.entregas.join("; ")}. Onde já fez: ${s.onde}`).join("\n")}`,
     `# Tecnologias e onde foram usadas\n${inventario}`,
     `# Contato\nE-mail: ${PERFIL.email}. Prazo de resposta: ${PERFIL.prazoResposta}. ${CONTATO.texto} GitHub: ${PERFIL.github}. LinkedIn: ${PERFIL.linkedin}.`,
   ].join("\n\n");

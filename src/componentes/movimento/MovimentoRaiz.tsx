@@ -25,7 +25,7 @@ function calcularAncoras(): [number, number][] {
     [Math.max(fimAbertura, alturaTela * 0.6), h(17, 50)],
     [topo("projetos"), h(18)],
     [topo("inventario"), h(18, 40)],
-    [topo("demos"), h(19, 20)],
+    [topo("servicos"), h(19, 20)],
     [topo("terminal"), h(20, 10)],
     [(topo("contato") ?? 0) - alturaTela * 0.4, h(22)],
     [ScrollTrigger.maxScroll(window), MINUTO_FINAL],

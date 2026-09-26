@@ -389,11 +389,37 @@
       inset 0 0 0 8px var(--color-fundo);
   }
 
-  /* ——— console das demos ——— */
-  /* a fenda: o cartucho só aparece acima do tampo; o que desce some dentro do console */
-  .console-fenda {
+  /* ——— mapa dos serviços ——— */
+  /* o personagem e os marcos têm vários quadros empilhados; o data-quadro escolhe qual aparece */
+  [data-quadro] > .quadro {
+    display: none;
+  }
+
+  [data-quadro="0"] > .quadro:nth-child(1),
+  [data-quadro="1"] > .quadro:nth-child(2),
+  [data-quadro="2"] > .quadro:nth-child(3),
+  [data-quadro="3"] > .quadro:nth-child(4),
+  [data-quadro="4"] > .quadro:nth-child(5) {
+    display: block;
+  }
+
+  .voltando {
+    transform: scaleX(-1);
+  }
+
+  .entrega {
+    position: relative;
+    padding-left: 20px;
+  }
+
+  .entrega::before {
+    content: "";
     position: absolute;
-    overflow: hidden;
+    left: 0;
+    top: 10px;
+    width: 8px;
+    height: 8px;
+    background-color: var(--color-ambar);
   }
 
   /* ——— terminal ——— */

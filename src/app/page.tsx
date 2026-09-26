@@ -6,12 +6,13 @@ import { Contato } from "@/componentes/secoes/Contato";
 import { Inventario } from "@/componentes/secoes/Inventario";
 import { Prateleira } from "@/componentes/secoes/Prateleira";
 import { Rodape } from "@/componentes/secoes/Rodape";
+import { Servicos } from "@/componentes/secoes/Servicos";
 import { Sobre } from "@/componentes/secoes/Sobre";
 import { Terminal } from "@/componentes/secoes/Terminal";
-import { ConsoleDemos } from "@/componentes/secoes/ConsoleDemos";
 import { INVENTARIO, TOTAL_PROJETOS } from "@/conteudo/inventario";
 import { CONTATO, PERFIL } from "@/conteudo/perfil";
 import { PROJETOS } from "@/conteudo/projetos";
+import { SERVICOS } from "@/conteudo/servicos";
 import { TERMINAL } from "@/conteudo/terminal";
 
 const SECOES = [
@@ -19,7 +20,7 @@ const SECOES = [
   { id: "quem-sou", rotulo: "quem sou" },
   { id: "projetos", rotulo: "projetos" },
   { id: "inventario", rotulo: "inventário" },
-  { id: "demos", rotulo: "demos" },
+  { id: "servicos", rotulo: "serviços" },
   { id: "terminal", rotulo: "terminal" },
   { id: "contato", rotulo: "contato" },
 ];
@@ -50,10 +51,10 @@ export default function Pagina() {
           titulo="Inventário"
           texto={`O que eu levo para os projetos. O número no canto de cada espaço é em quantos deles o item entrou — contando os cinco da prateleira e este site, ${TOTAL_PROJETOS} ao todo.`}
         />
-        <ConsoleDemos
-          demos={PROJETOS.filter((p) => p.link === "demo")}
-          titulo="Demos para jogar"
-          texto="O Scrims, o HQ e o DGAMES são de uso interno, então cada um tem uma cópia com dados fictícios. Escolha um cartucho e ligue o console."
+        <Servicos
+          servicos={SERVICOS}
+          titulo="Serviços"
+          texto="Do rascunho ao ar. Você pode me chamar para uma parada ou para o caminho inteiro."
         />
         {comTerminal && (
           <Terminal titulo={TERMINAL.titulo} texto={TERMINAL.texto} boasVindas={TERMINAL.boasVindas} sugestoes={TERMINAL.sugestoes} />

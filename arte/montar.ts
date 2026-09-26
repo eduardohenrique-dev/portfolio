@@ -14,9 +14,10 @@ import { join } from "node:path";
 import { CEUS, desenharCeu } from "../src/arte/ceu";
 import { comporIndices } from "../src/arte/compositor";
 import { HORARIOS, INDICE, PALETAS, VAZIO, type Rgb } from "../src/arte/paleta";
-import { capturaEmPixelArt, lerPngIndices } from "./pngLer";
+import { lerPngIndices } from "./pngLer";
+import { COMPOSICOES_MAPA, MARCOS, montarMapa, PARADAS, posicaoMarco } from "./sprites/mapa";
 import { type CenaExportada, exportarCena } from "./cena/exportar";
-import { CANECA, CONTROLE, CORES, GATO_DORMINDO, IBITURUNA, SUCULENTA, VAPOR } from "./cena/sprites";
+import { CANECA, CONTROLE, GATO_DORMINDO, IBITURUNA, SUCULENTA, VAPOR } from "./cena/sprites";
 import { gerarFonte } from "./fonte/gerar";
 import { desenharTexto, medirTexto } from "./fonte/texto";
 import { ampliar, pngIndexado } from "./png";
@@ -27,9 +28,6 @@ import {
   caixaDeck,
   caixaLoja,
   cartucho,
-  cartuchoDemo,
-  consoleDemos,
-  FENDA,
   favicon,
   fichario,
   guia,
@@ -38,8 +36,6 @@ import {
   iconeSol,
   postal,
   selo,
-  TELA,
-  televisao,
 } from "./sprites/objetos";
 import { Pincel } from "./sprites/pincel";
 import { desenhoParaIndices } from "./util";
@@ -159,19 +155,25 @@ for (const composicao of ["larga", "alta"] as const) {
 for (const [nome, linhas] of Object.entries(ICONES)) itensSprite.push([`icone-${nome}`, deDesenho(linhas)]);
 itensSprite.push(["cartucho", cartucho()], ["fichario", fichario()]);
 itensSprite.push(["guia", guia()], ["caixa-deck", caixaDeck()], ["caixa-loja", caixaLoja()]);
-// console das demos: TV, console apagado/aceso, cartuchos e as telas (capturas reais reduzidas a pixel art)
-{
-  const { F, A: Am, R: Ro, C: Cr, B: Br } = CORES;
-  itensSprite.push(["televisao", televisao()], ["console-apagado", consoleDemos(false)], ["console-aceso", consoleDemos(true)]);
-  itensSprite.push(
-    ["cartucho-scrims", cartuchoDemo("VS", Br, Am, F)],
-    ["cartucho-hq", cartuchoDemo("HQ", Ro, Cr, F)],
-    ["cartucho-dgames", cartuchoDemo("D", Am, Ro, Cr)],
-  );
-  for (const nome of ["scrims", "hq", "dgames"])
-    itensSprite.push([`tela-${nome}`, capturaEmPixelArt(join(RAIZ, "arte", "telas", `${nome}.png`), TELA.largura, TELA.altura, PALETAS.entardecer, 40)]);
+// mapa dos serviços: chão e trilha de cada composição, e os marcos com dois quadros
+const mapasServicos: Record<string, unknown> = {};
+for (const composicao of ["larga", "alta"] as const) {
+  const mapa = montarMapa(composicao);
+  itensSprite.push([`mapa-${composicao}`, mapa.chao], [`trilha-${composicao}`, mapa.trilha]);
+  const { largura, altura, paradas } = COMPOSICOES_MAPA[composicao];
+  mapasServicos[composicao] = {
+    largura,
+    altura,
+    caminho: mapa.pontos,
+    paradas: PARADAS.map((id, i) => {
+      const marco = MARCOS[id](0);
+      return { id, ponto: paradas[i], indice: mapa.indices[i], marco: posicaoMarco(paradas[i], marco.largura, marco.altura, id === "publicar") };
+    }),
+  };
 }
-itensSprite.push(["andarilho-0", andarilho()[0]]);
+for (const id of PARADAS) itensSprite.push([`servico-${id}-0`, MARCOS[id](0)], [`servico-${id}-1`, MARCOS[id](1)]);
+// o personagem anda pela trilha: parado + 4 quadros de caminhada
+andarilho().forEach((q, i) => itensSprite.push([`andarilho-${i}`, q]));
 itensSprite.push(["hud-sol", iconeSol()], ["hud-por-do-sol", iconePorDoSol()], ["hud-lua", iconeLua()]);
 itensSprite.push(["postal", postal(IBITURUNA)], ["selo", selo(GATO_DORMINDO[0])]);
 GATO_DORMINDO.forEach((q, i) => itensSprite.push([`gato-${i}`, deDesenho(q)]));
@@ -287,7 +289,7 @@ const atlas = {
   regioes: { ...sprites.regioes },
   regioesLuz: { ...luz.regioes },
   cenas: refsCena,
-  console: { tela: TELA, fenda: FENDA },
+  servicos: mapasServicos,
   cursores: Object.fromEntries(Object.entries(CURSORES).map(([nome, c]) => [nome, { regiao: `cursor-${nome}`, ponta: c.ponta }])),
 };
 writeFileSync(

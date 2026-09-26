@@ -41,12 +41,12 @@ verdade. Para marcar um elemento novo: `data-cursor="lupa"`, `data-cursor-acao` 
 | Abertura | nome letra por letra em `steps(2)`; a cena monta camada por camada; o fim de tarde passa enquanto a seção fica presa | SplitText, ScrollTrigger |
 | Página toda | a rolagem move o relógio (16:40 → 23:10); cada seção ancora um horário; paleta, luz da cena e HUD trocam em passos | ScrollTrigger |
 | Projetos | o objeto da prateleira cresce até virar o painel | Flip |
-| Demos | o cartucho voa até o console, desce na fenda em passos, a luz acende e a TV liga como tubo (linha que abre até a tela cheia); trocar ejeta o anterior | Flip, core |
+| Serviços | mapa de fases: a ilha abre, a trilha se desenha e os marcos se montam; escolher uma parada faz o personagem andar pela trilha, em quadros, e o marco ganha vida (o foguete decola); deslizar no celular troca de parada | ScrollTrigger, Observer, core |
 | Contato | cartão-postal vira achatando em passos | core |
 | Cursor | troca de sprite conforme o alvo; o rótulo abre em `steps(3)` | nenhum (canvas e CSS) |
 
 Com `prefers-reduced-motion`, a página fica parada no entardecer (também pelo CSS, sem depender de
-JS), o cartucho encaixa direto e as trocas acontecem sem animação.
+JS), o personagem do mapa vai direto à parada escolhida e as trocas acontecem sem animação.
 
 ## Terminal com IA
 

@@ -56,11 +56,14 @@ escurecer anda o caminho de volta. A cena nunca tem mais de 8 cores.
 | `guia` | 30×40 | guia de mapa dobrado com GV, rio Doce e alfinete | GVTEM |
 | `caixa-deck` | 28×42 | caixa de deck com carta saindo, cantos do visor da câmera, cinco cores de mana | Deck Scanner |
 | `caixa-loja` | 34×36 | caixa de papelão com o D da marca e etiqueta de preço | DGAMES |
-| `andarilho-0` | 12×18 | personagem parado | quem sou |
-| `televisao` | 148×110 | TV de tubo; a tela (128×80 a partir de 10,10) fica vazia | demos |
-| `console-apagado`, `console-aceso` | 100×30 | console de cartucho, com a luz apagada ou acesa | demos |
-| `cartucho-scrims`, `-hq`, `-dgames` | 24×30 | cartuchos com VS, HQ e D | demos |
-| `tela-scrims`, `-hq`, `-dgames` | 128×80 | captura real de cada demo (`arte/telas/*.png`, 1024×640) reduzida com pontilhado Bayer | demos |
+| `andarilho-0` … `-4` | 12×18 | personagem: parado, passo, junto, passo, junto (virado para a direita) | quem sou, mapa dos serviços |
+| `mapa-larga`, `mapa-alta` | 300×104, 160×244 | chão da ilha dos serviços: areia, água, pinheiros, clareiras e a plataforma do foguete | serviços |
+| `trilha-larga`, `trilha-alta` | iguais ao mapa | só a trilha pontilhada, para ser desenhada aos poucos | serviços |
+| `servico-entender-0`/`-1` | 26×28 | luneta no tripé; no quadro 1 ela vira | serviços (UX) |
+| `servico-desenhar-0`/`-1` | 26×28 | cavalete; rascunho e tela pintada | serviços (UI) |
+| `servico-construir-0`/`-1` | 26×28 | oficina; a engrenagem gira e a chaminé solta fumaça | serviços |
+| `servico-conectar-0`/`-1` | 26×28 | antena; a luz acende e saem ondas | serviços |
+| `servico-publicar-0`/`-1` | 18×30 | foguete; motor apagado e aceso | serviços |
 | `hud-sol`, `hud-por-do-sol`, `hud-lua` | 11×11 | ícone do relógio | HUD |
 | `icone-*` (17) | 16×16 | typescript, react, nextjs, vite, tailwind, supabase, postgresql, nodejs, vercel, python, opencv, prisma, vitest, grid, dndkit, claude, gsap | inventário |
 | `postal` | 120×76 | Ibituruna no fim de tarde, Rio Doce, parapente | contato |
@@ -87,11 +90,15 @@ Os desenhos e o ponto ativo de cada um (`ponta`, onde o clique acontece) ficam e
 Se o ponto ativo mudar de lugar, ajuste a `ponta` no arquivo e os pontos do CSS em `globals.css`
 (são a `ponta` × 2).
 
-O personagem é genérico (cabelo escuro, moletom sálvia). Se quiser que ele pareça você, redesenhe
-`andarilho-0`.
+O personagem é genérico (cabelo escuro, moletom sálvia). Se quiser que ele pareça você, os cinco
+quadros de `andarilho` são o lugar.
 
-As telas do console são capturas das demos em 1024×640. Se uma demo mudar, troque o PNG em
-`arte/telas/` e rode `npm run arte`.
+## Mapa dos serviços
+
+Gerado em `arte/sprites/mapa.ts`. As paradas de cada composição ficam em `COMPOSICOES_MAPA`; a trilha
+é uma curva que passa por elas, reamostrada a cada 1px e gravada no atlas (`ATLAS.servicos`), junto com a
+posição de cada marco — o personagem anda por esses mesmos pontos. Mudou uma parada de lugar: rode
+`npm run arte` e árvores, clareiras e trilha se refazem em volta dela.
 
 ## A cena por dentro
 

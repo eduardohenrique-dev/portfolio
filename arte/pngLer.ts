@@ -1,10 +1,10 @@
 /**
  * Leitor PNG mínimo (8 bits: indexado, RGB ou RGBA) para importar sprites exportados do Aseprite
- * e as capturas de tela das demos.
+ * (ou qualquer PNG que precise virar índices da paleta).
  */
 import { readFileSync } from "node:fs";
 import { inflateSync } from "node:zlib";
-import { BAYER4, VAZIO, type Rgb } from "../src/arte/paleta";
+import { VAZIO, type Rgb } from "../src/arte/paleta";
 
 function paeth(a: number, b: number, c: number): number {
   const p = a + b - c;
@@ -107,36 +107,5 @@ export function lerPngIndices(caminho: string, referencia: readonly Rgb[]): { la
     const o = p * 4;
     dados[p] = rgba[o + 3] < 128 ? VAZIO : maisProximo(rgba[o], rgba[o + 1], rgba[o + 2]);
   }
-  return { largura, altura, dados };
-}
-
-/**
- * Reduz uma captura de tela para largura×altura (média de cada bloco) e leva para a paleta com
- * pontilhado Bayer 4×4: a tela das demos vira pixel art de 8 cores, que troca com o horário.
- */
-export function capturaEmPixelArt(caminho: string, largura: number, altura: number, referencia: readonly Rgb[], espalhamento = 56) {
-  const img = lerPngRgba(caminho);
-  const maisProximo = criarMaisProximo(referencia);
-  const dados = new Uint8Array(largura * altura);
-  const bx = img.largura / largura;
-  const by = img.altura / altura;
-  for (let y = 0; y < altura; y++)
-    for (let x = 0; x < largura; x++) {
-      let r = 0;
-      let g = 0;
-      let b = 0;
-      let n = 0;
-      for (let j = Math.floor(y * by); j < Math.floor((y + 1) * by); j++)
-        for (let i = Math.floor(x * bx); i < Math.floor((x + 1) * bx); i++) {
-          const o = (j * img.largura + i) * 4;
-          r += img.rgba[o];
-          g += img.rgba[o + 1];
-          b += img.rgba[o + 2];
-          n++;
-        }
-      const limiar = ((BAYER4[y & 3][x & 3] + 0.5) / 16 - 0.5) * espalhamento;
-      const c = (v: number) => Math.max(0, Math.min(255, Math.round(v / n + limiar)));
-      dados[y * largura + x] = maisProximo(c(r), c(g), c(b));
-    }
   return { largura, altura, dados };
 }
