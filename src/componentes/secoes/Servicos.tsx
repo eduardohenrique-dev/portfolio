@@ -357,12 +357,6 @@ export function Servicos({ servicos, titulo, texto }: Props) {
         ))}
       </div>
 
-      <p className="mt-10 flex flex-wrap items-center gap-6 text-bruma">
-        Não sabe por qual parada começar? Me conte o problema.
-        <a className="botao" href="#contato">
-          Escrever para mim
-        </a>
-      </p>
     </section>
   );
 }
