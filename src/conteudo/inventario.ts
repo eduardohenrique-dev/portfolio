@@ -133,6 +133,6 @@ export const INVENTARIO: Item[] = [
     nome: "GSAP",
     icone: "icone-gsap",
     projetos: ["GVTEM", "este site"],
-    como: "Aqui, a luz que muda com a rolagem, o objeto que vira painel e a caminhada da trajetória; no GVTEM, as animações de entrada.",
+    como: "Aqui, a luz que muda com a rolagem, o objeto que vira painel e o cartucho que encaixa no console; no GVTEM, as animações de entrada.",
   },
 ];

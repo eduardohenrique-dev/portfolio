@@ -74,7 +74,7 @@ export function MovimentoRaiz() {
     document.fonts?.ready.then(() => ScrollTrigger.refresh());
 
     // abrir um projeto ou trocar o item do inventário muda a altura da página:
-    // o pin da trajetória e as âncoras do relógio precisam ser medidos de novo
+    // as âncoras do relógio precisam ser medidas de novo
     let alturaAnterior = document.body.scrollHeight;
     let espera = 0;
     const observador = new ResizeObserver(() => {
