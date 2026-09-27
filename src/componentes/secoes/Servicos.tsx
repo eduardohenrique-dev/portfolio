@@ -251,10 +251,7 @@ export function Servicos({ servicos, titulo, texto }: Props) {
         {titulo}
       </h2>
       <p className="mt-4 max-w-texto text-bruma">{texto}</p>
-      {/* a instrução vai centralizada, junto do mapa a que ela se refere */}
-      <p className="pixel mt-12 text-center text-pixel-1 text-bruma">Escolha uma parada no mapa.</p>
-
-      <div className="mapa-servicos relative mx-auto mt-6" style={{ width: mapa.largura * e, height: mapa.altura * e }}>
+      <div className="mapa-servicos relative mx-auto mt-12" style={{ width: mapa.largura * e, height: mapa.altura * e }}>
         <div className="mapa-chao absolute top-0 left-0" aria-hidden="true">
           <Sprite regiao={`mapa-${composicao}` as NomeRegiao} escala={e} />
         </div>
