@@ -68,7 +68,7 @@ export const SERVICOS: Servico[] = [
     descricao:
       "O projeto não termina no código: eu publico, configuro banco, login e armazenamento de arquivos e deixo rodando. E quando um serviço cai, migro sem perder o que importa.",
     entregas: [
-      "Publicação na Vercel, com funções e banco perto do Brasil",
+      "Publicação na hospedagem que fizer sentido para o projeto, escolhida junto com você",
       "Banco, login e arquivos configurados",
       "Custo sob controle, começando pelos planos gratuitos",
     ],
