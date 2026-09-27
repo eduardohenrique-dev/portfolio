@@ -5,22 +5,23 @@ import { TituloAbertura } from "./TituloAbertura";
 export function Abertura() {
   return (
     <section id="inicio" aria-labelledby="titulo-inicio" className="abertura relative">
-      {/* a abertura ocupa a largura toda: a cena só cresce em múltiplos inteiros e precisa de espaço para chegar a 2× e 3× */}
-      <div className="grid grid-cols-1 gap-12 px-5 pt-28 pb-16 md:px-10 xl:sticky xl:top-0 xl:h-dvh xl:grid-cols-12 xl:items-center xl:gap-8 xl:pt-0 xl:pr-6 xl:pb-0 xl:pl-16">
-        <div className="mx-auto flex w-full max-w-pagina flex-col gap-6 xl:col-span-5 xl:mx-0">
+      {/* no desktop largo a cena vai até a borda da tela: ela só cresce em múltiplos inteiros e precisa de espaço para chegar a 2× e 3× */}
+      <div className="abertura-grade grid grid-cols-1 gap-12 px-5 pt-28 pb-16 md:px-10 xl:sticky xl:top-0 xl:h-dvh xl:items-center xl:gap-8 xl:pt-0 xl:pr-6 xl:pb-0">
+        <div className="mx-auto flex w-full max-w-conteudo flex-col gap-6 xl:mx-0 xl:max-w-none">
           <TituloAbertura texto={PERFIL.nome} />
           <p className="max-w-texto text-destaque text-creme">{ABERTURA.lead}</p>
           <p className="text-bruma">{ABERTURA.linha}</p>
-          <div className="mt-4 flex flex-wrap gap-6">
-            <a className="botao" href="#projetos">
+          <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:flex-wrap">
+            <a className="botao justify-center" href="#projetos">
               Ver os projetos
             </a>
-            <a className="botao botao-contorno" href="#contato">
+            <a className="botao botao-contorno justify-center" href="#contato">
               Mandar um e-mail
             </a>
           </div>
         </div>
-        <div className="mx-auto w-full max-w-pagina xl:col-span-7 xl:max-w-none">
+        {/* no celular a cena sai do respiro lateral: com a largura toda, chega a 2× numa tela de 390px */}
+        <div className="mx-auto w-full max-w-conteudo max-sm:-mx-5 max-sm:w-auto xl:max-w-none">
           <Cena
             composicao="responsiva"
             horarioParado={1}

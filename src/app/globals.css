@@ -77,8 +77,14 @@
   --text-destaque: 21px;
   --text-destaque--line-height: 32px;
 
-  --container-texto: 62ch;
+  /*
+   * Medida do texto em px, não em ch: com ch, cada tamanho de fonte dava uma largura diferente e os blocos
+   * de uma mesma coluna terminavam desalinhados. 608px é a largura que os 62ch davam no texto corrido.
+   */
+  --container-texto: 608px;
+  /* a página tem 1160px com 40px de respiro de cada lado: o conteúdo mora em 1080px */
   --container-pagina: 1160px;
+  --container-conteudo: 1080px;
 
   --breakpoint-md: 768px;
   --breakpoint-lg: 1024px;
@@ -525,6 +531,19 @@
     .cursor-pixel {
       display: none;
     }
+  }
+}
+
+/*
+ * Grade da abertura no desktop largo. O texto começa na mesma linha do conteúdo das outras seções e tem
+ * a largura de 5 das 12 colunas (a mesma da cena no contato); a cena ocupa o resto até a borda da tela,
+ * para ter espaço de crescer em 2× e 3×. O 100% do recuo é a largura da seção, que não conta a barra de
+ * rolagem (o 100vw contaria). Fica fora das camadas para valer sobre o px-10 dos utilitários.
+ */
+@media (min-width: 1280px) {
+  .abertura-grade {
+    grid-template-columns: minmax(0, calc((var(--container-conteudo) - 11 * 32px) / 12 * 5 + 4 * 32px)) minmax(0, 1fr);
+    padding-left: calc((100% - var(--container-pagina)) / 2 + 40px);
   }
 }
 

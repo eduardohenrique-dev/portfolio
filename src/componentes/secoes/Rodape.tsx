@@ -13,7 +13,8 @@ export function Rodape({ comTerminal }: Props) {
           <p className="text-miudo text-bruma">{comTerminal ? COLOFAO.comTerminal : COLOFAO.semTerminal}</p>
           <AlternarCursor />
         </div>
-        <p className="pixel text-pixel-2 text-bruma">© 2026 {PERFIL.nomeCompleto}</p>
+        {/* 12px no celular: com 24px o nome completo quebrava em duas linhas */}
+        <p className="pixel text-pixel-1 text-bruma md:text-pixel-2">© 2026 {PERFIL.nomeCompleto}</p>
       </div>
     </footer>
   );

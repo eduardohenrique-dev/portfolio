@@ -251,9 +251,10 @@ export function Servicos({ servicos, titulo, texto }: Props) {
         {titulo}
       </h2>
       <p className="mt-4 max-w-texto text-bruma">{texto}</p>
-      <p className="pixel mt-6 text-pixel-1 text-bruma">Escolha uma parada no mapa.</p>
+      {/* a instrução vai centralizada, junto do mapa a que ela se refere */}
+      <p className="pixel mt-12 text-center text-pixel-1 text-bruma">Escolha uma parada no mapa.</p>
 
-      <div className="mapa-servicos relative mx-auto mt-10" style={{ width: mapa.largura * e, height: mapa.altura * e }}>
+      <div className="mapa-servicos relative mx-auto mt-6" style={{ width: mapa.largura * e, height: mapa.altura * e }}>
         <div className="mapa-chao absolute top-0 left-0" aria-hidden="true">
           <Sprite regiao={`mapa-${composicao}` as NomeRegiao} escala={e} />
         </div>
@@ -318,45 +319,52 @@ export function Servicos({ servicos, titulo, texto }: Props) {
         </div>
       </div>
 
-      <div className="moldura mt-12 p-6 md:p-10">
+      {/*
+        Mesmo desenho do painel de projeto: cabeçalho e três colunas iguais, cada uma com o seu título.
+        A partir de lg, os cinco painéis ocupam a mesma célula e só o da parada escolhida aparece: o painel
+        fica com a altura do mais longo, e a página não pula ao trocar de parada. Abaixo disso as colunas
+        viram uma pilha e cada painel tem a própria altura (a sobra do mais longo seria só espaço vazio).
+      */}
+      <div className="moldura mt-12 grid p-6 md:p-10">
         {servicos.map((s, i) => (
           <div
             key={s.id}
             role="tabpanel"
             id={`servico-painel-${s.id}`}
             aria-labelledby={`servico-aba-${s.id}`}
-            hidden={i !== ativo}
-            className="grid grid-cols-1 gap-8 md:grid-cols-12"
+            className={`grid grid-cols-1 content-start gap-10 [grid-area:1/1] ${i === ativo ? "" : "max-lg:hidden lg:invisible"}`}
           >
-            <div className="flex flex-col gap-3 md:col-span-7">
+            <header className="flex flex-col gap-2">
               <h3 className="pixel text-pixel-2 text-creme md:text-pixel-3" data-revelar-servico>
                 {s.nome}
               </h3>
               <p className="pixel text-pixel-2 text-ambar" data-revelar-servico>
                 {s.area}
               </p>
-              <p className="max-w-texto text-creme" data-revelar-servico>
-                {s.descricao}
-              </p>
-              <p className="max-w-texto text-bruma" data-revelar-servico>
-                <span className="pixel mr-3 text-pixel-2 text-rosa">Onde já fiz</span>
-                {s.onde}
-              </p>
-            </div>
-            <div className="md:col-span-5" data-revelar-servico>
-              <h4 className="pixel text-pixel-2 text-salvia">Você recebe</h4>
-              <ul className="mt-3 flex flex-col gap-2">
-                {s.entregas.map((entrega) => (
-                  <li key={entrega} className="entrega text-creme">
-                    {entrega}
-                  </li>
-                ))}
-              </ul>
+            </header>
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+              <div className="flex flex-col gap-3" data-revelar-servico>
+                <h4 className="pixel text-pixel-2 text-salvia">O que faço</h4>
+                <p className="text-creme">{s.descricao}</p>
+              </div>
+              <div className="flex flex-col gap-3" data-revelar-servico>
+                <h4 className="pixel text-pixel-2 text-salvia">Você recebe</h4>
+                <ul className="flex flex-col gap-2">
+                  {s.entregas.map((entrega) => (
+                    <li key={entrega} className="entrega text-creme">
+                      {entrega}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex flex-col gap-3" data-revelar-servico>
+                <h4 className="pixel text-pixel-2 text-salvia">Onde já fiz</h4>
+                <p className="text-creme">{s.onde}</p>
+              </div>
             </div>
           </div>
         ))}
       </div>
-
     </section>
   );
 }

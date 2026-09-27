@@ -15,15 +15,20 @@ interface Props {
   texto: string;
 }
 
+/** 4 colunas no celular, 6 a partir de sm. */
+const COLUNAS_CELULAR = 4;
 const COLUNAS_DESKTOP = 6;
-/** 6 × 3 a partir de sm; no celular a grade tem 4 colunas e ganha uma fileira a mais (4 × 5), sem sobra na última. */
-const ESPACOS = 18;
-const ESPACOS_CELULAR = 20;
+
+/** Espaços para completar a última fileira, sem sobrar uma fileira inteira vazia. */
+function espacos(itens: number, colunas: number) {
+  return Math.ceil(itens / colunas) * colunas;
+}
 
 export function Inventario({ itens, total, titulo, texto }: Props) {
   const [selecionado, setSelecionado] = useState(0);
   const botoes = useRef<(HTMLButtonElement | null)[]>([]);
-  const item = itens[selecionado];
+  const espacosCelular = espacos(itens.length, COLUNAS_CELULAR);
+  const espacosDesktop = espacos(itens.length, COLUNAS_DESKTOP);
 
   function mover(para: number) {
     const alvo = (para + itens.length) % itens.length;
@@ -61,14 +66,15 @@ export function Inventario({ itens, total, titulo, texto }: Props) {
       </h2>
       <p className="mt-4 max-w-texto text-bruma">{texto}</p>
 
-      <div className="mt-14 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8">
+      <div className="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8">
         <div className="lg:col-span-7">
           <ul className="inventario-grade grid grid-cols-4 gap-2 sm:grid-cols-6" aria-label="Itens do inventário">
-            {Array.from({ length: Math.max(ESPACOS_CELULAR, itens.length) }, (_, i) => {
+            {Array.from({ length: Math.max(espacosCelular, espacosDesktop) }, (_, i) => {
               const it = itens[i];
               if (!it) {
-                const classe = i < ESPACOS ? "espaco espaco-vazio" : "espaco espaco-vazio sm:hidden";
-                return <li key={`vazio-${i}`} className={classe} aria-hidden="true" />;
+                const visibilidade =
+                  i >= espacosCelular ? "hidden sm:block" : i >= espacosDesktop ? "sm:hidden" : "";
+                return <li key={`vazio-${i}`} className={`espaco espaco-vazio ${visibilidade}`} aria-hidden="true" />;
               }
               const ativo = i === selecionado;
               return (
@@ -92,7 +98,8 @@ export function Inventario({ itens, total, titulo, texto }: Props) {
                   >
                     <Sprite regiao={it.icone as NomeRegiao} escala={3} />
                     <span className="sr-only">{it.nome}</span>
-                    <span className="pixel absolute right-1 bottom-0 text-pixel-1 text-creme" aria-hidden="true">
+                    {/* 4px para dentro da borda de 4px do espaço, do lado e embaixo */}
+                    <span className="pixel absolute right-2 bottom-1 text-pixel-1 text-creme" aria-hidden="true">
                       ×{it.projetos.length}
                     </span>
                   </button>
@@ -103,20 +110,26 @@ export function Inventario({ itens, total, titulo, texto }: Props) {
           <p className="pixel mt-5 hidden text-pixel-1 text-bruma md:block">setas do teclado também andam pelos espaços</p>
         </div>
 
-        <div className="moldura self-start px-6 py-6 lg:col-span-5" aria-live="polite">
-          <div className="flex items-center gap-4">
-            <Sprite regiao={item.icone as NomeRegiao} escala={4} />
-            <div>
-              <h3 className="pixel text-pixel-2 text-creme">{item.nome}</h3>
-              <p className="pixel text-pixel-2 text-ambar">
-                em {item.projetos.length} de {total} projetos
-              </p>
+        {/* todas as descrições ocupam a mesma célula e só a escolhida aparece: o painel fica com a altura
+            da mais longa, e nada abaixo dele pula enquanto o visitante passa pelos itens */}
+        <div className="moldura grid self-start p-6 lg:col-span-5" aria-live="polite">
+          {itens.map((it, i) => (
+            <div key={it.id} className={`[grid-area:1/1] ${i === selecionado ? "" : "invisible"}`} aria-hidden={i !== selecionado || undefined}>
+              <div className="flex items-center gap-4">
+                <Sprite regiao={it.icone as NomeRegiao} escala={4} />
+                <div>
+                  <h3 className="pixel text-pixel-2 text-creme">{it.nome}</h3>
+                  <p className="pixel text-pixel-2 text-ambar">
+                    em {it.projetos.length} de {total} projetos
+                  </p>
+                </div>
+              </div>
+              <h4 className="pixel mt-6 text-pixel-2 text-salvia">onde</h4>
+              <p className="text-creme">{it.projetos.join(", ")}</p>
+              <h4 className="pixel mt-4 text-pixel-2 text-salvia">como</h4>
+              <p className="text-creme">{it.como}</p>
             </div>
-          </div>
-          <h4 className="pixel mt-6 text-pixel-2 text-salvia">onde</h4>
-          <p className="text-creme">{item.projetos.join(", ")}</p>
-          <h4 className="pixel mt-4 text-pixel-2 text-salvia">como</h4>
-          <p className="text-creme">{item.como}</p>
+          ))}
         </div>
       </div>
     </section>

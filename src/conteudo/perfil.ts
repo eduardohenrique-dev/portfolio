@@ -8,7 +8,7 @@ export const PERFIL = {
   cidade: "Governador Valadares, MG",
   papel: "Full stack e UX/UI",
   formacao: "Análise e Desenvolvimento de Sistemas, 4º período, em andamento",
-  idiomas: ["Português (nativo)", "Inglês"],
+  idiomas: ["Português (nativo)", "Inglês (avançado)"],
   email: "edu.hcdev@gmail.com",
   prazoResposta: "até 1 dia útil",
   github: "https://github.com/eduardohenrique-dev",
@@ -33,7 +33,7 @@ export const SOBRE = {
   nota: [
     ["Onde", "Governador Valadares, MG"],
     ["Estudo", "ADS, 4º período"],
-    ["Idiomas", "Português e inglês"],
+    ["Idiomas", "Português e inglês avançado"],
   ] as [string, string][],
 };
 

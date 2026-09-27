@@ -48,7 +48,11 @@ export function Contato({ titulo, texto, email, github, linkedin }: Props) {
   return (
     <section id="contato" aria-labelledby="titulo-contato" className="mx-auto max-w-pagina px-5 py-20 md:px-10 md:py-24">
       <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-8">
-        <div className="order-2 lg:order-1 lg:col-span-5">
+        {/*
+          Até 400px: no tablet, com a coluna inteira, a cena passava de uma tela de altura.
+          No celular ela sai do respiro lateral, como na abertura, para chegar a 2×.
+        */}
+        <div className="order-2 mx-auto w-full max-w-100 max-sm:-mx-5 max-sm:w-auto max-sm:max-w-none lg:order-1 lg:col-span-5">
           <Cena
             composicao="alta"
             horarioParado={3}
@@ -64,53 +68,63 @@ export function Contato({ titulo, texto, email, github, linkedin }: Props) {
             <p className="mt-4 max-w-texto text-destaque text-creme">{texto}</p>
           </div>
 
-          <div ref={cartao} className="postal-cartao self-start">
-            {frente ? (
-              <figure className="moldura bg-creme p-3" style={{ ["--cor-moldura" as string]: "var(--color-creme)" }}>
-                <Sprite
-                  regiao="postal"
-                  escala={2}
-                  className="md:hidden"
-                  rotulo="Cartão-postal: o Pico da Ibituruna no fim de tarde, com o Rio Doce embaixo e um parapente no céu."
-                />
-                <Sprite
-                  regiao="postal"
-                  escala={3}
-                  className="hidden md:block"
-                  rotulo="Cartão-postal: o Pico da Ibituruna no fim de tarde, com o Rio Doce embaixo e um parapente no céu."
-                />
-                <figcaption className="pixel mt-3 text-pixel-2 text-fundo">Governador Valadares, MG</figcaption>
-              </figure>
-            ) : (
-              <div
-                className="moldura postal-verso grid gap-6 bg-creme p-6 text-fundo md:grid-cols-[1fr_auto]"
-                style={{ ["--cor-moldura" as string]: "var(--color-creme)" }}
-              >
-                <div className="flex flex-col gap-4 md:border-r-4 md:border-dashed md:border-bruma md:pr-6">
-                  <p className="pixel text-pixel-2">Para</p>
-                  <p className="pixel text-pixel-2 break-all md:text-pixel-3">{email}</p>
-                  <p className="text-fundo">Resposta em até 1 dia útil.</p>
-                </div>
-                <div className="flex flex-col items-end gap-4">
-                  <Sprite regiao="selo" escala={3} />
-                  <p className="pixel text-right text-pixel-1 text-superficie">
-                    GOV. VALADARES
-                    <br />
-                    2026
-                  </p>
-                </div>
+          {/*
+            O cartão ocupa a coluna toda e os dois lados ficam na mesma célula, com o conteúdo centralizado:
+            ele vira sem mudar de tamanho, e o botão de virar não foge do lugar.
+          */}
+          <div ref={cartao} className="postal-cartao grid">
+            <figure
+              className={`moldura flex flex-col items-center justify-center bg-creme p-3 [grid-area:1/1] ${frente ? "" : "invisible"}`}
+              style={{ ["--cor-moldura" as string]: "var(--color-creme)" }}
+            >
+              <Sprite
+                regiao="postal"
+                escala={2}
+                className="md:hidden"
+                rotulo="Cartão-postal: o Pico da Ibituruna no fim de tarde, com o Rio Doce embaixo e um parapente no céu."
+              />
+              <Sprite
+                regiao="postal"
+                escala={3}
+                className="hidden md:block"
+                rotulo="Cartão-postal: o Pico da Ibituruna no fim de tarde, com o Rio Doce embaixo e um parapente no céu."
+              />
+              <figcaption className="pixel mt-3 text-pixel-2 text-fundo">Governador Valadares, MG</figcaption>
+            </figure>
+            <div
+              className={`moldura postal-verso grid gap-6 bg-creme p-6 text-fundo [grid-area:1/1] md:grid-cols-[1fr_auto] ${frente ? "invisible" : ""}`}
+              style={{ ["--cor-moldura" as string]: "var(--color-creme)" }}
+            >
+              {/* a linha tracejada vai de cima a baixo do cartão; o endereço fica no meio e o selo no canto */}
+              <div className="flex flex-col justify-center gap-4 md:border-r-4 md:border-dashed md:border-bruma md:pr-6">
+                <p className="pixel text-pixel-2">Para</p>
+                <p className="pixel text-pixel-2 break-all md:text-pixel-3">{email}</p>
+                <p className="text-fundo">Resposta em até 1 dia útil.</p>
               </div>
-            )}
+              <div className="flex flex-col items-end gap-4">
+                <Sprite regiao="selo" escala={3} />
+                <p className="pixel text-right text-pixel-1 text-superficie">
+                  GOV. VALADARES
+                  <br />
+                  2026
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-wrap gap-6">
-            <a className="botao" href={`mailto:${email}`}>
+          {/* os botões crescem até fechar a largura do cartão; no celular, um embaixo do outro, na largura toda */}
+          <div className="flex flex-col gap-6 sm:flex-row sm:flex-wrap">
+            <a className="botao justify-center sm:flex-auto" href={`mailto:${email}`}>
               Escrever e-mail
             </a>
-            <button type="button" className="botao botao-contorno" onClick={copiar} aria-live="polite">
-              {copiado ? "Copiado" : "Copiar endereço"}
+            <button type="button" className="botao botao-contorno justify-center sm:flex-auto" onClick={copiar} aria-live="polite">
+              {/* as duas palavras reservam o mesmo espaço: o botão não encolhe quando vira "Copiado" */}
+              <span className="grid justify-items-center">
+                <span className={`[grid-area:1/1] ${copiado ? "invisible" : ""}`}>Copiar endereço</span>
+                <span className={`[grid-area:1/1] ${copiado ? "" : "invisible"}`}>Copiado</span>
+              </span>
             </button>
-            <button type="button" className="botao botao-contorno" onClick={virar} aria-pressed={frente}>
+            <button type="button" className="botao botao-contorno justify-center sm:flex-auto" onClick={virar} aria-pressed={frente}>
               Virar o cartão
             </button>
           </div>
