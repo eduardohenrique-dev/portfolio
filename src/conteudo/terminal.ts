@@ -48,7 +48,7 @@ export const RESPOSTAS_OFFLINE: RespostaOffline[] = [
   {
     chaves: ["gvtem", "valadares", "guia", "negocios", "avaliacao"],
     texto:
-      "O GVTEM é um projeto próprio do Eduardo, desde junho de 2026: um guia de negócios de Governador Valadares com os 122 negócios do site antigo, avaliações, busca que tolera acento e erro de digitação e painel para o dono do negócio. Está em gvtem.vercel.app, feito com Next.js 16, Prisma, Postgres no Neon e Auth.js.",
+      "O GVTEM é um guia de negócios de Governador Valadares que existe desde 2009. Em 2026 o Eduardo refez a plataforma, com os 122 negócios do site antigo, avaliações, busca que tolera acento e erro de digitação e painel para o dono do negócio. Está em gvtem.vercel.app, feito com Next.js 16, Prisma, Postgres no Neon e Auth.js.",
   },
   {
     chaves: ["deck", "scanner", "magic", "mtg", "carta", "cartas", "camera", "visao", "opencv", "python"],

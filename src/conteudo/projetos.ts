@@ -65,10 +65,10 @@ export const PROJETOS: Projeto[] = [
     objetoDescricao: "um guia de mapa dobrado, com GV na capa e um alfinete",
     url: "https://gvtem.vercel.app",
     link: "site",
-    quando: "desde junho de 2026",
+    quando: "no ar desde 2009, refeito em 2026",
     resumo: "Guia de negócios de Governador Valadares, com avaliações, busca e painel para o dono do negócio.",
     problema:
-      "O GVTEM já existia como site em PHP, com 122 negócios de Valadares. A versão nova precisava de avaliação, de uma busca que achasse o que a pessoa digitou sem acento ou com erro e de um painel para o dono cuidar da própria página. No meio do caminho, o plano gratuito do Supabase apagou o banco, que estava pausado havia meses.",
+      "O GVTEM existe desde 2009 como site em PHP, com 122 negócios de Valadares. Em 2026 eu refiz a plataforma, e a versão nova precisava de avaliação, de uma busca que achasse o que a pessoa digitou sem acento ou com erro e de um painel para o dono cuidar da própria página. No meio do caminho, o plano gratuito do Supabase apagou o banco, que estava pausado havia meses.",
     decisao:
       "A busca roda no próprio Postgres, com pg_trgm e unaccent num índice trigram, sem serviço externo. As 203 categorias herdadas, 168 delas com um negócio só, viraram filhas de 15 grupos. Depois da perda do banco, o schema do Prisma subiu no Neon sem nenhuma alteração, o login passou para Auth.js e as fotos para o Vercel Blob.",
     resultado:
