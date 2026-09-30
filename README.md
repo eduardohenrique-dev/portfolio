@@ -1,7 +1,25 @@
-# Portfólio · Eduardo Henrique
+<p align="center">
+  <img src="docs/assets/banner.png" alt="Um monitor com as iniciais EH e um gato dormindo, num céu de noite com uma lua crescente" width="100%">
+</p>
 
-One-page em pixel art, no fim de uma tarde que vira noite conforme a página rola.
-Next.js 16, Tailwind v4, GSAP e a API do Claude.
+<p align="center">
+  <b>Portfólio do Eduardo Henrique.</b><br>
+  Uma página em pixel art, no fim de uma tarde que vira noite conforme você rola. Next.js 16, Tailwind v4, GSAP e um terminal com IA.
+</p>
+
+<p align="center">
+  <a href="https://eduardohenrique-nu.vercel.app"><b>Ver no ar</b></a> ·
+  <a href="#decisões">Decisões</a> ·
+  <a href="#terminal-com-ia">Terminal com IA</a> ·
+  <a href="ARTE.md">Arte</a>
+</p>
+
+<p align="center"><img src="docs/assets/divisor.png" alt="" width="100%"></p>
+
+<p align="center">
+  <img src="docs/assets/tela-abertura.png" alt="Abertura: o nome, uma frase sobre o trabalho e um quarto isométrico em pixel art com janela, mesa, gato e tapete" width="49%">
+  <img src="docs/assets/tela-projetos.png" alt="Prateleira com cinco objetos em pixel art, um para cada projeto: EINERD Scrims, EINERD HQ e GVTEM" width="49%">
+</p>
 
 ## Decisões
 
@@ -115,3 +133,7 @@ com teclado e com movimento reduzido.
 
 Texto em Inter Tight (SIL OFL). GSAP (licença gratuita da GSAP). Os ícones do inventário são
 referências simplificadas às marcas das tecnologias, redesenhadas na paleta do site.
+
+---
+
+<sub>Feito em Governador Valadares (MG). Código publicado para consulta; todos os direitos reservados.</sub>
