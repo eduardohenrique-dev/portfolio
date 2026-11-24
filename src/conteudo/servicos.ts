@@ -50,7 +50,7 @@ export const SERVICOS: Servico[] = [
       "Permissão garantida no banco, não só na tela",
       "Painéis com indicadores tirados dos dados reais",
     ],
-    onde: "O EINERD HQ junta a gestão de um time de esports, o Scrims transforma partidas em indicadores, o DGAMES controla estoque e lucro de uma loja e o GVTEM é um guia público com avaliações e painel para o dono do negócio.",
+    onde: "O EINERD HQ junta a gestão de um time de esports, o Scrims transforma partidas em indicadores, o DGAMES controla estoque e lucro de uma loja e o GVTEM é um guia público com avaliações e painel para o dono do negócio. No Windows, o Acervo lê o disco direto pela MFT do NTFS, e o Palco e o Penumbra controlam as telas pelo Win32.",
   },
   {
     id: "conectar",

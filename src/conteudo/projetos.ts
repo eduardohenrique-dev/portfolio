@@ -1,16 +1,17 @@
 /**
  * Projetos no ar. Números e decisões vêm do código, dos READMEs e da documentação de cada repositório.
  * Os sistemas internos (Scrims, HQ, DGAMES) abrem numa demo com dados fictícios.
+ * Os apps de Windows (Acervo, Palco, Penumbra) não têm site: o link abre o código no GitHub.
  */
 export interface Projeto {
-  id: "scrims" | "hq" | "gvtem" | "deck" | "dgames";
+  id: "scrims" | "hq" | "gvtem" | "deck" | "dgames" | "acervo" | "palco" | "penumbra";
   nome: string;
-  objeto: "cartucho" | "fichario" | "guia" | "caixa-deck" | "caixa-loja";
+  objeto: "cartucho" | "fichario" | "guia" | "caixa-deck" | "caixa-loja" | "cofrinho" | "gato-tv" | "coruja";
   /** o que o objeto é, para leitores de tela */
   objetoDescricao: string;
   url: string;
-  /** "demo" quando o link abre uma cópia com dados fictícios, não o sistema de verdade */
-  link: "site" | "demo";
+  /** "demo" quando o link abre uma cópia com dados fictícios; "codigo" quando abre o repositório (apps de desktop) */
+  link: "site" | "demo" | "codigo";
   /** como entrar, quando não é só abrir o link */
   acesso?: string;
   quando: string;
@@ -110,5 +111,59 @@ export const PROJETOS: Projeto[] = [
     resultado:
       "Cadastro com até 5 fotos, fornecedor e cliente com CEP e telefone formatados enquanto se digita, lucro por item e acumulado, e backup num JSON único que substitui ou mescla os dados em outro computador.",
     feitoCom: "React 18 e Tailwind pelo CDN, Babel no navegador, IndexedDB, build em Node que junta os módulos.",
+  },
+  {
+    id: "acervo",
+    nome: "Acervo",
+    objeto: "cofrinho",
+    objetoDescricao: "um cofrinho de porquinho rosa com uma moeda entrando pela fenda",
+    url: "https://github.com/eduardohenrique-dev/acervo",
+    link: "codigo",
+    acesso: "App de Windows: o link abre o código, com as instruções para gerar o instalador.",
+    quando: "novembro de 2026",
+    resumo: "O armazenamento do PC mostrado como no iPhone, com o que o Windows não mostra.",
+    problema:
+      "A tela de armazenamento do Windows joga quase tudo em \"Outros\": jogos de launchers, caches, restos de programas desinstalados e pastas de desenvolvimento somem no meio. E percorrer pasta por pasta um disco de 1 TB leva minutos.",
+    decisao:
+      "O app lê a Master File Table do NTFS direto e monta a árvore do disco em segundos. Depois acompanha o USN Journal, o diário de mudanças do próprio disco, e guarda um snapshot ao fechar para reabrir só com o que mudou. As ações passam pela mesma API do Explorer, e uma política separada da interface decide o que pode ser mexido.",
+    resultado:
+      "Cada disco em 10 categorias, com regras por caminho, nome de pasta e extensão. A barra muda em menos de um segundo quando algo é criado ou apagado. Dá para entrar em cada categoria, listar todos os arquivos do maior ao menor e mandar para a Lixeira, mover ou copiar, sem nunca tocar no que é do Windows. São cerca de 130 testes em Rust e 26 na interface.",
+    feitoCom: "Rust num workspace com quatro crates, Tauri 2, React 19 e TypeScript, Tailwind 4, Win32 (MFT, USN Journal, IFileOperation), Vitest.",
+  },
+  {
+    id: "palco",
+    nome: "Palco",
+    objeto: "gato-tv",
+    objetoDescricao: "um gato preto sentado em cima de uma TV que mostra um palco com holofote",
+    url: "https://github.com/eduardohenrique-dev/palco",
+    link: "codigo",
+    acesso: "App de Windows: o link abre o código, com as instruções para gerar o instalador.",
+    quando: "novembro de 2026",
+    resumo: "Manda cada jogo para a tela escolhida, inclusive os que só abrem no monitor principal.",
+    problema:
+      "Muito jogo de PC só abre no monitor principal. Para jogar na TV, o caminho era trocar a tela principal nas configurações do Windows, jogar e trocar de volta, toda vez.",
+    decisao:
+      "Nada de cadastro prévio: quando um jogo abre, um aviso sem foco aparece no canto com um botão por tela, porque tirar o foco de um jogo em tela cheia exclusiva o minimiza. O Palco tenta do mais leve para o mais invasivo: mover a janela, trocar a principal deslocando todas as telas pela API de configuração de vídeo, e por último fechar e reabrir o jogo já na tela certa.",
+    resultado:
+      "O caminho que funcionou fica salvo no perfil de cada jogo, e da próxima vez o Palco vai direto nele, ou age sozinho com \"sempre nesta tela\". Quando o jogo fecha, a tela principal volta, mesmo que o app tenha sido fechado no meio. Nada é injetado no jogo, o que é seguro com anti-cheat.",
+    feitoCom: "Rust e Tauri 2, Win32 (SetDisplayConfig, janelas e processos), interface em HTML, CSS e JavaScript puro.",
+  },
+  {
+    id: "penumbra",
+    nome: "Penumbra",
+    objeto: "coruja",
+    objetoDescricao: "uma coruja num poleiro, com o olho direito meio coberto pela sombra",
+    url: "https://github.com/eduardohenrique-dev/penumbra",
+    link: "codigo",
+    acesso: "App de Windows: o link abre o código, com as instruções para gerar o instalador.",
+    quando: "novembro de 2026",
+    resumo: "Escurece cada monitor separadamente, com o brilho do próprio monitor e uma camada por cima.",
+    problema:
+      "No Windows, o brilho por tela só existe em notebook, e a luz noturna vale para todas as telas juntas. Com dois monitores, um deles na vertical, não dava para escurecer só um à noite.",
+    decisao:
+      "Até a metade, quem escurece é o próprio monitor, pelo protocolo DDC/CI, sem perder contraste. Daí em diante, uma camada preta transparente aos cliques completa o resto. As camadas são janelas nativas do Windows, sem navegador, e a interface só existe enquanto está aberta.",
+    resultado:
+      "Um controle de 0 a 90% por tela, atalhos globais e presets na bandeja. Com a janela fechada, o app inteiro fica em cerca de 16 MB de memória e 0% de CPU, e ao sair o brilho original de cada monitor volta.",
+    feitoCom: "Rust e Tauri 2, Win32 (janelas em camadas, DDC/CI pelo dxva2), interface em HTML, CSS e JavaScript puro.",
   },
 ];

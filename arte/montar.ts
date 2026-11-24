@@ -28,8 +28,11 @@ import {
   caixaDeck,
   caixaLoja,
   cartucho,
+  cofrinho,
+  coruja,
   favicon,
   fichario,
+  gatoNaTv,
   guia,
   iconeLua,
   iconePorDoSol,
@@ -155,6 +158,7 @@ for (const composicao of ["larga", "alta"] as const) {
 for (const [nome, linhas] of Object.entries(ICONES)) itensSprite.push([`icone-${nome}`, deDesenho(linhas)]);
 itensSprite.push(["cartucho", cartucho()], ["fichario", fichario()]);
 itensSprite.push(["guia", guia()], ["caixa-deck", caixaDeck()], ["caixa-loja", caixaLoja()]);
+itensSprite.push(["coruja", coruja()], ["gato-tv", gatoNaTv()], ["cofrinho", cofrinho()]);
 // mapa dos serviços: chão e trilha de cada composição, e os marcos com dois quadros
 const mapasServicos: Record<string, unknown> = {};
 for (const composicao of ["larga", "alta"] as const) {

@@ -18,7 +18,7 @@
 
 <p align="center">
   <img src="docs/assets/tela-abertura.png" alt="Abertura: o nome, uma frase sobre o trabalho e um quarto isométrico em pixel art com janela, mesa, gato e tapete" width="49%">
-  <img src="docs/assets/tela-projetos.png" alt="Prateleira com cinco objetos em pixel art, um para cada projeto: EINERD Scrims, EINERD HQ e GVTEM" width="49%">
+  <img src="docs/assets/tela-projetos.png" alt="Prateleira com oito objetos em pixel art, um para cada projeto: EINERD Scrims, EINERD HQ, GVTEM, Deck Scanner, DGAMES e Acervo à vista" width="49%">
 </p>
 
 ## Decisões

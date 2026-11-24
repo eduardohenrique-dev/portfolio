@@ -1,6 +1,6 @@
 /**
- * Inventário: onde cada tecnologia entrou. A contagem é sobre seis projetos —
- * EINERD Scrims, EINERD HQ, GVTEM, Deck Scanner, DGAMES e este site.
+ * Inventário: onde cada tecnologia entrou. A contagem é sobre nove projetos —
+ * EINERD Scrims, EINERD HQ, GVTEM, Deck Scanner, DGAMES, Acervo, Palco, Penumbra e este site.
  */
 export interface Item {
   id: string;
@@ -12,21 +12,21 @@ export interface Item {
   soComTerminal?: boolean;
 }
 
-export const TOTAL_PROJETOS = 6;
+export const TOTAL_PROJETOS = 9;
 
 export const INVENTARIO: Item[] = [
   {
     id: "typescript",
     nome: "TypeScript",
     icone: "icone-typescript",
-    projetos: ["EINERD HQ", "GVTEM", "Deck Scanner", "este site"],
-    como: "Tipos do banco espelhados à mão no HQ, para a UI nunca pedir coluna que não existe; no Deck Scanner, o motor do torneio e a visão do navegador. O Scrims ficou em JavaScript.",
+    projetos: ["EINERD HQ", "GVTEM", "Deck Scanner", "Acervo", "este site"],
+    como: "Tipos do banco espelhados à mão no HQ, para a UI nunca pedir coluna que não existe; no Deck Scanner, o motor do torneio e a visão do navegador; no Acervo, a interface que lista milhões de arquivos. O Scrims ficou em JavaScript.",
   },
   {
     id: "react",
     nome: "React",
     icone: "icone-react",
-    projetos: ["EINERD Scrims", "EINERD HQ", "GVTEM", "Deck Scanner", "DGAMES", "este site"],
+    projetos: ["EINERD Scrims", "EINERD HQ", "GVTEM", "Deck Scanner", "DGAMES", "Acervo", "este site"],
     como: "Server Components no HQ; no Scrims, SPA com Context API, escrita otimista e realtime; no DGAMES, pelo CDN, compilado no próprio navegador.",
   },
   {
@@ -40,14 +40,14 @@ export const INVENTARIO: Item[] = [
     id: "vite",
     nome: "Vite",
     icone: "icone-vite",
-    projetos: ["EINERD Scrims", "Deck Scanner"],
-    como: "Build do Scrims, com funções da Vercel ao lado para a ingestão de dados, e do front do Deck Scanner.",
+    projetos: ["EINERD Scrims", "Deck Scanner", "Acervo"],
+    como: "Build do Scrims, com funções da Vercel ao lado para a ingestão de dados, do front do Deck Scanner e da interface do Acervo dentro do Tauri.",
   },
   {
     id: "tailwind",
     nome: "Tailwind CSS",
     icone: "icone-tailwind",
-    projetos: ["EINERD Scrims", "EINERD HQ", "GVTEM", "Deck Scanner", "DGAMES", "este site"],
+    projetos: ["EINERD Scrims", "EINERD HQ", "GVTEM", "Deck Scanner", "DGAMES", "Acervo", "este site"],
     como: "Tokens semânticos no @theme do HQ (ink, line, surface, royal) e do Deck Scanner; aqui, a paleta inteira troca de valor conforme o horário.",
   },
   {
@@ -79,6 +79,20 @@ export const INVENTARIO: Item[] = [
     como: "Deploy dos que estão no ar; cron diário no Scrims; front e API em Python no mesmo domínio no Deck Scanner.",
   },
   {
+    id: "rust",
+    nome: "Rust",
+    icone: "icone-rust",
+    projetos: ["Acervo", "Palco", "Penumbra"],
+    como: "O núcleo dos apps de Windows, falando direto com o Win32: a MFT e o USN Journal do NTFS no Acervo, a configuração de telas no Palco e o DDC/CI dos monitores no Penumbra.",
+  },
+  {
+    id: "tauri",
+    nome: "Tauri",
+    icone: "icone-tauri",
+    projetos: ["Acervo", "Palco", "Penumbra"],
+    como: "App de bandeja com a interface em web: a janela só existe enquanto está aberta, e com ela fechada o Penumbra pesa cerca de 16 MB.",
+  },
+  {
     id: "python",
     nome: "Python",
     icone: "icone-python",
@@ -103,8 +117,8 @@ export const INVENTARIO: Item[] = [
     id: "vitest",
     nome: "Vitest",
     icone: "icone-vitest",
-    projetos: ["EINERD Scrims"],
-    como: "71 testes nas regras de indicadores do Scrims — regra de cálculo nova entra com teste.",
+    projetos: ["EINERD Scrims", "Acervo"],
+    como: "71 testes nas regras de indicadores do Scrims — regra de cálculo nova entra com teste; no Acervo, a navegação, a paginação e o estado das operações.",
   },
   {
     id: "grid",

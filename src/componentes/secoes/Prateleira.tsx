@@ -21,6 +21,9 @@ const TAMANHO = {
   guia: [30, 40],
   "caixa-deck": [28, 42],
   "caixa-loja": [34, 36],
+  cofrinho: [36, 32],
+  "gato-tv": [32, 42],
+  coruja: [26, 38],
 } as const;
 const ESCALA = 4;
 /** Objetos por tábua: 2 no celular, 3 a partir do tablet. Cada objeto ocupa 2 colunas da grade. */
@@ -215,7 +218,7 @@ export function Prateleira({ projetos, titulo, texto }: Props) {
                 </div>
                 <div className="flex flex-wrap gap-6" data-revelar>
                   <a className="botao" href={projetoAberto.url} target="_blank" rel="noreferrer">
-                    {projetoAberto.link === "demo" ? "Abrir a demo" : "Abrir o site"}
+                    {{ demo: "Abrir a demo", site: "Abrir o site", codigo: "Ver o código" }[projetoAberto.link]}
                     <span className="sr-only"> (abre em nova aba)</span>
                   </a>
                   <button type="button" className="botao botao-contorno" onClick={() => trocar(null)}>

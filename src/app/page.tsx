@@ -42,14 +42,14 @@ export default function Pagina() {
         <Sobre comTerminal={comTerminal} />
         <Prateleira
           projetos={PROJETOS}
-          titulo="Cinco projetos no ar"
-          texto="Escolha um objeto da prateleira para abrir o caso: o problema, a decisão técnica e o resultado. Os sistemas de uso interno abrem numa demo com dados fictícios."
+          titulo="Oito projetos"
+          texto="Escolha um objeto da prateleira para abrir o caso: o problema, a decisão técnica e o resultado. Os sistemas de uso interno abrem numa demo com dados fictícios, e os apps de Windows abrem o código no GitHub."
         />
         <Inventario
           itens={itens}
           total={TOTAL_PROJETOS}
           titulo="Inventário"
-          texto={`O que eu levo para os projetos. O número no canto de cada espaço é em quantos deles o item entrou — contando os cinco da prateleira e este site, ${TOTAL_PROJETOS} ao todo.`}
+          texto={`O que eu levo para os projetos. O número no canto de cada espaço é em quantos deles o item entrou — contando os oito da prateleira e este site, ${TOTAL_PROJETOS} ao todo.`}
         />
         <Servicos
           servicos={SERVICOS}

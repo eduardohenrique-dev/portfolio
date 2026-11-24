@@ -38,7 +38,7 @@ export const RESPOSTAS_OFFLINE: RespostaOffline[] = [
   {
     chaves: ["stack", "tecnologia", "tecnologias", "linguagem", "usa", "ferramenta", "next", "react", "supabase", "typescript"],
     texto:
-      "O que mais aparece nos projetos dele: React, Tailwind e Node.js em todos; Next.js no HQ, no GVTEM e neste site, e TypeScript também no Deck Scanner; PostgreSQL em quatro deles, pelo Supabase no Scrims e no HQ e pelo Neon no GVTEM e no Deck Scanner. O Deck Scanner tem API em Python com FastAPI e visão com OpenCV.",
+      "O que mais aparece nos projetos dele: React e Tailwind em todos os projetos web; Next.js no HQ, no GVTEM e neste site, e TypeScript também no Deck Scanner; PostgreSQL em quatro deles, pelo Supabase no Scrims e no HQ e pelo Neon no GVTEM e no Deck Scanner. O Deck Scanner tem API em Python com FastAPI e visão com OpenCV. Os apps de Windows (Acervo, Palco e Penumbra) são em Rust com Tauri.",
   },
   {
     chaves: ["servico", "servicos", "oferece", "faz", "ux", "ui", "design", "interface", "deploy", "integracao", "integracoes"],
@@ -59,6 +59,11 @@ export const RESPOSTAS_OFFLINE: RespostaOffline[] = [
     chaves: ["dgames", "loja", "estoque", "lucro", "games", "revenda"],
     texto:
       "O DGAMES controla estoque e lucro de uma loja de revenda de games: fotos, fornecedor, cliente, lucro por item e backup em JSON. É um index.html que abre com dois cliques, com os dados guardados no navegador. Há uma demo com dados fictícios na prateleira de projetos.",
+  },
+  {
+    chaves: ["windows", "desktop", "rust", "tauri", "acervo", "palco", "penumbra", "monitor", "monitores", "disco", "armazenamento", "quintal"],
+    texto:
+      "O Eduardo fez três apps de Windows em Rust com Tauri, da mesma família visual. O Acervo lê a MFT do NTFS e mostra o armazenamento de cada disco em 10 categorias, ao vivo pelo USN Journal. O Palco manda cada jogo para a tela escolhida, trocando o monitor principal quando precisa e devolvendo ao fechar. O Penumbra escurece cada monitor separadamente, com o brilho real pelo DDC/CI e uma camada por cima. O código dos três está no GitHub.",
   },
   {
     chaves: ["ia", "claude", "inteligencia", "llm", "terminal", "anthropic", "gpt"],

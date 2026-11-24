@@ -140,6 +140,135 @@ export function caixaLoja(): Pincel {
   return p;
 }
 
+/** Coruja num poleiro, com o olho direito meio na sombra — Penumbra. */
+export function coruja(): Pincel {
+  const p = new Pincel(26, 38);
+  // tufos das orelhas
+  for (let j = 0; j < 4; j++) {
+    p.ret(3, j, 2 + j, 1, L);
+    p.ret(21 - j, j, 2 + j, 1, L);
+    if (j > 0) {
+      p.ret(4, j, j, 1, S);
+      p.ret(22 - j, j, j, 1, S);
+    }
+  }
+  // corpo
+  p.caixa(2, 3, 22, 30, S, L);
+  p.ret(3, 4, 1, 28, B);
+  // olhos
+  for (const cx of [8, 17]) {
+    p.circulo(cx, 11, 4, C);
+    p.circulo(cx, 11, 2, A);
+    p.ret(cx, 11, 1, 1, F);
+  }
+  // a penumbra: a pálpebra cobre a metade de cima do olho direito
+  p.ret(13, 6, 9, 5, L);
+  p.ret(13, 10, 9, 1, F);
+  // bico
+  p.ret(12, 14, 2, 2, A);
+  p.ret(12, 16, 2, 1, R);
+  // penas da barriga em V
+  for (let fileira = 0; fileira < 4; fileira++)
+    for (let k = 0; k < 4; k++) {
+      const x = 6 + k * 4 + (fileira % 2) * 2;
+      const y = 20 + fileira * 3;
+      p.px(x, y, B);
+      p.px(x + 1, y + 1, B);
+      p.px(x + 2, y, B);
+    }
+  // pés e poleiro
+  p.ret(7, 33, 3, 1, A);
+  p.ret(16, 33, 3, 1, A);
+  p.ret(0, 34, 26, 2, L);
+  p.ret(0, 34, 26, 1, B);
+  p.ret(3, 36, 2, 2, L);
+  p.ret(21, 36, 2, 2, L);
+  return p;
+}
+
+/** Cofrinho de porquinho com uma moeda entrando — Acervo. */
+export function cofrinho(): Pincel {
+  const p = new Pincel(36, 32);
+  // moeda entrando pela fenda
+  p.circulo(17, 4, 4, A);
+  p.ret(16, 2, 1, 5, C);
+  // corpo
+  p.circulo(17, 18, 11, L);
+  p.ret(4, 10, 27, 17, L);
+  p.circulo(17, 18, 10, R);
+  p.ret(5, 11, 25, 15, R);
+  p.ret(6, 12, 3, 4, C); // brilho
+  // fenda
+  p.ret(13, 8, 9, 2, F);
+  // orelha
+  p.ret(22, 6, 4, 2, L);
+  p.ret(23, 7, 3, 3, R);
+  p.ret(22, 8, 1, 2, L);
+  // focinho
+  p.caixa(29, 15, 7, 8, R, L);
+  p.ret(31, 17, 1, 3, L);
+  p.ret(33, 17, 1, 3, L);
+  // olho
+  p.ret(25, 13, 2, 2, F);
+  // rabinho
+  p.px(3, 14, L);
+  p.px(2, 13, L);
+  p.px(1, 14, L);
+  p.px(2, 15, L);
+  // patas
+  for (const x of [8, 24]) {
+    p.ret(x, 27, 5, 4, L);
+    p.ret(x + 1, 27, 3, 3, R);
+  }
+  return p;
+}
+
+/** Gato preto sentado em cima de uma TV, com o jogo na tela — Palco. */
+export function gatoNaTv(): Pincel {
+  const p = new Pincel(32, 42);
+  // gato (silhueta escura com contorno, olhos âmbar)
+  p.desenho(
+    [
+      "...L.....L.....",
+      "..LSL...LSL....",
+      "..LSSLLLSSL....",
+      "..LSSSSSSSL....",
+      "..LSASSSASL....",
+      "..LSSSSSSSL....",
+      "...LSSRSSL.....",
+      "....LSSSL......",
+      "...LSSSSSL.....",
+      "..LSSSSSSSL....",
+      "..LSSSSSSSL..L.",
+      ".LSSSSSSSSSL.LL",
+      ".LSSSSSSSSSL..L",
+      ".LSSSSSSSSSLLLL",
+      ".LLLLLLLLLLLL..",
+    ],
+    12,
+    0,
+  );
+  // TV
+  p.caixa(0, 15, 32, 24, B, L);
+  p.ret(1, 16, 30, 1, C);
+  p.caixa(3, 18, 20, 17, F, L);
+  // na tela: um palco com holofote
+  p.ret(4, 19, 18, 15, F);
+  for (let j = 0; j < 10; j++) p.ret(12 - Math.floor(j / 2), 20 + j, 2 + j, 1, S);
+  p.ret(5, 30, 16, 1, A);
+  p.ret(5, 31, 16, 2, R);
+  // botões
+  p.circulo(27, 22, 2, L);
+  p.circulo(27, 22, 1, A);
+  p.ret(25, 27, 5, 1, L);
+  p.ret(25, 29, 5, 1, L);
+  p.ret(25, 31, 5, 1, L);
+  // pés
+  p.ret(4, 39, 4, 3, L);
+  p.ret(24, 39, 4, 3, L);
+  return p;
+}
+
 /** Personagem: parado + 4 quadros de caminhada, virado para a direita. Anda pela trilha do mapa de serviços. */
 export function andarilho(): Pincel[] {
   const cabeca = ["....SSSSS...", "...SSSSSSS..", "...SSSCCCC..", "...SSCCFCC..", "....SCCCCC..", ".....CCCC..."];
